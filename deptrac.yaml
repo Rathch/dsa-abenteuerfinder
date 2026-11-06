@@ -1,0 +1,109 @@
+# SPDX-FileCopyrightText: 2026 Christian Rath-Ulrich
+#
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Deptrac: erlaubte Abhängigkeiten zwischen Architektur-Schichten.
+#
+# Richtung der Abhängigkeiten:
+#   Livewire / Http / Console -> Services -> Models -> Domain
+#   Domain ist rein (kein Eloquent, keine Services, keine UI-/HTTP-Schicht).
+deptrac:
+  paths:
+    - ./app
+
+  layers:
+    - name: Domain
+      collectors:
+        - type: directory
+          value: app/Domain/.*
+
+    - name: Models
+      collectors:
+        - type: directory
+          value: app/Models/.*
+
+    - name: Services
+      collectors:
+        - type: directory
+          value: app/Services/.*
+
+    - name: Livewire
+      collectors:
+        - type: directory
+          value: app/Livewire/.*
+
+    - name: Http
+      collectors:
+        - type: directory
+          value: app/Http/.*
+
+    - name: Console
+      collectors:
+        - type: directory
+          value: app/Console/.*
+
+    - name: Providers
+      collectors:
+        - type: directory
+          value: app/Providers/.*
+
+    - name: Support
+      collectors:
+        - type: directory
+          value: app/Support/.*
+
+    # Framework-Persistenz (Eloquent) — darf nicht in die Domain lecken.
+    - name: Eloquent
+      collectors:
+        - type: classNameRegex
+          value: '#^Illuminate\\Database\\Eloquent\\#'
+
+  ruleset:
+    # Reine Fachlogik und Value Objects: keine Abhängigkeit auf andere Schichten.
+    Domain: []
+
+    # Persistenz: nur Domain-Value-Objects (z. B. Casts) und Eloquent selbst.
+    Models:
+      - Domain
+      - Eloquent
+
+    # Anwendungslogik: Models + Domain (+ Hilfen). Kein UI/HTTP.
+    # Services dürfen andere Services nutzen (z. B. Import → Korrekturen).
+    Services:
+      - Domain
+      - Models
+      - Support
+      - Eloquent
+      - Services
+
+    # UI-Schicht: nur über Services und Domain, nicht direkt auf Models.
+    Livewire:
+      - Domain
+      - Services
+      - Support
+
+    Http:
+      - Domain
+      - Services
+      - Support
+
+    Console:
+      - Domain
+      - Services
+      - Support
+
+    # Hilfsfunktionen ohne Fachlogik.
+    Support:
+      - Domain
+
+    # Bootstrapping darf Schichten verdrahten.
+    Providers:
+      - Domain
+      - Models
+      - Services
+      - Livewire
+      - Http
+      - Console
+      - Support
+
+    Eloquent: []

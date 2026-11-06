@@ -1,0 +1,40 @@
+{
+    "series": [
+        {
+            "slug": "nordmarken-sagen",
+            "name": "Nordmarken-Sagen"
+        },
+        {
+            "slug": "kronen-von-gareth",
+            "name": "Kronen von Gareth"
+        },
+        {
+            "slug": "tulamidische-naechte",
+            "name": "Tulamidische Nächte"
+        },
+        {
+            "slug": "suedmeer-chroniken",
+            "name": "Südmeer-Chroniken"
+        },
+        {
+            "slug": "seewolf-reihe",
+            "name": "Seewolf-Reihe"
+        },
+        {
+            "slug": "myranische-fragmente",
+            "name": "Myranische Fragmente"
+        },
+        {
+            "slug": "einzelabenteuer",
+            "name": "Einzelabenteuer"
+        },
+        {
+            "slug": "va-reihe",
+            "name": "VA-Reihe"
+        },
+        {
+            "slug": "a-reihe",
+            "name": "A-Reihe"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-FileCopyrightText: 2026 Christian Rath-Ulrich -->
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <style>
+        .s { fill: #fffaf3; stroke: #4a2e1c; stroke-width: 2.15; stroke-linejoin: round; }
+        .lid { fill: none; stroke: #4a2e1c; stroke-width: 2.4; stroke-linecap: round; }
+        .i { fill: #9a6236; }
+        .p { fill: #2a1810; }
+        .g { fill: none; stroke: #7a4e28; stroke-width: 2.2; }
+        .h { fill: none; stroke: #7a4e28; stroke-width: 3.6; stroke-linecap: round; }
+        .l { fill: #fffdf8; }
+        @media (prefers-color-scheme: dark) {
+            .s { fill: #6b4330; stroke: #e6d2b0; }
+            .lid { stroke: #e6d2b0; }
+            .i { fill: #8a5430; }
+            .p { fill: #1a0e08; }
+            .g, .h { stroke: #e0b56a; }
+            .l { fill: #f8e7c4; }
+        }
+    </style>
+    <path class="s" d="M5.2 33.4C15.4 15.6 48.2 14.6 58.8 31.6C49.4 49.4 16.6 50.6 5.2 33.4Z" />
+    <path class="lid" d="M6.2 32.2C16.2 16.8 47.4 15.8 57.6 30.8" />
+    <circle class="i" cx="30.5" cy="32.4" r="11.6" />
+    <circle class="p" cx="30.5" cy="32.4" r="10" />
+    <circle class="g" cx="30.5" cy="32.4" r="10" />
+    <circle class="l" cx="26.6" cy="28.4" r="2.3" />
+    <path class="h" d="M38.3 40.2 46.6 48.5" />
+</svg>

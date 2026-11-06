@@ -1,0 +1,40 @@
+{
+    "tags": [
+        {
+            "slug": "investigation",
+            "name": "Ermittlung"
+        },
+        {
+            "slug": "dungeon",
+            "name": "Dungeon"
+        },
+        {
+            "slug": "intrigue",
+            "name": "Intrige"
+        },
+        {
+            "slug": "horror",
+            "name": "Horror"
+        },
+        {
+            "slug": "humor",
+            "name": "Humor"
+        },
+        {
+            "slug": "exploration",
+            "name": "Erkundung"
+        },
+        {
+            "slug": "social",
+            "name": "Soziales Spiel"
+        },
+        {
+            "slug": "seafaring",
+            "name": "Seefahrt"
+        },
+        {
+            "slug": "sonstiges",
+            "name": "Sonstiges"
+        }
+    ]
+}

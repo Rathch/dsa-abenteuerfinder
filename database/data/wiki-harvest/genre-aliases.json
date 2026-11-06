@@ -1,0 +1,29 @@
+{
+    "aliases": {
+        "detektiv": "investigation",
+        "detektivgeschichte": "investigation",
+        "ermittlung": "investigation",
+        "mystery": "investigation",
+        "dungeon": "dungeon",
+        "dungeonabenteuer": "dungeon",
+        "intrige": "intrigue",
+        "intrigenszenario": "intrigue",
+        "politik": "intrigue",
+        "horror": "horror",
+        "horrorszenario": "horror",
+        "humor": "humor",
+        "erkundung": "exploration",
+        "erkundungsreise": "exploration",
+        "exploration": "exploration",
+        "wildnis": "exploration",
+        "wildnisabenteuer": "exploration",
+        "reiseabenteuer": "exploration",
+        "sozial": "social",
+        "gesellschaft": "social",
+        "stadtabenteuer": "social",
+        "seefahrt": "seafaring",
+        "seefahrtsabenteuer": "seafaring",
+        "maritim": "seafaring"
+    },
+    "fallback": "sonstiges"
+}

@@ -1,0 +1,102 @@
+# SPDX-FileCopyrightText: 2026 Christian Rath-Ulrich
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+services:
+  public-init:
+    image: ${IMAGE:-ghcr.io/rathch/dsa-abenteuerfinder:latest}
+    container_name: dsa-abenteuerfinder-public-init
+    user: root
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      DB_CONNECTION: ${DB_CONNECTION:-sqlite}
+      DB_DATABASE: ${DB_DATABASE:-/var/lib/dsa-abenteuerfinder/database.sqlite}
+      PUBLIC_INIT_FORCE: ${PUBLIC_INIT_FORCE:-0}
+    command: ["sh", "/usr/local/bin/dsa-public-init.sh"]
+    networks:
+      - internal
+    volumes:
+      - app-public:/public-vol
+      - laravel-storage:/var/www/html/storage
+
+  app:
+    image: ${IMAGE:-ghcr.io/rathch/dsa-abenteuerfinder:latest}
+    container_name: dsa-abenteuerfinder-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_CONNECTION: ${DB_CONNECTION:-sqlite}
+      DB_DATABASE: ${DB_DATABASE:-/var/lib/dsa-abenteuerfinder/database.sqlite}
+    networks:
+      - internal
+    volumes:
+      - laravel-storage:/var/www/html/storage
+      - laravel-cache:/var/www/html/bootstrap/cache
+      - sqlite-data:/var/lib/dsa-abenteuerfinder
+
+  scheduler:
+    image: ${IMAGE:-ghcr.io/rathch/dsa-abenteuerfinder:latest}
+    container_name: dsa-abenteuerfinder-scheduler
+    restart: unless-stopped
+    depends_on:
+      - app
+    env_file:
+      - .env
+    environment:
+      DB_CONNECTION: ${DB_CONNECTION:-sqlite}
+      DB_DATABASE: ${DB_DATABASE:-/var/lib/dsa-abenteuerfinder/database.sqlite}
+    command: >
+      sh -lc "echo '* * * * * cd /var/www/html && php artisan schedule:run --no-interaction >> /proc/1/fd/1 2>&1' > /etc/crontabs/root && crond -f -l 8"
+    user: root
+    networks:
+      - internal
+    volumes:
+      - laravel-storage:/var/www/html/storage
+      - laravel-cache:/var/www/html/bootstrap/cache
+      - sqlite-data:/var/lib/dsa-abenteuerfinder
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: dsa-abenteuerfinder-web
+    restart: unless-stopped
+    depends_on:
+      public-init:
+        condition: service_completed_successfully
+      app:
+        condition: service_started
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - app-public:/var/www/html/public:ro
+      - laravel-storage:/var/www/html/storage
+      - laravel-cache:/var/www/html/bootstrap/cache
+    networks:
+      - proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.dsaabenteuerfinder.rule=Host(`dsa-abenteuerfinder.rath-ulrich.de`)"
+      - "traefik.http.routers.dsaabenteuerfinder.entrypoints=websecure"
+      - "traefik.http.routers.dsaabenteuerfinder.tls=true"
+      - "traefik.http.routers.dsaabenteuerfinder.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.dsaabenteuerfinder.service=dsaabenteuerfinder"
+      - "traefik.http.services.dsaabenteuerfinder.loadbalancer.server.port=80"
+
+volumes:
+  app-public:
+    name: dsaabenteuerfinder_app-public
+  laravel-storage:
+    name: dsaabenteuerfinder_laravel-storage
+  laravel-cache:
+    name: dsaabenteuerfinder_laravel-cache
+  sqlite-data:
+    name: dsaabenteuerfinder_sqlite-data
+
+networks:
+  proxy:
+    external: true
+  internal:
+    internal: true

@@ -1,0 +1,31 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "engines": {
+        "node": ">=24.0.0"
+    },
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "test:a11y": "npm run build && playwright test tests/visual/public/accessibility.spec.ts",
+        "test:a11y:ci": "playwright test tests/visual/public/accessibility.spec.ts",
+        "test:visual": "npm run build && playwright test",
+        "test:visual:update": "npm run build && playwright test --update-snapshots",
+        "test:visual:ci": "playwright test",
+        "test:visual:install": "playwright install --with-deps chromium"
+    },
+    "devDependencies": {
+        "@axe-core/playwright": "^4.14.0",
+        "@playwright/test": "^1.65.0",
+        "@tailwindcss/forms": "^0.5.11",
+        "@tailwindcss/vite": "^4.0.0",
+        "concurrently": "^10.0.6",
+        "laravel-vite-plugin": "^3.1",
+        "tailwindcss": "^4.0.0",
+        "vite": "^8.0.0"
+    },
+    "optionalDependencies": {
+        "@laravel/multiplex": "^0.4.1"
+    }
+}

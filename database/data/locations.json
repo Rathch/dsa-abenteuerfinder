@@ -1,0 +1,72 @@
+{
+    "locations": [
+        {
+            "slug": "aventurien",
+            "name": "Aventurien",
+            "type": "continent",
+            "children": [
+                {
+                    "slug": "nordmarken",
+                    "name": "Nordmarken",
+                    "type": "region",
+                    "children": [
+                        { "slug": "havena", "name": "Havena", "type": "place" },
+                        { "slug": "riva", "name": "Riva", "type": "place" }
+                    ]
+                },
+                {
+                    "slug": "mittelaventurien",
+                    "name": "Mittelaventurien",
+                    "type": "region",
+                    "children": [
+                        { "slug": "gareth", "name": "Gareth", "type": "place" },
+                        { "slug": "punin", "name": "Punin", "type": "place" }
+                    ]
+                },
+                {
+                    "slug": "tulamidenlande",
+                    "name": "Tulamidenlande",
+                    "type": "region",
+                    "children": [
+                        { "slug": "fasar", "name": "Fasar", "type": "place" },
+                        { "slug": "khunchom", "name": "Khunchom", "type": "place" }
+                    ]
+                },
+                {
+                    "slug": "suedaventurien",
+                    "name": "Südaventurien",
+                    "type": "region",
+                    "children": [
+                        { "slug": "al-anfa", "name": "Al'Anfa", "type": "place" },
+                        { "slug": "brabak", "name": "Brabak", "type": "place" }
+                    ]
+                },
+                {
+                    "slug": "suedwest",
+                    "name": "Südwest",
+                    "type": "region",
+                    "children": [
+                        { "slug": "kuslik", "name": "Kuslik", "type": "place" },
+                        { "slug": "vinsalt", "name": "Vinsalt", "type": "place" }
+                    ]
+                },
+                {
+                    "slug": "seefahrt",
+                    "name": "Seefahrt",
+                    "type": "region",
+                    "children": [
+                        { "slug": "zyklopeninseln", "name": "Zyklopeninseln", "type": "place" }
+                    ]
+                }
+            ]
+        },
+        {
+            "slug": "myranor",
+            "name": "Myranor",
+            "type": "continent",
+            "children": [
+                { "slug": "pelagos", "name": "Pelagos", "type": "place" }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,151 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://dsa-abenteuerfinder.example/schemas/adventures.schema.json",
+    "title": "DSA Abenteuerfinder – Abenteuer-Importdatei",
+    "description": "Zweckgebundene Metadaten zu Abenteuern. Kurzbeschreibungen sind selbst verfasst und spoilerfrei.",
+    "type": "object",
+    "required": ["adventures"],
+    "additionalProperties": false,
+    "properties": {
+        "adventures": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/$defs/adventure" }
+        }
+    },
+    "$defs": {
+        "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "maxLength": 120
+        },
+        "nullableSlug": {
+            "oneOf": [
+                { "$ref": "#/$defs/slug" },
+                { "type": "null" }
+            ]
+        },
+        "nullablePositiveInt": {
+            "oneOf": [
+                { "type": "integer", "minimum": 1 },
+                { "type": "null" }
+            ]
+        },
+        "adventure": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "slug",
+                "title",
+                "series",
+                "experience_level",
+                "duration_category",
+                "rule_version",
+                "exotic",
+                "complexity",
+                "location_type",
+                "genres",
+                "short_description",
+                "wiki_url"
+            ],
+            "properties": {
+                "slug": { "$ref": "#/$defs/slug" },
+                "title": { "type": "string", "minLength": 2, "maxLength": 200 },
+                "series": { "$ref": "#/$defs/slug" },
+                "experience_level": {
+                    "enum": ["einsteiger", "fortgeschritten", "erfahren", "meister"]
+                },
+                "page_count": { "$ref": "#/$defs/nullablePositiveInt" },
+                "duration_category": {
+                    "enum": ["kurz", "mittel", "lang", "kampagne"]
+                },
+                "rule_version": {
+                    "enum": ["dsa4", "dsa5", "editionunabhaengig"]
+                },
+                "exotic": { "type": "boolean" },
+                "complexity": { "enum": ["niedrig", "mittel", "hoch"] },
+                "group_size_min": { "$ref": "#/$defs/nullablePositiveInt" },
+                "group_size_max": { "$ref": "#/$defs/nullablePositiveInt" },
+                "location_type": { "enum": ["point", "corridor", "traveling"] },
+                "primary_location": { "$ref": "#/$defs/nullableSlug" },
+                "primary_region": { "$ref": "#/$defs/nullableSlug" },
+                "regions": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": { "$ref": "#/$defs/slug" }
+                },
+                "genres": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": { "$ref": "#/$defs/slug" }
+                },
+                "short_description": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 1200
+                },
+                "wiki_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+                "incomplete": { "type": "boolean" },
+                "missing_from_wiki": { "type": "boolean" },
+                "source_note": {
+                    "oneOf": [
+                        { "type": "string", "maxLength": 255 },
+                        { "type": "null" }
+                    ]
+                }
+            },
+            "allOf": [
+                {
+                    "if": {
+                        "properties": { "location_type": { "const": "point" } },
+                        "required": ["location_type"]
+                    },
+                    "then": {
+                        "required": ["primary_location", "primary_region"],
+                        "properties": {
+                            "primary_location": { "type": "string" },
+                            "primary_region": { "type": "string" }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": { "location_type": { "const": "corridor" } },
+                        "required": ["location_type"]
+                    },
+                    "then": {
+                        "required": ["regions"],
+                        "properties": {
+                            "regions": { "minItems": 2 }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": { "location_type": { "const": "traveling" } },
+                        "required": ["location_type"]
+                    },
+                    "then": {
+                        "required": ["regions"],
+                        "properties": {
+                            "regions": { "minItems": 1 }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": { "incomplete": { "const": true } },
+                        "required": ["incomplete"]
+                    },
+                    "then": {
+                        "required": ["source_note"],
+                        "properties": {
+                            "source_note": { "type": "string", "minLength": 3 }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

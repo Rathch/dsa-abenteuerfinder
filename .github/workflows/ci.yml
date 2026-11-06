@@ -1,0 +1,232 @@
+# SPDX-FileCopyrightText: 2026 Christian Rath-Ulrich
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+# Quality Gates: Pint, PHPStan (Larastan), Deptrac, composer validate,
+# Vite-Build, Pest mit Coverage, Playwright (visuell + a11y).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  php-quality:
+    name: Pint, PHPStan, Deptrac, composer validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: mbstring, xml, ctype, json, tokenizer, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/composer/files
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-publish
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Laravel Pint (check only)
+        run: vendor/bin/pint --test
+
+      - name: PHPStan (Larastan)
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=512M
+
+      - name: Deptrac (Architektur-Schichten)
+        run: vendor/bin/deptrac analyse --no-progress
+
+  frontend-build:
+    name: Frontend build (Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install & build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Upload Vite output
+        uses: actions/upload-artifact@v7
+        with:
+          name: vite-build
+          path: public/build
+          retention-days: 1
+
+  pest:
+    name: Pest (Coverage)
+    runs-on: ubuntu-latest
+    needs: frontend-build
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download Vite build
+        uses: actions/download-artifact@v8
+        with:
+          name: vite-build
+          path: public/build
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: mbstring, xml, ctype, json, tokenizer, bcmath, fileinfo, pdo_sqlite
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Cache Composer
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/composer/files
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare Laravel env
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+          touch database/database.sqlite
+
+      - name: Pest mit Coverage
+        run: vendor/bin/pest --coverage-clover=coverage.xml
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ${{ github.workspace }}/database/database.sqlite
+
+      - name: Domain-Coverage >= 90 % (app/Domain)
+        run: |
+          if [ ! -d app/Domain ]; then
+            echo "app/Domain existiert noch nicht – Gate übersprungen."
+            exit 0
+          fi
+          python3 - <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+
+          root = ET.parse("coverage.xml").getroot()
+          total = covered = 0
+          for f in root.iter("file"):
+              if "/app/Domain/" not in f.attrib.get("name", ""):
+                  continue
+              m = f.find("metrics")
+              if m is None:
+                  continue
+              total += int(m.attrib.get("statements", "0"))
+              covered += int(m.attrib.get("coveredstatements", "0"))
+          if total == 0:
+              print("Keine Statements in app/Domain – Gate übersprungen.")
+              sys.exit(0)
+          pct = covered / total * 100
+          print(f"Domain-Coverage: {pct:.2f} % ({covered}/{total})")
+          sys.exit(0 if pct >= 90 else 1)
+          PY
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage.xml
+          retention-days: 7
+
+  playwright:
+    name: Playwright (visuell + a11y)
+    runs-on: ubuntu-latest
+    needs: frontend-build
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Prüfen, ob Playwright konfiguriert ist
+        id: pw
+        run: |
+          if [ -f playwright.config.ts ] || [ -f playwright.config.js ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Keine Playwright-Konfiguration – Job übersprungen."
+          fi
+
+      - name: Download Vite build
+        if: steps.pw.outputs.enabled == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          name: vite-build
+          path: public/build
+
+      - name: Setup PHP
+        if: steps.pw.outputs.enabled == 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: mbstring, xml, ctype, json, tokenizer, bcmath, fileinfo, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Node
+        if: steps.pw.outputs.enabled == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.pw.outputs.enabled == 'true'
+        run: |
+          composer install --no-interaction --no-progress --prefer-dist
+          npm ci
+
+      - name: Install Playwright Chromium
+        if: steps.pw.outputs.enabled == 'true'
+        run: npm run test:visual:install
+
+      - name: Axe-Gate (alle Ansichten, light + dark)
+        if: steps.pw.outputs.enabled == 'true'
+        run: npm run test:a11y:ci
+
+      - name: Run Playwright
+        if: steps.pw.outputs.enabled == 'true'
+        run: npx playwright test --grep-invert "axe-Verstöße"
+        env:
+          CI: true
+          PLAYWRIGHT_MANAGE_SERVER: "1"
+          PLAYWRIGHT_E2E: "1"
+
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
