@@ -6,8 +6,9 @@ use App\Domain\Matching\DurationWish;
 use App\Domain\Matching\ExoticWish;
 use App\Domain\Matching\ExperienceLevel;
 use App\Domain\Matching\GroupSizeWish;
+use App\Domain\Matching\MatchResult;
 use App\Domain\Matching\RegionKey;
-use App\Domain\Matching\RulesWish;
+use App\Domain\Matching\RuleVersion;
 use App\Domain\Matching\WizardAnswers;
 use App\Domain\Matching\WizardFacetFilter;
 use App\Models\GenreTag;
@@ -17,23 +18,35 @@ use App\Models\GenreTag;
  */
 class WizardOptionsService
 {
+    /** @var list<array{slug: string, name: string}>|null */
+    private ?array $genreCatalog = null;
+
     public function __construct(
         private readonly AdventureMatchService $matches = new AdventureMatchService,
         private readonly WizardFacetFilter $facets = new WizardFacetFilter,
     ) {}
+
+    public function recommend(WizardAnswers $answers): MatchResult
+    {
+        return $this->matches->recommend($answers);
+    }
 
     /**
      * @return list<array{slug: string, name: string}>
      */
     public function genres(): array
     {
+        if ($this->genreCatalog !== null) {
+            return $this->genreCatalog;
+        }
+
         $options = [];
 
         foreach (GenreTag::query()->orderBy('name')->get() as $tag) {
             $options[] = ['slug' => $tag->slug, 'name' => $tag->name];
         }
 
-        return $options;
+        return $this->genreCatalog = $options;
     }
 
     /**
@@ -194,10 +207,10 @@ class WizardOptionsService
     public function exoticOptions(array $values): array
     {
         $meta = [
-            ExoticWish::No->value => ['Klassisches Aventurien', 'Vertraute Regionen und Kulturen.'],
-            ExoticWish::ExtraAventurian->value => ['Außerhalb Aventuriens', 'Zum Beispiel Myranor.'],
+            ExoticWish::No->value => ['Nur Aventurien', 'Nur der Kontinent Aventurien.'],
+            ExoticWish::ExtraAventurian->value => ['Andere Kontinente', 'Myranor, Uthuria, Tharun, Rakshazar oder das Tiefenreich.'],
             ExoticWish::UnusualCultures->value => ['Ungewöhnliche Kulturen', 'Fremde Bräuche und seltene Schauplätze.'],
-            ExoticWish::Any->value => ['Egal', 'Alles ist willkommen.'],
+            ExoticWish::Any->value => ['Egal', 'Aventurien und die anderen Kontinente.'],
         ];
 
         return $this->mapOptions($values, $meta);
@@ -209,11 +222,14 @@ class WizardOptionsService
      */
     public function rulesOptions(array $values): array
     {
-        $meta = [
-            RulesWish::Dsa5->value => ['DSA 5', null],
-            RulesWish::Dsa4->value => ['DSA 4.1', null],
-            RulesWish::Any->value => ['Egal', 'Schließt editionsunabhängige Abenteuer mit ein.'],
-        ];
+        $meta = [];
+        foreach (RuleVersion::cases() as $version) {
+            if ($version === RuleVersion::EditionUnabhaengig) {
+                continue;
+            }
+            $meta[$version->value] = [$version->label(), null];
+        }
+        $meta['any'] = ['Egal', 'Schließt alle Editionen und editionsunabhängige Abenteuer mit ein.'];
 
         return $this->mapOptions($values, $meta);
     }

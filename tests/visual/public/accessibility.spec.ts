@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { expectNoA11yViolations, setTheme, type Theme } from '../a11y-helpers';
-import { chooseRadioInFieldsetAndPersist, completeWizard, formHeading } from '../wizard-helpers';
+import { chooseChecks, chooseRadioInFieldsetAndPersist, completeWizard, formHeading } from '../wizard-helpers';
 
 /**
  * Festes QA-Gate: jede Ansicht in Hell und Dunkel, geprüft mit axe (WCAG 2.2 AA).
@@ -47,26 +47,24 @@ for (const theme of themes) {
 
         test('Formular-Fehlerübersicht hat keine axe-Verstöße', async ({ page }) => {
             await openThemed(page, theme);
-            await chooseRadioInFieldsetAndPersist(page, /Regelwerk/, 'DSA 5');
+            await chooseChecks(page, /Regelwerk/, ['DSA 5']);
             await chooseRadioInFieldsetAndPersist(page, /Heldinnen und Helden/, 'Einsteiger');
-            await chooseRadioInFieldsetAndPersist(page, /Region/, 'Egal');
-            const place = page.getByRole('combobox', { name: /Ort/ });
-            await place.fill('Nirgendwo');
-            await place.blur();
-            await page.getByRole('button', { name: 'Weiter', exact: true }).click();
+            await chooseChecks(page, /exotisch/, ['Nur Aventurien']);
+            await page.getByRole('group', { name: /Region/ }).getByRole('button', { name: 'Weiter', exact: true }).click();
             await expect(page.locator('#error-summary')).toBeVisible();
 
             await expectNoA11yViolations(page);
         });
 
-        test('Ortssuche hat keine axe-Verstöße', async ({ page }) => {
+        test('Ortsauswahl hat keine axe-Verstöße', async ({ page }) => {
             await openThemed(page, theme);
-            await chooseRadioInFieldsetAndPersist(page, /Regelwerk/, 'DSA 5');
+            await chooseChecks(page, /Regelwerk/, ['DSA 5']);
             await chooseRadioInFieldsetAndPersist(page, /Heldinnen und Helden/, 'Einsteiger');
-            await chooseRadioInFieldsetAndPersist(page, /Region/, 'Egal');
-            await page.getByRole('combobox', { name: /Ort/ }).fill('ga');
-            await expect(page.getByRole('option', { name: /Gareth/ })).toBeVisible();
-            await expect(page.getByRole('combobox', { name: /Ort/ })).toHaveAttribute('aria-expanded', 'true');
+            await chooseChecks(page, /exotisch/, ['Nur Aventurien']);
+            await page.getByRole('group', { name: /Region/ }).getByRole('checkbox', { name: /^Nordmarken/ }).check();
+            await expect(page.getByRole('radio', { name: 'Havena' })).toBeVisible();
+            await expect(page.getByRole('radio', { name: 'Riva' })).toBeVisible();
+            await expect(page.getByRole('radiogroup', { name: /Ort/ })).toBeVisible();
 
             await expectNoA11yViolations(page);
         });

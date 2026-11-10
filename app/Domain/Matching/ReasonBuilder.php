@@ -52,7 +52,9 @@ final class ReasonBuilder
 
     private function regionReason(WizardAnswers $answers, AdventureCandidate $candidate, ScoreBreakdown $score): ?string
     {
-        $wantedRegion = $answers->regionSlug !== null ? RegionKey::labelFor($answers->regionSlug) : null;
+        $wantedRegion = count($answers->regionSlugs) === 1
+            ? RegionKey::labelFor($answers->regionSlugs[0])
+            : null;
 
         return match ($score->regionKind) {
             RegionMatchKind::Place => 'Spielt in '.($candidate->primaryPlaceName ?? 'deinem Wunschort').' – genau der Ort, den du dir gewünscht hast.',
@@ -88,21 +90,51 @@ final class ReasonBuilder
 
     private function timeframeReason(WizardAnswers $answers, AdventureCandidate $candidate, ScoreBreakdown $score): ?string
     {
-        if ($score->timeframe < 50) {
+        if ($score->timeframe < 50 || ! $answers->restrictsDuration()) {
             return null;
         }
 
-        return 'Dauer passt zu '.$answers->durationWish()->label().' ('.$candidate->durationCategory->label().').';
+        $label = $this->bestDurationLabel($answers, $candidate);
+        if ($label === null) {
+            return null;
+        }
+
+        return 'Dauer passt zu '.$label.' ('.$candidate->durationCategory->label().').';
+    }
+
+    private function bestDurationLabel(WizardAnswers $answers, AdventureCandidate $candidate): ?string
+    {
+        $best = null;
+        $bestFit = -1;
+        foreach ($answers->durationWishes() as $wish) {
+            $fit = $wish->fitFor($candidate->durationCategory);
+            if ($fit > $bestFit) {
+                $bestFit = $fit;
+                $best = $wish;
+            }
+        }
+
+        return $best?->label();
     }
 
     private function rulesReason(WizardAnswers $answers, AdventureCandidate $candidate): ?string
     {
-        $wish = $answers->rulesWish();
-        if ($wish === RulesWish::Any) {
+        if ($answers->rules === []) {
             return null;
         }
 
-        return 'Verfügbar für '.$wish->label().' ('.$candidate->ruleVersion->label().').';
+        $labels = [];
+        foreach ($answers->rules as $value) {
+            $version = RuleVersion::tryFrom($value);
+            if ($version !== null) {
+                $labels[] = $version->label();
+            }
+        }
+        if ($labels === []) {
+            return null;
+        }
+
+        return 'Verfügbar für '.self::joinGerman($labels).' ('.$candidate->ruleVersion->label().').';
     }
 
     private function groupReason(WizardAnswers $answers, AdventureCandidate $candidate): ?string
@@ -121,12 +153,23 @@ final class ReasonBuilder
 
     private function exoticReason(WizardAnswers $answers, AdventureCandidate $candidate, ScoreBreakdown $score): ?string
     {
-        return match ($answers->exoticWish()) {
-            ExoticWish::No => $candidate->exotic ? null : 'Bleibt bei klassisch aventurischen Schauplätzen und Kulturen.',
-            ExoticWish::ExtraAventurian => $score->exotic >= 60 ? 'Führt dich abseits des gewohnten Aventurien.' : null,
-            ExoticWish::UnusualCultures => $candidate->exotic ? 'Stellt ungewöhnliche Kulturen in den Mittelpunkt.' : null,
-            ExoticWish::Any => null,
-        };
+        if (! $answers->restrictsExotic()) {
+            return null;
+        }
+
+        foreach ($answers->exoticWishes() as $wish) {
+            $reason = match ($wish) {
+                ExoticWish::No => ($candidate->exotic || $candidate->isExtraAventurian()) ? null : 'Bleibt bei klassisch aventurischen Schauplätzen und Kulturen.',
+                ExoticWish::ExtraAventurian => $score->exotic >= 60 ? 'Führt dich abseits des gewohnten Aventurien.' : null,
+                ExoticWish::UnusualCultures => $candidate->exotic ? 'Stellt ungewöhnliche Kulturen in den Mittelpunkt.' : null,
+                ExoticWish::Any => null,
+            };
+            if ($reason !== null) {
+                return $reason;
+            }
+        }
+
+        return null;
     }
 
     private function gmReason(WizardAnswers $answers, AdventureCandidate $candidate, ScoreBreakdown $score): ?string

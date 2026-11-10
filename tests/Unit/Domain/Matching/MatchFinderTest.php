@@ -86,6 +86,64 @@ describe('hard filters', function (): void {
             ->and($any)->toHaveCount(4);
     });
 
+    it('keeps adventures of either selected edition and drops a third', function (): void {
+        $candidates = [
+            adventureCandidate(['slug' => 'drei', 'ruleVersion' => RuleVersion::Dsa3]),
+            adventureCandidate(['slug' => 'fuenf', 'ruleVersion' => RuleVersion::Dsa5]),
+            adventureCandidate(['slug' => 'frei', 'ruleVersion' => RuleVersion::EditionUnabhaengig]),
+            adventureCandidate(['slug' => 'eins', 'ruleVersion' => RuleVersion::Dsa1]),
+        ];
+
+        $result = $this->finder->find(wizardAnswers([
+            'rules' => ['dsa3', 'dsa5'],
+            'rulesAny' => false,
+        ]), $candidates);
+
+        expect(recommendedSlugs($result->recommendations))
+            ->toContain('drei', 'fuenf', 'frei')
+            ->not->toContain('eins');
+    });
+
+    it('does not filter editions when no rule is selected', function (): void {
+        $result = $this->finder->find(wizardAnswers([
+            'rules' => [],
+            'rulesAny' => false,
+        ]), [
+            adventureCandidate(['slug' => 'alt', 'ruleVersion' => RuleVersion::Dsa1]),
+            adventureCandidate(['slug' => 'neu', 'ruleVersion' => RuleVersion::Dsa5]),
+            adventureCandidate(['slug' => 'frei', 'ruleVersion' => RuleVersion::EditionUnabhaengig]),
+        ]);
+
+        expect(recommendedSlugs($result->recommendations))->toContain('alt', 'neu', 'frei');
+    });
+
+    it('requires an exact region and excludes a neighbour until the region is relaxed', function (): void {
+        $strict = $this->finder->find(wizardAnswers([
+            'regionSlugs' => ['nordmarken', 'myranor'],
+            'regionsAny' => false,
+        ]), [
+            adventureCandidate(['slug' => 'nord-1', 'primaryRegionSlug' => 'nordmarken']),
+            adventureCandidate(['slug' => 'nord-2', 'primaryRegionSlug' => 'nordmarken']),
+            adventureCandidate(['slug' => 'myr', 'primaryRegionSlug' => 'myranor']),
+            adventureCandidate(['slug' => 'nachbar', 'primaryRegionSlug' => 'mittelaventurien']),
+            adventureCandidate(['slug' => 'fremd', 'primaryRegionSlug' => 'suedwest']),
+        ]);
+
+        expect(recommendedSlugs($strict->recommendations))
+            ->toContain('nord-1', 'nord-2', 'myr')
+            ->not->toContain('nachbar', 'fremd')
+            ->and($strict->fallbackNotes)->toBe([]);
+
+        $relaxed = $this->finder->find(wizardAnswers(['regionSlug' => 'nordmarken']), [
+            adventureCandidate(['slug' => 'nord', 'primaryRegionSlug' => 'nordmarken']),
+            adventureCandidate(['slug' => 'nachbar', 'primaryRegionSlug' => 'mittelaventurien']),
+            adventureCandidate(['slug' => 'fremd', 'primaryRegionSlug' => 'suedwest']),
+        ]);
+
+        expect(recommendedSlugs($relaxed->recommendations))->toContain('nord', 'nachbar')
+            ->and($relaxed->fallbackNotes[0])->toStartWith('Region wurde ignoriert');
+    });
+
     it('never relaxes the rules filter in fallback mode', function (): void {
         $result = $this->finder->find(wizardAnswers(['rules' => 'dsa4']), [
             adventureCandidate(['ruleVersion' => RuleVersion::Dsa5]),
@@ -96,15 +154,18 @@ describe('hard filters', function (): void {
         expect($result->isEmpty())->toBeTrue();
     });
 
-    it('skips incomplete adventures', function (): void {
+    it('keeps incomplete adventures and skips ones missing from the wiki', function (): void {
         $result = $this->finder->find(wizardAnswers(), [
             adventureCandidate(['slug' => 'a']),
             adventureCandidate(['slug' => 'b']),
             adventureCandidate(['slug' => 'c']),
             adventureCandidate(['slug' => 'unfertig', 'incomplete' => true]),
+            adventureCandidate(['slug' => 'fehlt', 'missingFromWiki' => true]),
         ]);
 
-        expect(recommendedSlugs($result->recommendations))->not->toContain('unfertig')->toHaveCount(3);
+        expect(recommendedSlugs($result->recommendations))->toContain('unfertig')
+            ->not->toContain('fehlt')
+            ->toHaveCount(4);
     });
 
     it('applies the group size filter with one band of tolerance', function (): void {
@@ -183,15 +244,26 @@ describe('region scoring', function (): void {
         }
     });
 
+    it('scores a neighbour of any selected region and withholds the bonus from an unconnected region', function (): void {
+        $calc = new ScoreCalculator;
+        $answers = wizardAnswers([
+            'regionSlugs' => ['nordmarken', 'myranor'],
+            'regionsAny' => false,
+        ]);
+
+        expect($calc->regionScore($answers, adventureCandidate(['primaryRegionSlug' => 'mittelaventurien']))[0])->toBe(50)
+            ->and($calc->regionScore($answers, adventureCandidate(['primaryRegionSlug' => 'suedwest']))[0])->toBe(20)
+            ->and($calc->regionScore($answers, adventureCandidate(['primaryRegionSlug' => 'nordmarken']))[0])->toBe(80);
+    });
+
     it('is neutral without a region wish and handles a place-only wish', function (): void {
         $calc = new ScoreCalculator;
 
         expect($calc->regionScore(wizardAnswers(), adventureCandidate())[0])->toBe(100);
 
-        $placeOnly = wizardAnswers(['placeSlug' => 'gareth']);
-        expect($calc->regionScore($placeOnly, adventureCandidate(['primaryPlaceSlug' => 'gareth']))[0])->toBe(100)
-            ->and($calc->regionScore($placeOnly, adventureCandidate(['locationType' => LocationType::Traveling]))[0])->toBe(60)
-            ->and($calc->regionScore($placeOnly, adventureCandidate(['primaryPlaceSlug' => 'riva']))[0])->toBe(20);
+        $withoutRegion = wizardAnswers(['placeSlug' => 'gareth']);
+        expect($withoutRegion->placeSlug)->toBeNull()
+            ->and($calc->regionScore($withoutRegion, adventureCandidate(['primaryPlaceSlug' => 'gareth']))[0])->toBe(100);
     });
 
     it('ranks place above region above traveling above neighbour', function (): void {
@@ -203,7 +275,7 @@ describe('region scoring', function (): void {
             adventureCandidate(['slug' => 'woanders', 'primaryRegionSlug' => 'suedwest']),
         ]);
 
-        expect(recommendedSlugs($result->recommendations))->toBe(['ort', 'region', 'reise', 'nachbar'])
+        expect(recommendedSlugs($result->recommendations))->toBe(['ort', 'region', 'reise'])
             ->and($result->fallbackNotes)->toBe([]);
     });
 
@@ -596,7 +668,7 @@ describe('performance', function (): void {
                 experienceLevel: $experiences[mt_rand(0, 3)],
                 pageCount: mt_rand(0, 1) === 1 ? mt_rand(16, 320) : null,
                 durationCategory: $durations[mt_rand(0, 3)],
-                ruleVersion: $rules[mt_rand(0, 2)],
+                ruleVersion: $rules[mt_rand(0, count($rules) - 1)],
                 exotic: mt_rand(0, 4) === 0,
                 complexity: $complexities[mt_rand(0, 2)],
                 groupSizeMin: mt_rand(0, 1) === 1 ? mt_rand(2, 4) : null,

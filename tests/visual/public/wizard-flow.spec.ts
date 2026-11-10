@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
+    chooseChecks,
     chooseRadioInFieldsetAndPersist,
     completeWizard,
     formHeading,
@@ -42,34 +43,37 @@ test.describe('Wunsch-Formular', () => {
 
         await page.locator('#ruleset-0').focus();
         await page.keyboard.press('Space');
+        await page.getByRole('button', { name: 'Weiter', exact: true }).focus();
+        await page.keyboard.press('Enter');
         await expect(page.getByRole('group', { name: /Heldinnen und Helden/ })).toBeVisible();
 
         await page.locator('#experienceLevel-0').focus();
         await page.keyboard.press('Space');
-        await expect(page.getByRole('group', { name: /Region/ })).toBeVisible();
-
-        await page.locator('#regionSlug-1').focus();
-        await page.keyboard.press('Space');
-        await expect(page.getByRole('combobox', { name: /Ort/ })).toBeVisible();
-
-        const place = page.getByRole('combobox', { name: /Ort/ });
-        await place.focus();
-        await page.keyboard.type('hav', { delay: 30 });
-        await expect(page.getByRole('option', { name: /Havena/ })).toBeVisible();
-        await page.keyboard.press('ArrowDown');
-        await page.keyboard.press('Enter');
-        await expect(place).toHaveValue('Havena');
-
         await page.getByRole('button', { name: 'Weiter', exact: true }).focus();
         await page.keyboard.press('Enter');
         await expect(page.getByRole('group', { name: /exotisch/ })).toBeVisible();
 
         await page.locator('#exotic-0').focus();
         await page.keyboard.press('Space');
+        await page.getByRole('button', { name: 'Weiter', exact: true }).focus();
+        await page.keyboard.press('Enter');
+        await expect(page.getByRole('group', { name: /Region/ })).toBeVisible();
+
+        await page.locator('#regionSlug-1').focus();
+        await page.keyboard.press('Space');
+        await expect(page.getByRole('radio', { name: 'Havena' })).toBeVisible();
+        await page.locator('#place-havena').focus();
+        await page.keyboard.press('Space');
+        await expect(page.locator('#place-havena')).toBeChecked();
+
+        await page.getByRole('button', { name: 'Weiter', exact: true }).focus();
+        await page.keyboard.press('Enter');
         await expect(page.getByRole('group', { name: /Zeit/ })).toBeVisible();
 
         await page.locator('#timeframe-0').focus();
         await page.keyboard.press('Space');
+        await page.getByRole('button', { name: 'Weiter', exact: true }).focus();
+        await page.keyboard.press('Enter');
         await expect(page.getByRole('group', { name: /Genres/ })).toBeVisible();
 
         const firstGenre = page.locator('fieldset input[type="checkbox"]').first();
@@ -81,10 +85,14 @@ test.describe('Wunsch-Formular', () => {
 
         await page.locator('#gmExperience-0').focus();
         await page.keyboard.press('Space');
+        await page.getByRole('button', { name: 'Weiter', exact: true }).focus();
+        await page.keyboard.press('Enter');
         await expect(page.getByRole('group', { name: /Spielende/ })).toBeVisible();
 
         await page.locator('#groupSize-0').focus();
         await page.keyboard.press('Space');
+        await page.getByRole('button', { name: 'Weiter', exact: true }).focus();
+        await page.keyboard.press('Enter');
         await expect(reviewHeading(page)).toBeVisible();
 
         await page.getByRole('button', { name: 'Empfehlungen anzeigen' }).focus();
@@ -100,31 +108,28 @@ test.describe('Wunsch-Formular', () => {
         await expect(page.getByRole('group', { name: /Regelwerk/ })).toBeVisible();
     });
 
-    test('zeigt Fehler bei ungültigem Ort und fokussiert die Fehlerübersicht', async ({ page }) => {
+    test('zeigt einen Fehler, wenn die Region fehlt, und fokussiert die Fehlerübersicht', async ({ page }) => {
         await page.goto('/');
-        await chooseRadioInFieldsetAndPersist(page, /Regelwerk/, 'DSA 5');
+        await chooseChecks(page, /Regelwerk/, ['DSA 5']);
         await chooseRadioInFieldsetAndPersist(page, /Heldinnen und Helden/, 'Einsteiger');
-        await chooseRadioInFieldsetAndPersist(page, /Region/, 'Egal');
-        const place = page.getByRole('combobox', { name: /Ort/ });
-        await place.fill('Nirgendwo');
-        await place.blur();
-        await expect(page.getByRole('button', { name: 'Weiter', exact: true })).toBeVisible();
+        await chooseChecks(page, /exotisch/, ['Nur Aventurien']);
+        await expect(page.getByRole('group', { name: /Region/ })).toBeVisible();
         await page.getByRole('button', { name: 'Weiter', exact: true }).click();
 
         const summary = page.locator('#error-summary');
         await expect(summary).toBeVisible();
         await expect(summary).toBeFocused();
-        await expect(summary).toContainText('Ort');
+        await expect(summary).toContainText('Region');
     });
 
     test('Antworten bleiben nach Neuladen in der Zusammenfassung erhalten', async ({ page }) => {
         await page.goto('/');
-        await chooseRadioInFieldsetAndPersist(page, /Regelwerk/, 'DSA 5');
+        await chooseChecks(page, /Regelwerk/, ['DSA 5']);
         await chooseRadioInFieldsetAndPersist(page, /Heldinnen und Helden/, 'Erfahrene');
         await page.reload();
         await expect(formHeading(page)).toBeVisible();
         await expect(page.getByRole('button', { name: /Helden:.*Erfahrene/ })).toBeVisible();
-        await expect(page.getByRole('group', { name: /Region/ })).toBeVisible();
+        await expect(page.getByRole('group', { name: /exotisch/ })).toBeVisible();
     });
 
     test('Neu starten auf der Ergebnisseite öffnet wieder das Formular', async ({ page }) => {

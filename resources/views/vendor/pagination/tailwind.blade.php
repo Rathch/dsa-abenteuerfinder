@@ -34,7 +34,7 @@
             </p>
 
             <div>
-                <span class="inline-flex gap-1 rounded-md shadow-sm">
+                <span class="inline-flex gap-1 shadow-sm">
                     @if ($paginator->onFirstPage())
                         <span aria-disabled="true" class="btn btn-secondary btn-sm pointer-events-none opacity-50">
                             <span class="sr-only">{{ __('pagination.previous') }}</span>

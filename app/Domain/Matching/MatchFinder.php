@@ -94,7 +94,7 @@ final class MatchFinder
     }
 
     /**
-     * Wendet die unveränderlichen harten Filter an (unvollständig, Regeln, Gruppengröße)
+     * Wendet die unveränderlichen harten Filter an (im Wiki fehlend, Regeln, Gruppengröße)
      * und berechnet die Scores einmalig.
      *
      * @param  iterable<AdventureCandidate>  $candidates
@@ -102,15 +102,14 @@ final class MatchFinder
      */
     private function scoreEligible(WizardAnswers $answers, iterable $candidates): array
     {
-        $rules = $answers->rulesWish();
         $group = $answers->groupSizeWish();
         $eligible = [];
 
         foreach ($candidates as $candidate) {
-            if ($candidate->incomplete) {
+            if ($candidate->missingFromWiki) {
                 continue;
             }
-            if (! $rules->accepts($candidate->ruleVersion)) {
+            if (! $answers->acceptsRule($candidate->ruleVersion)) {
                 continue;
             }
             if ($group !== null && ! $group->isCompatibleWith($candidate->groupSizeMin, $candidate->groupSizeMax)) {
@@ -142,7 +141,7 @@ final class MatchFinder
             if ($score->experienceDistance > $maxDistance) {
                 continue;
             }
-            if ($filterRegion && $score->region < self::ACCEPTABLE_FIT) {
+            if ($filterRegion && ($score->regionKind === RegionMatchKind::Neighbor || $score->region < self::ACCEPTABLE_FIT)) {
                 continue;
             }
             if ($filterTimeframe && $score->timeframe < self::ACCEPTABLE_FIT) {

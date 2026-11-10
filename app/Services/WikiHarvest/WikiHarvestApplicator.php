@@ -131,10 +131,8 @@ final class WikiHarvestApplicator
                 $unmapped[] = $typed['title'].' | '.$typed['place_raw'];
             }
 
-            foreach ($adventure['genres'] as $genreSlug) {
-                if ($genreSlug === 'sonstiges') {
-                    $this->ensureTag($tagsDoc, 'sonstiges', 'Sonstiges');
-                }
+            foreach ($this->mapper->mapGenreTags($typed['genre_raw']) as $tag) {
+                $this->ensureTag($tagsDoc, $tag['slug'], $tag['name']);
             }
         }
 

@@ -1,40 +1,276 @@
 {
     "series": [
         {
-            "slug": "nordmarken-sagen",
-            "name": "Nordmarken-Sagen"
-        },
-        {
-            "slug": "kronen-von-gareth",
-            "name": "Kronen von Gareth"
-        },
-        {
-            "slug": "tulamidische-naechte",
-            "name": "Tulamidische Nächte"
-        },
-        {
-            "slug": "suedmeer-chroniken",
-            "name": "Südmeer-Chroniken"
-        },
-        {
-            "slug": "seewolf-reihe",
-            "name": "Seewolf-Reihe"
-        },
-        {
-            "slug": "myranische-fragmente",
-            "name": "Myranische Fragmente"
-        },
-        {
-            "slug": "einzelabenteuer",
-            "name": "Einzelabenteuer"
-        },
-        {
             "slug": "va-reihe",
             "name": "VA-Reihe"
         },
         {
             "slug": "a-reihe",
             "name": "A-Reihe"
+        },
+        {
+            "slug": "alveraniars-abenteuer",
+            "name": "Alveraniars Abenteuer"
+        },
+        {
+            "slug": "boten-abenteuer",
+            "name": "Boten-Abenteuer"
+        },
+        {
+            "slug": "boxen-abenteuer",
+            "name": "Boxen-Abenteuer"
+        },
+        {
+            "slug": "hw-reihe",
+            "name": "HW-Reihe"
+        },
+        {
+            "slug": "inoffiziell",
+            "name": "Inoffizielle Abenteuer"
+        },
+        {
+            "slug": "kostenlos",
+            "name": "Kostenlose Abenteuer"
+        },
+        {
+            "slug": "weitere-reihen",
+            "name": "Weitere Reihen"
+        },
+        {
+            "slug": "wettbewerbe",
+            "name": "Wettbewerbe"
+        },
+        {
+            "slug": "chronologisch",
+            "name": "Chronologisch"
+        },
+        {
+            "slug": "dsaforumorkenspalter",
+            "name": "DSAForum/Orkenspalter"
+        },
+        {
+            "slug": "weitere",
+            "name": "Weitere"
+        },
+        {
+            "slug": "b-basis-abenteuer",
+            "name": "B - Basis-Abenteuer"
+        },
+        {
+            "slug": "d-drakensang-abenteuer",
+            "name": "D - Drakensang-Abenteuer"
+        },
+        {
+            "slug": "e-einsteiger-abenteuer",
+            "name": "E - Einsteiger-Abenteuer"
+        },
+        {
+            "slug": "j-dsa-junior-abenteuer",
+            "name": "J - DSA-Junior-Abenteuer"
+        },
+        {
+            "slug": "m-myranor-abenteuer",
+            "name": "M - Myranor-Abenteuer"
+        },
+        {
+            "slug": "p-praesent-abenteuer",
+            "name": "P - Präsent-Abenteuer"
+        },
+        {
+            "slug": "t-promo-abenteuer",
+            "name": "T - Promo-Abenteuer"
+        },
+        {
+            "slug": "u-uthuria-abenteuer",
+            "name": "U - Uthuria-Abenteuer"
+        },
+        {
+            "slug": "sg-borbaradkampagne",
+            "name": "SG - Borbaradkampagne"
+        },
+        {
+            "slug": "vb-dsa5-betatest-abenteuer",
+            "name": "VB - DSA5-Betatest-Abenteuer"
+        },
+        {
+            "slug": "ax-sonstige-abenteuer",
+            "name": "AX - sonstige Abenteuer"
+        },
+        {
+            "slug": "ka-die-schwarze-katze",
+            "name": "KA - Die Schwarze Katze"
+        },
+        {
+            "slug": "5-jahre-5-seiten-2014",
+            "name": "5 Jahre - 5 Seiten 2014"
+        },
+        {
+            "slug": "auf-aves-spuren-vi-2013",
+            "name": "Auf Aves Spuren VI - 2013"
+        },
+        {
+            "slug": "auf-aves-spuren-v-2012",
+            "name": "Auf Aves Spuren V - 2012"
+        },
+        {
+            "slug": "auf-aves-spuren-iv-2011",
+            "name": "Auf Aves Spuren IV - 2011"
+        },
+        {
+            "slug": "auf-aves-spuren-iii-2010",
+            "name": "Auf Aves Spuren III - 2010"
+        },
+        {
+            "slug": "auf-aves-spuren-ii-2009",
+            "name": "Auf Aves Spuren II - 2009"
+        },
+        {
+            "slug": "auf-aves-spuren-i-2008",
+            "name": "Auf Aves Spuren I - 2008"
+        },
+        {
+            "slug": "die-dunklen-zeilen-2011",
+            "name": "Die Dunklen Zeilen 2011"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2021",
+            "name": "Drachenzwinge-Wettbewerb 2021"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2020",
+            "name": "Drachenzwinge-Wettbewerb 2020"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2019",
+            "name": "Drachenzwinge-Wettbewerb 2019"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2018",
+            "name": "Drachenzwinge-Wettbewerb 2018"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2017",
+            "name": "Drachenzwinge-Wettbewerb 2017"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2016",
+            "name": "Drachenzwinge-Wettbewerb 2016"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2015",
+            "name": "Drachenzwinge-Wettbewerb 2015"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2014",
+            "name": "Drachenzwinge-Wettbewerb 2014"
+        },
+        {
+            "slug": "drachenzwinge-wettbewerb-2013",
+            "name": "Drachenzwinge-Wettbewerb 2013"
+        },
+        {
+            "slug": "fanpro-wettbewerb-2007",
+            "name": "FanPro-Wettbewerb 2007"
+        },
+        {
+            "slug": "gaensekiel-tastenschlag-2007",
+            "name": "Gänsekiel & Tastenschlag 2007"
+        },
+        {
+            "slug": "gaensekiel-tastenschlag-2006",
+            "name": "Gänsekiel & Tastenschlag 2006"
+        },
+        {
+            "slug": "gaensekiel-tastenschlag-2005",
+            "name": "Gänsekiel & Tastenschlag 2005"
+        },
+        {
+            "slug": "gaensekiel-tastenschlag-2004",
+            "name": "Gänsekiel & Tastenschlag 2004"
+        },
+        {
+            "slug": "gaensekiel-tastenschlag-2003",
+            "name": "Gänsekiel & Tastenschlag 2003"
+        },
+        {
+            "slug": "goldener-becher-2009",
+            "name": "Goldener Becher 2009"
+        },
+        {
+            "slug": "goldener-becher-2008",
+            "name": "Goldener Becher 2008"
+        },
+        {
+            "slug": "goldener-becher-2006",
+            "name": "Goldener Becher 2006"
+        },
+        {
+            "slug": "goldener-becher-2005",
+            "name": "Goldener Becher 2005"
+        },
+        {
+            "slug": "goldener-becher-2004",
+            "name": "Goldener Becher 2004"
+        },
+        {
+            "slug": "goldener-becher-2003",
+            "name": "Goldener Becher 2003"
+        },
+        {
+            "slug": "goldener-becher-2002",
+            "name": "Goldener Becher 2002"
+        },
+        {
+            "slug": "goldener-becher-2001",
+            "name": "Goldener Becher 2001"
+        },
+        {
+            "slug": "goldener-becher-2000",
+            "name": "Goldener Becher 2000"
+        },
+        {
+            "slug": "goldener-becher-1996",
+            "name": "Goldener Becher 1996"
+        },
+        {
+            "slug": "hexenkult-racheflug-2007",
+            "name": "Hexenkult & Racheflug 2007"
+        },
+        {
+            "slug": "menetekel-meisterschrift-2024",
+            "name": "Menetekel Meisterschrift 2024"
+        },
+        {
+            "slug": "myranor-wettbewerb-2009",
+            "name": "Myranor-Wettbewerb 2009"
+        },
+        {
+            "slug": "myranor-wettbewerb-2008",
+            "name": "Myranor-Wettbewerb 2008"
+        },
+        {
+            "slug": "myranor-wettbewerb-2007",
+            "name": "Myranor-Wettbewerb 2007"
+        },
+        {
+            "slug": "schattenlande-zwischen-woelfen-und-schwertern",
+            "name": "Schattenlande: Zwischen Wölfen und Schwertern"
+        },
+        {
+            "slug": "schattenschlag-2010",
+            "name": "Schattenschlag 2010"
+        },
+        {
+            "slug": "ulisses-autorenwettbewerb-2010",
+            "name": "Ulisses-Autorenwettbewerb 2010"
+        },
+        {
+            "slug": "990-bf-999-bf",
+            "name": "990 BF - 999 BF"
+        },
+        {
+            "slug": "dunkle-zeiten",
+            "name": "Dunkle Zeiten"
         }
     ]
 }

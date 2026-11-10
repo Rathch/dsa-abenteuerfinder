@@ -11,6 +11,10 @@
             </p>
         </div>
 
-        <livewire:adventure-wizard />
+        <x-catalog-stats />
+
+        <div id="abenteuer-finden" class="scroll-mt-28">
+            <livewire:adventure-wizard />
+        </div>
     </div>
 @endsection

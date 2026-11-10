@@ -10,9 +10,8 @@ use App\Domain\Matching\GroupSizeWish;
 use App\Domain\Matching\LocationType;
 use App\Domain\Matching\MatchResult;
 use App\Domain\Matching\RegionKey;
-use App\Domain\Matching\RulesWish;
+use App\Domain\Matching\RuleVersion;
 use App\Domain\Matching\WizardAnswers;
-use App\Services\AdventureMatchService;
 use App\Services\LocationAutocompleteService;
 use App\Services\WizardOptionsService;
 use Illuminate\Contracts\View\View;
@@ -36,6 +35,8 @@ class AdventureWizard extends Component
 
     public const FOCUS_REVIEW = 'review';
 
+    private ?WizardOptionsService $wizardOptions = null;
+
     public bool $showResults = false;
 
     /** Aktives Panel: Feldname, region, genres oder review. */
@@ -45,24 +46,40 @@ class AdventureWizard extends Component
 
     public bool $genresDone = false;
 
+    public bool $rulesDone = false;
+
+    public bool $timeframeDone = false;
+
+    public bool $exoticDone = false;
+
     public string $experienceLevel = '';
 
     public string $groupSize = '';
 
-    public string $timeframe = '';
+    /** @var list<string> */
+    public array $timeframes = [];
 
-    public string $regionSlug = '';
+    /** @var list<string> */
+    public array $regionSlugs = [];
+
+    public bool $regionsAny = false;
 
     public string $placeQuery = '';
 
     public string $placeSlug = '';
 
-    public string $exotic = '';
+    /** @var list<string> */
+    public array $exotics = [];
+
+    public bool $exoticAny = false;
 
     /** @var list<string> */
     public array $genres = [];
 
-    public string $ruleset = '';
+    /** @var list<string> */
+    public array $rules = [];
+
+    public bool $rulesAny = false;
 
     public string $gmExperience = '';
 
@@ -76,22 +93,25 @@ class AdventureWizard extends Component
             return;
         }
 
-        $this->experienceLevel = $this->storedString($stored, 'experienceLevel');
+        $restored = WizardAnswers::fromSession($stored);
+        $this->experienceLevel = $restored->experienceLevel;
         $this->groupSize = $this->storedString($stored, 'groupSize');
-        $this->timeframe = $this->storedString($stored, 'timeframe');
-        $this->regionSlug = $this->storedString($stored, 'regionSlug');
-        $this->placeQuery = $this->storedString($stored, 'placeQuery');
-        $this->placeSlug = $this->storedString($stored, 'placeSlug');
-        $this->exotic = $this->storedString($stored, 'exotic');
-        $this->ruleset = $this->storedString($stored, 'rules');
-        $this->gmExperience = $this->storedString($stored, 'gmExperience');
-        $this->regionConfirmed = ($stored['regionConfirmed'] ?? false) === true;
+        $this->gmExperience = $restored->gmExperience;
+        $this->genres = $restored->genres;
+        $this->rules = $restored->rules;
+        $this->rulesAny = $restored->rulesAny;
+        $this->regionSlugs = $restored->regionSlugs;
+        $this->regionsAny = $restored->regionsAny;
+        $this->timeframes = $restored->timeframes;
+        $this->exotics = $restored->exotics;
+        $this->exoticAny = $restored->exoticAny;
+        $this->placeSlug = $restored->placeSlug ?? '';
+        $this->placeQuery = $this->placeSlug === '' ? '' : $this->storedString($stored, 'placeQuery');
+        $this->rulesDone = is_array($stored['rules'] ?? null) && ($stored['rulesDone'] ?? false) === true;
+        $this->timeframeDone = is_array($stored['timeframes'] ?? null) && ($stored['timeframeDone'] ?? false) === true;
+        $this->exoticDone = is_array($stored['exotics'] ?? null) && ($stored['exoticDone'] ?? false) === true;
+        $this->regionConfirmed = is_array($stored['regionSlugs'] ?? null) && ($stored['regionConfirmed'] ?? false) === true;
         $this->genresDone = ($stored['genresDone'] ?? false) === true;
-
-        $genres = $stored['genres'] ?? [];
-        $this->genres = is_array($genres)
-            ? array_values(array_filter($genres, is_string(...)))
-            : [];
 
         $this->showResults = ($stored['showResults'] ?? false) === true && $this->answersComplete();
         $this->scrubInvalidAnswers();
@@ -149,6 +169,18 @@ class AdventureWizard extends Component
             $this->regionConfirmed = false;
         }
 
+        if ($field === 'ruleset') {
+            $this->rulesDone = false;
+        }
+
+        if ($field === 'exotic') {
+            $this->exoticDone = false;
+        }
+
+        if ($field === 'timeframe') {
+            $this->timeframeDone = false;
+        }
+
         if ($field === 'genres') {
             $this->genresDone = false;
         }
@@ -161,9 +193,10 @@ class AdventureWizard extends Component
     {
         $this->resetErrorBag();
         $this->reset([
-            'showResults', 'experienceLevel', 'groupSize', 'timeframe', 'regionSlug',
-            'placeQuery', 'placeSlug', 'exotic', 'genres', 'ruleset', 'gmExperience',
-            'regionConfirmed', 'genresDone',
+            'showResults', 'experienceLevel', 'groupSize', 'timeframes', 'regionSlugs',
+            'regionsAny', 'placeQuery', 'placeSlug', 'exotics', 'exoticAny', 'genres',
+            'rules', 'rulesAny', 'gmExperience', 'regionConfirmed', 'genresDone',
+            'rulesDone', 'timeframeDone', 'exoticDone',
         ]);
         $this->focusField = 'ruleset';
         session()->forget(self::SESSION_KEY);
@@ -171,9 +204,36 @@ class AdventureWizard extends Component
         $this->dispatch('wizard-focus', target: 'form-heading');
     }
 
+    public function continueRules(): void
+    {
+        $this->finishMultiStep('rulesDone');
+    }
+
+    public function continueTimeframe(): void
+    {
+        $this->finishMultiStep('timeframeDone');
+    }
+
+    public function continueExotic(): void
+    {
+        $this->finishMultiStep('exoticDone');
+    }
+
+    private function finishMultiStep(string $flag): void
+    {
+        $this->{$flag} = true;
+        $this->resetErrorBag();
+        $this->scrubInvalidAnswers();
+        $this->persist();
+        $this->advanceToNextOpenField();
+    }
+
     public function confirmRegion(): void
     {
-        if ($this->regionSlug === '') {
+        if ($this->regionSlugs === [] && ! $this->regionsAny) {
+            $this->addError('regionConfirmed', 'Bitte wähle eine Region oder „Egal“.');
+            $this->dispatch('wizard-focus', target: 'error-summary');
+
             return;
         }
 
@@ -184,7 +244,7 @@ class AdventureWizard extends Component
             return;
         }
 
-        $this->resetErrorBag('placeQuery');
+        $this->resetErrorBag();
         $this->regionConfirmed = true;
         $this->scrubInvalidAnswers();
         $this->persist();
@@ -205,9 +265,76 @@ class AdventureWizard extends Component
     public function continueGenres(): void
     {
         $this->genresDone = true;
+        $this->resetErrorBag();
         $this->scrubInvalidAnswers();
         $this->persist();
         $this->advanceToNextOpenField();
+    }
+
+    public function togglePlace(string $slug): void
+    {
+        if (count($this->regionSlugs) !== 1 || $this->regionsAny) {
+            return;
+        }
+
+        if ($this->placeSlug === $slug) {
+            $this->placeSlug = '';
+            $this->placeQuery = '';
+        } else {
+            $place = null;
+            foreach ($this->placesForSelectedRegion() as $candidate) {
+                if ($candidate['slug'] === $slug) {
+                    $place = $candidate;
+                    break;
+                }
+            }
+
+            if ($place === null) {
+                return;
+            }
+
+            $this->placeSlug = $place['slug'];
+            $this->placeQuery = $place['name'];
+        }
+
+        $this->resetErrorBag('placeQuery');
+        $this->scrubInvalidAnswers();
+        $this->persist();
+    }
+
+    public function updatedPlaceSlug(): void
+    {
+        if (count($this->regionSlugs) !== 1 || $this->regionsAny) {
+            $this->placeSlug = '';
+            $this->placeQuery = '';
+
+            return;
+        }
+
+        if ($this->placeSlug === '') {
+            $this->placeQuery = '';
+        } else {
+            $match = null;
+            foreach ($this->placesForSelectedRegion() as $candidate) {
+                if ($candidate['slug'] === $this->placeSlug) {
+                    $match = $candidate;
+                    break;
+                }
+            }
+
+            if ($match === null) {
+                $this->placeSlug = '';
+                $this->placeQuery = '';
+
+                return;
+            }
+
+            $this->placeQuery = $match['name'];
+        }
+
+        $this->resetErrorBag('placeQuery');
+        $this->scrubInvalidAnswers();
+        $this->persist();
     }
 
     public function selectPlace(string $slug): void
@@ -218,7 +345,7 @@ class AdventureWizard extends Component
                 $this->resetErrorBag('placeQuery');
                 $this->scrubInvalidAnswers();
                 $this->persist();
-                $this->dispatch('wizard-focus', target: 'place-input');
+                $this->dispatch('wizard-focus', target: 'place-list');
 
                 return;
             }
@@ -233,10 +360,9 @@ class AdventureWizard extends Component
         $this->placeSlug = $place['slug'];
         $this->placeQuery = $place['name'];
 
-        if (($this->regionSlug === '' || $this->regionSlug === self::EGAL)
-            && $place['region_slug'] !== null
-            && RegionKey::tryFrom($place['region_slug']) !== null) {
-            $this->regionSlug = $place['region_slug'];
+        if (count($this->regionSlugs) === 1 && $place['region_slug'] !== null && $place['region_slug'] !== $this->regionSlugs[0]) {
+            $this->placeSlug = '';
+            $this->placeQuery = '';
         }
     }
 
@@ -246,7 +372,7 @@ class AdventureWizard extends Component
         $this->placeSlug = '';
         $this->scrubInvalidAnswers();
         $this->persist();
-        $this->dispatch('wizard-focus', target: 'place-input');
+        $this->dispatch('wizard-focus', target: 'place-list');
     }
 
     public function updatedPlaceQuery(): void
@@ -254,11 +380,31 @@ class AdventureWizard extends Component
         $this->placeSlug = '';
     }
 
-    public function updatedRegionSlug(): void
+    public function updatedRegionsAny(): void
     {
-        if ($this->placeSlug !== '' && $this->regionSlug !== '' && $this->regionSlug !== self::EGAL) {
+        if ($this->regionsAny) {
+            $this->regionSlugs = [];
+            $this->placeQuery = '';
+            $this->placeSlug = '';
+        }
+
+        $this->regionConfirmed = false;
+        $this->scrubInvalidAnswers();
+        $this->persist();
+    }
+
+    public function updatedRegionSlugs(): void
+    {
+        if ($this->regionSlugs !== []) {
+            $this->regionsAny = false;
+        }
+
+        if (count($this->regionSlugs) !== 1) {
+            $this->placeQuery = '';
+            $this->placeSlug = '';
+        } elseif ($this->placeSlug !== '') {
             $placeRegion = app(LocationAutocompleteService::class)->regionSlugFor($this->placeSlug);
-            if ($placeRegion !== $this->regionSlug) {
+            if ($placeRegion !== $this->regionSlugs[0]) {
                 $this->placeQuery = '';
                 $this->placeSlug = '';
             }
@@ -267,27 +413,67 @@ class AdventureWizard extends Component
         $this->regionConfirmed = false;
         $this->scrubInvalidAnswers();
         $this->persist();
-        // Region-Panel bleibt offen für optionalen Ort.
     }
 
-    public function updatedRuleset(): void
+    public function updatedRulesAny(): void
     {
-        $this->afterRadioChange();
+        if ($this->rulesAny) {
+            $this->rules = [];
+        }
+
+        $this->rulesDone = false;
+        $this->scrubInvalidAnswers();
+        $this->persist();
+    }
+
+    public function updatedRules(): void
+    {
+        if ($this->rules !== []) {
+            $this->rulesAny = false;
+        }
+
+        $this->rulesDone = false;
+        $this->scrubInvalidAnswers();
+        $this->persist();
+    }
+
+    public function continueExperience(): void
+    {
+        $this->finishChoice('experienceLevel');
     }
 
     public function updatedExperienceLevel(): void
     {
-        $this->afterRadioChange();
+        $this->rememberChoice();
     }
 
-    public function updatedExotic(): void
+    public function updatedExoticAny(): void
     {
-        $this->afterRadioChange();
+        if ($this->exoticAny) {
+            $this->exotics = [];
+        }
+
+        $this->exoticDone = false;
+        $this->scrubInvalidAnswers();
+        $this->persist();
     }
 
-    public function updatedTimeframe(): void
+    public function updatedExotics(): void
     {
-        $this->afterRadioChange();
+        if ($this->exotics !== []) {
+            $this->exoticAny = false;
+        }
+
+        $this->exoticDone = false;
+        $this->scrubInvalidAnswers();
+        $this->persist();
+    }
+
+    public function updatedTimeframes(): void
+    {
+        $this->timeframeDone = false;
+        $this->scrubInvalidAnswers();
+        $this->persist();
     }
 
     public function updatedGenres(): void
@@ -297,21 +483,49 @@ class AdventureWizard extends Component
         $this->persist();
     }
 
+    public function continueGmExperience(): void
+    {
+        $this->finishChoice('gmExperience');
+    }
+
     public function updatedGmExperience(): void
     {
-        $this->afterRadioChange();
+        $this->rememberChoice();
+    }
+
+    public function continueGroupSize(): void
+    {
+        $this->finishChoice('groupSize');
     }
 
     public function updatedGroupSize(): void
     {
-        $this->afterRadioChange();
+        $this->rememberChoice();
     }
 
-    private function afterRadioChange(): void
+    /**
+     * @param  'experienceLevel'|'gmExperience'|'groupSize'  $property
+     */
+    private function finishChoice(string $property): void
     {
+        if ($this->{$property} === '') {
+            $this->addError($property, $this->validationMessages()[$property.'.required']);
+            $this->dispatch('wizard-focus', target: 'error-summary');
+
+            return;
+        }
+
+        $this->resetErrorBag();
         $this->scrubInvalidAnswers();
         $this->persist();
         $this->advanceToNextOpenField();
+    }
+
+    private function rememberChoice(): void
+    {
+        $this->resetErrorBag();
+        $this->scrubInvalidAnswers();
+        $this->persist();
     }
 
     /**
@@ -322,8 +536,8 @@ class AdventureWizard extends Component
         return [
             'ruleset',
             'experienceLevel',
-            'region',
             'exotic',
+            'region',
             'timeframe',
             'genres',
             'gmExperience',
@@ -331,12 +545,17 @@ class AdventureWizard extends Component
         ];
     }
 
+    private function wizardOptions(): WizardOptionsService
+    {
+        return $this->wizardOptions ??= app(WizardOptionsService::class);
+    }
+
     /**
      * Setzt Fokus auf die nächste Frage, die Nutzeraktion braucht; autofill/skip dazwischen.
      */
     public function advanceToNextOpenField(bool $announce = true): void
     {
-        $options = app(WizardOptionsService::class);
+        $options = $this->wizardOptions();
 
         foreach ($this->fieldOrder() as $field) {
             if ($this->fieldIsSatisfied($field, $options)) {
@@ -368,11 +587,11 @@ class AdventureWizard extends Component
     private function fieldIsSatisfied(string $field, WizardOptionsService $options): bool
     {
         return match ($field) {
-            'ruleset' => $this->ruleset !== '',
+            'ruleset' => $this->rulesDone,
             'experienceLevel' => $this->experienceLevel !== '',
-            'region' => $this->regionSlug !== '' && $this->regionConfirmed,
-            'exotic' => $this->exotic !== '',
-            'timeframe' => $this->timeframe !== '',
+            'region' => $this->regionConfirmed && ($this->regionsAny || $this->regionSlugs !== []),
+            'exotic' => $this->exoticDone,
+            'timeframe' => $this->timeframeDone,
             'genres' => $this->genresDone,
             'gmExperience' => $this->gmExperience !== '',
             'groupSize' => $this->groupSize !== '',
@@ -388,11 +607,11 @@ class AdventureWizard extends Component
         $facets = $this->toFacetAnswers();
 
         return match ($field) {
-            'ruleset' => $this->autoFillProperty('ruleset', $options->availableRulesWishes($facets)),
+            'ruleset' => false,
             'experienceLevel' => $this->autoFillProperty('experienceLevel', $options->availableExperienceLevels($facets)),
             'region' => $this->autoFillRegion($options, $facets),
-            'exotic' => $this->autoFillProperty('exotic', $options->availableExoticWishes($facets)),
-            'timeframe' => $this->autoFillProperty('timeframe', $options->availableTimeframes($facets)),
+            'exotic' => false,
+            'timeframe' => false,
             'genres' => $this->autoSkipEmptyGenres($options, $facets),
             'gmExperience' => $this->autoFillProperty('gmExperience', $options->availableGmExperienceLevels($facets)),
             'groupSize' => $this->autoFillProperty('groupSize', $options->availableGroupSizes($facets)),
@@ -401,7 +620,7 @@ class AdventureWizard extends Component
     }
 
     /**
-     * @param  'ruleset'|'experienceLevel'|'exotic'|'timeframe'|'gmExperience'|'groupSize'  $property
+     * @param  'experienceLevel'|'gmExperience'|'groupSize'  $property
      * @param  list<string>  $available
      */
     private function autoFillProperty(string $property, array $available): bool
@@ -427,13 +646,13 @@ class AdventureWizard extends Component
 
     private function autoFillRegion(WizardOptionsService $options, WizardAnswers $facets): bool
     {
-        if ($this->regionSlug !== '' && $this->regionConfirmed) {
+        if ($this->regionConfirmed && ($this->regionsAny || $this->regionSlugs !== [])) {
             return true;
         }
 
         $slugs = $options->availableRegionSlugs($facets);
-        if ($slugs === [] && $this->regionSlug === '') {
-            $this->regionSlug = self::EGAL;
+        if ($slugs === [] && $this->regionSlugs === [] && ! $this->regionsAny) {
+            $this->regionsAny = true;
             $this->regionConfirmed = true;
             $this->scrubInvalidAnswers();
 
@@ -488,42 +707,46 @@ class AdventureWizard extends Component
             return null;
         }
 
-        return app(AdventureMatchService::class)->recommend($this->toAnswers());
+        return $this->wizardOptions()->recommend($this->toAnswers());
     }
 
     public function toAnswers(): WizardAnswers
     {
-        return new WizardAnswers(
+        return $this->answersFor(
             experienceLevel: $this->experienceLevel !== '' ? $this->experienceLevel : 'einsteiger',
-            groupSize: $this->groupSize === '' || $this->groupSize === self::EGAL ? null : $this->groupSize,
-            timeframe: $this->timeframe !== '' ? $this->timeframe : 'evening_long',
-            regionSlug: $this->regionSlug === '' || $this->regionSlug === self::EGAL ? null : $this->regionSlug,
-            placeSlug: $this->placeSlug === '' ? null : $this->placeSlug,
-            exotic: $this->exotic !== '' ? $this->exotic : 'any',
-            genres: $this->genres,
-            rules: $this->ruleset !== '' ? $this->ruleset : 'any',
             gmExperience: $this->gmExperience !== '' ? $this->gmExperience : 'einsteiger',
         );
     }
 
     public function toFacetAnswers(): WizardAnswers
     {
-        return new WizardAnswers(
+        return $this->answersFor(
             experienceLevel: $this->experienceLevel,
-            groupSize: $this->groupSize === '' || $this->groupSize === self::EGAL ? null : $this->groupSize,
-            timeframe: $this->timeframe,
-            regionSlug: $this->regionSlug === '' || $this->regionSlug === self::EGAL ? null : $this->regionSlug,
-            placeSlug: $this->placeSlug === '' ? null : $this->placeSlug,
-            exotic: $this->exotic,
-            genres: $this->genres,
-            rules: $this->ruleset,
             gmExperience: $this->gmExperience,
+        );
+    }
+
+    private function answersFor(string $experienceLevel, string $gmExperience): WizardAnswers
+    {
+        return new WizardAnswers(
+            experienceLevel: $experienceLevel,
+            groupSize: $this->groupSize === '' || $this->groupSize === self::EGAL ? null : $this->groupSize,
+            timeframes: $this->timeframes,
+            regionSlugs: $this->regionSlugs,
+            regionsAny: $this->regionsAny,
+            placeSlug: $this->placeSlug === '' ? null : $this->placeSlug,
+            exotics: $this->exotics,
+            exoticAny: $this->exoticAny,
+            genres: $this->genres,
+            rules: $this->rules,
+            rulesAny: $this->rulesAny,
+            gmExperience: $gmExperience,
         );
     }
 
     public function render(): View
     {
-        $options = app(WizardOptionsService::class);
+        $options = $this->wizardOptions();
         $facets = $this->toFacetAnswers();
         $result = $this->matchResult;
         $fields = $this->fieldConfig($options, $facets);
@@ -533,7 +756,8 @@ class AdventureWizard extends Component
             'fieldsByKey' => collect($fields)->keyBy('field'),
             'genreOptions' => $options->availableGenres($facets),
             'regionOptions' => $options->regionOptions($options->availableRegionSlugs($facets)),
-            'summaryItems' => $this->summaryItems($options, $facets),
+            'placeOptions' => $this->placesForSelectedRegion(),
+            'summaryItems' => $this->summaryItems($options, $facets, $fields),
             'progress' => $this->progressRatio(),
             'cards' => $result === null ? [] : $this->cards($result, $options->genreNames()),
             'fallbackNotes' => $result->fallbackNotes ?? [],
@@ -549,7 +773,7 @@ class AdventureWizard extends Component
             [
                 'field' => 'ruleset',
                 'question' => 'Nach welchem Regelwerk wollt ihr spielen?',
-                'hint' => 'Im Katalog: DSA 5, DSA 4.1 und editionsunabhängige Abenteuer. „Egal“ schließt editionsunabhängige mit ein.',
+                'hint' => 'Im Katalog: DSA 1 bis DSA 5 und editionsunabhängige Abenteuer. „Egal“ schließt alle Editionen ein.',
                 'options' => $options->rulesOptions($options->availableRulesWishes($facets)),
             ],
             [
@@ -561,7 +785,7 @@ class AdventureWizard extends Component
             [
                 'field' => 'exotic',
                 'question' => 'Wie exotisch darf das Abenteuer sein?',
-                'hint' => null,
+                'hint' => '„Nur Aventurien“ blendet die anderen Kontinente und das Tiefenreich aus. „Egal“ lässt sie zu.',
                 'options' => $options->exoticOptions($options->availableExoticWishes($facets)),
             ],
             [
@@ -586,12 +810,13 @@ class AdventureWizard extends Component
     }
 
     /**
+     * @param  list<array{field: string, question: string, hint: ?string, options: list<array{value: string, label: string, description: ?string}>}>  $fields
      * @return list<array{field: string, label: string, value: string}>
      */
-    private function summaryItems(WizardOptionsService $options, WizardAnswers $facets): array
+    private function summaryItems(WizardOptionsService $options, WizardAnswers $facets, array $fields): array
     {
         $items = [];
-        $byField = collect($this->fieldConfig($options, $facets))->keyBy('field');
+        $byField = collect($fields)->keyBy('field');
 
         foreach ($this->fieldOrder() as $field) {
             $label = match ($field) {
@@ -607,11 +832,11 @@ class AdventureWizard extends Component
             };
 
             $value = match ($field) {
-                'ruleset' => $this->optionLabel($byField->get('ruleset')['options'] ?? [], $this->ruleset),
+                'ruleset' => $this->multiSummaryLabel($byField->get('ruleset')['options'] ?? [], $this->rules, $this->rulesAny, $this->rulesDone),
                 'experienceLevel' => $this->optionLabel($byField->get('experienceLevel')['options'] ?? [], $this->experienceLevel),
                 'region' => $this->regionSummaryLabel($options, $facets),
-                'exotic' => $this->optionLabel($byField->get('exotic')['options'] ?? [], $this->exotic),
-                'timeframe' => $this->optionLabel($byField->get('timeframe')['options'] ?? [], $this->timeframe),
+                'exotic' => $this->multiSummaryLabel($byField->get('exotic')['options'] ?? [], $this->exotics, $this->exoticAny, $this->exoticDone),
+                'timeframe' => $this->multiSummaryLabel($byField->get('timeframe')['options'] ?? [], $this->timeframes, false, $this->timeframeDone),
                 'genres' => $this->genresSummaryLabel($options, $facets),
                 'gmExperience' => $this->optionLabel($byField->get('gmExperience')['options'] ?? [], $this->gmExperience),
                 'groupSize' => $this->optionLabel($byField->get('groupSize')['options'] ?? [], $this->groupSize),
@@ -646,24 +871,59 @@ class AdventureWizard extends Component
         return $value;
     }
 
-    private function regionSummaryLabel(WizardOptionsService $options, WizardAnswers $facets): ?string
+    /**
+     * @param  list<array{value: string, label: string, description: ?string}>  $options
+     * @param  list<string>  $selected
+     */
+    private function multiSummaryLabel(array $options, array $selected, bool $any, bool $done): ?string
     {
-        if ($this->regionSlug === '' || ! $this->regionConfirmed) {
+        if (! $done && ! $any) {
             return null;
         }
 
-        foreach ($options->regionOptions($options->availableRegionSlugs($facets)) as $option) {
-            if ($option['value'] === $this->regionSlug) {
-                $label = $option['label'];
-                if ($this->placeSlug !== '' && $this->placeQuery !== '') {
-                    return $label.' · '.$this->placeQuery;
-                }
+        if ($any) {
+            return 'Egal';
+        }
 
-                return $label;
+        if ($selected === []) {
+            return 'Keine Einschränkung';
+        }
+
+        $labels = [];
+        foreach ($selected as $value) {
+            $labels[] = $this->optionLabel($options, $value) ?? $value;
+        }
+
+        return implode(', ', $labels);
+    }
+
+    private function regionSummaryLabel(WizardOptionsService $options, WizardAnswers $facets): ?string
+    {
+        if (! $this->regionConfirmed || (! $this->regionsAny && $this->regionSlugs === [])) {
+            return null;
+        }
+
+        if ($this->regionsAny) {
+            return 'Egal';
+        }
+
+        $labels = [];
+        foreach ($options->regionOptions($options->availableRegionSlugs($facets)) as $option) {
+            if (in_array($option['value'], $this->regionSlugs, true)) {
+                $labels[] = $option['label'];
             }
         }
 
-        return $this->regionSlug;
+        if ($labels === []) {
+            $labels = array_map(RegionKey::labelFor(...), $this->regionSlugs);
+        }
+
+        $label = implode(', ', $labels);
+        if (count($this->regionSlugs) === 1 && $this->placeSlug !== '' && $this->placeQuery !== '') {
+            return $label.' · '.$this->placeQuery;
+        }
+
+        return $label;
     }
 
     private function genresSummaryLabel(WizardOptionsService $options, WizardAnswers $facets): ?string
@@ -698,11 +958,11 @@ class AdventureWizard extends Component
     private function progressRatio(): array
     {
         $checks = [
-            $this->ruleset !== '',
+            $this->rulesDone,
             $this->experienceLevel !== '',
-            $this->regionSlug !== '' && $this->regionConfirmed,
-            $this->exotic !== '',
-            $this->timeframe !== '',
+            $this->regionConfirmed && ($this->regionsAny || $this->regionSlugs !== []),
+            $this->exoticDone,
+            $this->timeframeDone,
             $this->gmExperience !== '',
             $this->groupSize !== '',
         ];
@@ -718,7 +978,7 @@ class AdventureWizard extends Component
 
     /**
      * @param  array<string, string>  $genreNames
-     * @return list<array{id: int, title: string, series: string, location: string, duration: string, rules: string, edition: ?int, group: ?string, genres: list<string>, description: string, reasons: list<string>, wikiUrl: string}>
+     * @return list<array{id: int, title: string, series: string, location: string, duration: string, rules: string, edition: ?int, group: ?string, genres: list<string>, description: string, reasons: list<string>, wikiUrl: string, blurbUrl: string, coverUrl: ?string}>
      */
     private function cards(MatchResult $result, array $genreNames): array
     {
@@ -734,11 +994,7 @@ class AdventureWizard extends Component
                 'location' => $this->locationLabel($adventure),
                 'duration' => $adventure->durationCategory->label(),
                 'rules' => $adventure->ruleVersion->label(),
-                'edition' => match ($adventure->ruleVersion->value) {
-                    'dsa4' => 4,
-                    'dsa5' => 5,
-                    default => null,
-                },
+                'edition' => $adventure->ruleVersion->editionNumber(),
                 'group' => $this->groupLabel($adventure->groupSizeMin, $adventure->groupSizeMax),
                 'genres' => array_map(
                     static fn (string $slug): string => $genreNames[$slug] ?? ucfirst($slug),
@@ -747,19 +1003,33 @@ class AdventureWizard extends Component
                 'description' => $adventure->shortDescription,
                 'reasons' => $recommendation->reasons,
                 'wikiUrl' => $adventure->wikiUrl,
+                'blurbUrl' => $this->blurbUrl($adventure->wikiUrl),
+                'coverUrl' => $adventure->coverUrl,
             ];
         }
 
         return $cards;
     }
 
+    private function blurbUrl(string $wikiUrl): string
+    {
+        $base = rtrim($wikiUrl, '/');
+        if (str_ends_with($base, '/Klappentext')) {
+            return $base;
+        }
+
+        return $base.'/Klappentext';
+    }
+
     private function locationLabel(AdventureCandidate $adventure): string
     {
         $region = $adventure->primaryRegionSlug !== null ? RegionKey::labelFor($adventure->primaryRegionSlug) : null;
 
+        $place = $adventure->primaryPlaceName ?? $adventure->placeLabel;
+
         $label = match (true) {
-            $adventure->primaryPlaceName !== null && $region !== null => $adventure->primaryPlaceName.' ('.$region.')',
-            $adventure->primaryPlaceName !== null => $adventure->primaryPlaceName,
+            $place !== null && $region !== null => $place.' ('.$region.')',
+            $place !== null => $place,
             $region !== null => $region,
             default => 'Schauplatz offen',
         };
@@ -794,15 +1064,29 @@ class AdventureWizard extends Component
      */
     private function formRules(): array
     {
-        $options = app(WizardOptionsService::class);
+        $options = $this->wizardOptions();
 
         return [
-            'ruleset' => ['required', Rule::in(array_column(RulesWish::cases(), 'value'))],
+            'rules' => ['array'],
+            'rules.*' => ['string', Rule::in(array_map(
+                static fn (RuleVersion $version): string => $version->value,
+                array_filter(RuleVersion::cases(), static fn (RuleVersion $version): bool => $version !== RuleVersion::EditionUnabhaengig),
+            ))],
+            'rulesDone' => ['accepted'],
             'experienceLevel' => ['required', Rule::in(array_column(ExperienceLevel::cases(), 'value'))],
-            'regionSlug' => ['required', Rule::in([self::EGAL, ...array_column(RegionKey::cases(), 'value')])],
+            'regionSlugs' => ['array'],
+            'regionSlugs.*' => ['string', Rule::in(array_column(RegionKey::cases(), 'value'))],
+            'regionConfirmed' => ['accepted'],
             'placeQuery' => ['nullable', 'string', 'max:80'],
-            'exotic' => ['required', Rule::in(array_column(ExoticWish::cases(), 'value'))],
-            'timeframe' => ['required', Rule::in(array_column(DurationWish::cases(), 'value'))],
+            'exotics' => ['array'],
+            'exotics.*' => ['string', Rule::in(array_filter(
+                array_column(ExoticWish::cases(), 'value'),
+                static fn (string $value): bool => $value !== ExoticWish::Any->value,
+            ))],
+            'exoticDone' => ['accepted'],
+            'timeframes' => ['array'],
+            'timeframes.*' => ['string', Rule::in(array_column(DurationWish::cases(), 'value'))],
+            'timeframeDone' => ['accepted'],
             'genres' => ['array'],
             'genres.*' => ['string', Rule::in(array_column($options->genres(), 'slug'))],
             'gmExperience' => ['required', Rule::in(array_column(ExperienceLevel::cases(), 'value'))],
@@ -820,16 +1104,16 @@ class AdventureWizard extends Component
             'experienceLevel.in' => 'Bitte wähle eine der angebotenen Erfahrungsstufen.',
             'groupSize.required' => 'Bitte wähle eine Gruppengröße (oder „Egal“).',
             'groupSize.in' => 'Bitte wähle eine der angebotenen Gruppengrößen.',
-            'timeframe.required' => 'Bitte wähle einen Zeitrahmen.',
-            'timeframe.in' => 'Bitte wähle einen der angebotenen Zeitrahmen.',
-            'regionSlug.required' => 'Bitte wähle eine Region (oder „Egal“).',
-            'regionSlug.in' => 'Bitte wähle eine der angebotenen Regionen.',
+            'timeframes.*.in' => 'Bitte wähle einen der angebotenen Zeitrahmen.',
+            'timeframeDone.accepted' => 'Bitte bestätige den Zeitrahmen.',
+            'regionSlugs.*.in' => 'Bitte wähle eine der angebotenen Regionen.',
+            'regionConfirmed.accepted' => 'Bitte wähle eine Region oder „Egal“.',
             'placeQuery.max' => 'Der Ortsname ist zu lang.',
-            'exotic.required' => 'Bitte wähle, wie exotisch das Abenteuer sein darf.',
-            'exotic.in' => 'Bitte wähle eine der angebotenen Optionen.',
+            'exotics.*.in' => 'Bitte wähle eine der angebotenen Optionen.',
+            'exoticDone.accepted' => 'Bitte bestätige die Exotik.',
             'genres.*.in' => 'Bitte wähle nur Genres aus der Liste.',
-            'ruleset.required' => 'Bitte wähle ein Regelwerk (oder „Egal“).',
-            'ruleset.in' => 'Bitte wähle eines der angebotenen Regelwerke.',
+            'rules.*.in' => 'Bitte wähle eines der angebotenen Regelwerke.',
+            'rulesDone.accepted' => 'Bitte wähle ein Regelwerk oder „Egal“.',
             'gmExperience.required' => 'Bitte wähle die Erfahrung der Spielleitung.',
             'gmExperience.in' => 'Bitte wähle eine der angebotenen Erfahrungsstufen.',
         ];
@@ -889,20 +1173,41 @@ class AdventureWizard extends Component
      */
     private function placeSearch(string $query): array
     {
-        $region = $this->regionSlug !== '' && $this->regionSlug !== self::EGAL
-            ? $this->regionSlug
+        $region = count($this->regionSlugs) === 1 && ! $this->regionsAny
+            ? $this->regionSlugs[0]
             : null;
 
         return app(LocationAutocompleteService::class)->search($query, regionSlug: $region);
     }
 
+    /**
+     * @return list<array{slug: string, name: string}>
+     */
+    private function placesForSelectedRegion(): array
+    {
+        if (count($this->regionSlugs) !== 1 || $this->regionsAny) {
+            return [];
+        }
+
+        return app(LocationAutocompleteService::class)->placesInRegion($this->regionSlugs[0]);
+    }
+
     private function scrubInvalidAnswers(): void
     {
-        $options = app(WizardOptionsService::class);
+        $options = $this->wizardOptions();
         $answers = $this->toFacetAnswers();
 
-        if ($this->ruleset !== '' && ! in_array($this->ruleset, $options->availableRulesWishes($answers), true)) {
-            $this->ruleset = '';
+        $availableRules = $options->availableRulesWishes($answers);
+        $keptRules = array_values(array_filter(
+            $this->rules,
+            static fn (string $value): bool => in_array($value, $availableRules, true),
+        ));
+        if ($keptRules !== $this->rules) {
+            $this->rules = $keptRules;
+        }
+        if ($this->rulesAny && ! in_array('any', $availableRules, true)) {
+            $this->rulesAny = false;
+            $this->rulesDone = false;
         }
 
         $answers = $this->toFacetAnswers();
@@ -911,30 +1216,51 @@ class AdventureWizard extends Component
         }
 
         $answers = $this->toFacetAnswers();
-        $regions = [self::EGAL, ...$options->availableRegionSlugs($answers)];
-        if ($this->regionSlug !== '' && ! in_array($this->regionSlug, $regions, true)) {
-            $this->regionSlug = '';
+        $regions = $options->availableRegionSlugs($answers);
+        $keptRegions = array_values(array_filter(
+            $this->regionSlugs,
+            static fn (string $slug): bool => in_array($slug, $regions, true),
+        ));
+        if ($keptRegions !== $this->regionSlugs) {
+            $this->regionSlugs = $keptRegions;
             $this->placeQuery = '';
             $this->placeSlug = '';
             $this->regionConfirmed = false;
         }
 
         $answers = $this->toFacetAnswers();
-        if ($this->exotic !== '' && ! in_array($this->exotic, $options->availableExoticWishes($answers), true)) {
-            $this->exotic = '';
+        $availableExotic = $options->availableExoticWishes($answers);
+        $keptExotics = array_values(array_filter(
+            $this->exotics,
+            static fn (string $value): bool => in_array($value, $availableExotic, true),
+        ));
+        if ($keptExotics !== $this->exotics) {
+            $this->exotics = $keptExotics;
+        }
+        if ($this->exoticAny && ! in_array(ExoticWish::Any->value, $availableExotic, true)) {
+            $this->exoticAny = false;
+            $this->exoticDone = false;
         }
 
         $answers = $this->toFacetAnswers();
-        if ($this->timeframe !== '' && ! in_array($this->timeframe, $options->availableTimeframes($answers), true)) {
-            $this->timeframe = '';
+        $availableTimeframes = $options->availableTimeframes($answers);
+        $keptTimeframes = array_values(array_filter(
+            $this->timeframes,
+            static fn (string $value): bool => in_array($value, $availableTimeframes, true),
+        ));
+        if ($keptTimeframes !== $this->timeframes) {
+            $this->timeframes = $keptTimeframes;
         }
 
         $answers = $this->toFacetAnswers();
         $genreSlugs = array_column($options->availableGenres($answers), 'slug');
-        $this->genres = array_values(array_filter(
+        $keptGenres = array_values(array_filter(
             $this->genres,
             static fn (string $slug): bool => in_array($slug, $genreSlugs, true),
         ));
+        if ($keptGenres !== $this->genres) {
+            $this->genres = $keptGenres;
+        }
         if ($genreSlugs === []) {
             $this->genresDone = true;
         }
@@ -952,13 +1278,13 @@ class AdventureWizard extends Component
 
     private function answersComplete(): bool
     {
-        return $this->experienceLevel !== ''
+        return $this->rulesDone
+            && $this->experienceLevel !== ''
             && $this->groupSize !== ''
-            && $this->timeframe !== ''
-            && $this->regionSlug !== ''
+            && $this->timeframeDone
             && $this->regionConfirmed
-            && $this->exotic !== ''
-            && $this->ruleset !== ''
+            && ($this->regionsAny || $this->regionSlugs !== [])
+            && $this->exoticDone
             && $this->gmExperience !== '';
     }
 
@@ -969,15 +1295,21 @@ class AdventureWizard extends Component
             'focusField' => $this->focusField,
             'regionConfirmed' => $this->regionConfirmed,
             'genresDone' => $this->genresDone,
+            'rulesDone' => $this->rulesDone,
+            'timeframeDone' => $this->timeframeDone,
+            'exoticDone' => $this->exoticDone,
             'experienceLevel' => $this->experienceLevel,
             'groupSize' => $this->groupSize,
-            'timeframe' => $this->timeframe,
-            'regionSlug' => $this->regionSlug,
+            'timeframes' => $this->timeframes,
+            'regionSlugs' => $this->regionSlugs,
+            'regionsAny' => $this->regionsAny,
             'placeQuery' => $this->placeQuery,
             'placeSlug' => $this->placeSlug,
-            'exotic' => $this->exotic,
+            'exotics' => $this->exotics,
+            'exoticAny' => $this->exoticAny,
             'genres' => $this->genres,
-            'rules' => $this->ruleset,
+            'rules' => $this->rules,
+            'rulesAny' => $this->rulesAny,
             'gmExperience' => $this->gmExperience,
         ]);
     }

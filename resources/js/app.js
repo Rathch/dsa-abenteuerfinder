@@ -113,3 +113,17 @@ function registerWizardFocus() {
 
 document.addEventListener('livewire:init', registerWizardFocus);
 registerWizardFocus();
+
+/**
+ * Das gezeigte Tortenstück nach vorn holen, damit die Vergrößerung nicht unter den Nachbarstücken liegt.
+ */
+document.addEventListener('pointerover', (event) => {
+    const slice = event.target instanceof Element ? event.target.closest('.pie-slice') : null;
+    const parent = slice?.parentElement;
+
+    if (!slice || !parent || parent.lastElementChild === slice) {
+        return;
+    }
+
+    parent.appendChild(slice);
+});

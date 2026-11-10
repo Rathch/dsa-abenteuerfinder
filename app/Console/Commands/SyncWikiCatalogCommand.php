@@ -7,7 +7,9 @@ namespace App\Console\Commands;
 use App\Services\AdventureImportService;
 use App\Services\WikiHarvest\WikiAdventureMapper;
 use App\Services\WikiHarvest\WikiBlurbParser;
+use App\Services\WikiHarvest\WikiCatalogSources;
 use App\Services\WikiHarvest\WikiCatalogSyncService;
+use App\Services\WikiHarvest\WikiCoverGalleryParser;
 use App\Services\WikiHarvest\WikiHttpClient;
 use App\Services\WikiHarvest\WikiIndexTableParser;
 use Illuminate\Console\Command;
@@ -16,7 +18,7 @@ use Throwable;
 
 #[AsCommand(
     name: 'adventures:sync-wiki',
-    description: 'Prüft VA-/A-Reihe im Wiki: neue Abenteuer importieren, entfernte als missing markieren',
+    description: 'Prüft die Wiki-Indexseiten: neue Abenteuer importieren, entfernte als missing markieren',
 )]
 class SyncWikiCatalogCommand extends Command
 {
@@ -26,17 +28,6 @@ class SyncWikiCatalogCommand extends Command
                             {--pause=1000 : Pause zwischen HTTP-Requests in Millisekunden}
                             {--skip-blurbs : Keine Klappentexte laden (neue Einträge nur mit Platzhalter)}
                             {--dry-run : Nur Bericht, keine JSON-/DB-Änderungen}';
-
-    private const SOURCES = [
-        [
-            'url' => 'https://de.wiki-aventurica.de/wiki/Abenteuer/VA-Reihe',
-            'series_key' => 'va-reihe',
-        ],
-        [
-            'url' => 'https://de.wiki-aventurica.de/wiki/Abenteuer/A-Reihe',
-            'series_key' => 'a-reihe',
-        ],
-    ];
 
     public function handle(
         WikiIndexTableParser $parser,
@@ -51,7 +42,7 @@ class SyncWikiCatalogCommand extends Command
         );
 
         $rows = [];
-        foreach (self::SOURCES as $source) {
+        foreach (WikiCatalogSources::all() as $source) {
             $this->info('Lade Index '.$source['url'].' …');
             try {
                 $html = $client->get($source['url']);
@@ -61,9 +52,12 @@ class SyncWikiCatalogCommand extends Command
                 return self::FAILURE;
             }
 
-            $parsed = $parser->parse($html, $source['series_key']);
-            $this->line(sprintf('  → %d DSA4/DSA5-Zeilen', count($parsed)));
-            $rows = array_merge($rows, $parsed);
+            $parsed = $parser->parse($html, $source['series_key'], $source['series_name'], $source['split_by_heading']);
+            foreach ($parsed as $row) {
+                $row['overwrite'] = $source['overwrite'];
+                $rows[] = $row;
+            }
+            $this->line(sprintf('  → %d Indexzeilen', count($parsed)));
         }
 
         if ($rows === []) {
@@ -76,23 +70,24 @@ class SyncWikiCatalogCommand extends Command
         $existing = $this->existingIdentities($dataPath);
         $newIndexes = [];
         foreach ($rows as $index => $row) {
-            $title = (string) ($row['title'] ?? '');
-            $path = isset($row['wiki_path']) && is_string($row['wiki_path']) ? $row['wiki_path'] : null;
+            $title = $row['title'];
+            $path = $row['wiki_path'];
             $key = mb_strtolower($title).'|'.($path ?? '');
             if (! isset($existing['titles'][mb_strtolower($title)]) && ! ($path !== null && isset($existing['paths'][$path]))) {
                 $newIndexes[] = $index;
             }
-            $rows[$index]['short_description_raw'] = null;
+            $row['short_description_raw'] = null;
+            $rows[$index] = $row;
         }
 
         if (! $this->option('skip-blurbs') && $newIndexes !== []) {
             $this->info(sprintf('Lade Klappentexte für %d neue Einträge …', count($newIndexes)));
             foreach ($newIndexes as $progress => $index) {
                 $row = $rows[$index];
-                $path = $row['wiki_path'] ?? null;
+                $path = $row['wiki_path'];
                 $articlePath = is_string($path) && $path !== ''
                     ? $path
-                    : '/wiki/'.rawurlencode(str_replace(' ', '_', (string) $row['title']));
+                    : '/wiki/'.rawurlencode(str_replace(' ', '_', $row['title']));
                 $articleUrl = str_starts_with($articlePath, 'http')
                     ? $articlePath
                     : 'https://de.wiki-aventurica.de'.$articlePath;
@@ -108,7 +103,8 @@ class SyncWikiCatalogCommand extends Command
                         $description = $blurbParser->extractFromArticle($articleHtml);
                     }
                 }
-                $rows[$index]['short_description_raw'] = $description;
+                $row['short_description_raw'] = $description;
+                $rows[$index] = $row;
 
                 if (($progress + 1) % 10 === 0 || $progress + 1 === count($newIndexes)) {
                     $this->line(sprintf('  … %d/%d', $progress + 1, count($newIndexes)));
@@ -132,7 +128,15 @@ class SyncWikiCatalogCommand extends Command
         $sync = new WikiCatalogSyncService($dataPath, $mapper);
 
         try {
-            $summary = $sync->sync($rows);
+            $covers = [];
+            try {
+                $covers = (new WikiCoverGalleryParser)->parse($client->get(WikiCoverGalleryParser::PAGE_URL));
+                $this->line(sprintf('  → %d Cover', count($covers)));
+            } catch (Throwable $e) {
+                $this->warn('Cover-Galerie nicht geladen: '.$e->getMessage());
+            }
+
+            $summary = $sync->sync($rows, $covers);
         } catch (Throwable $e) {
             $this->error($e->getMessage());
 

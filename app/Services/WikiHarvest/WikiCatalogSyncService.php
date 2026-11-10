@@ -12,10 +12,7 @@ use RuntimeException;
  */
 final class WikiCatalogSyncService
 {
-    public const SOURCE_NOTE_MISSING = 'Im Wiki-Index (VA-/A-Reihe) nicht mehr gelistet.';
-
-    /** @var list<string> */
-    private const TRACKED_SERIES = ['va-reihe', 'a-reihe'];
+    public const SOURCE_NOTE_MISSING = 'Im Wiki-Index nicht mehr gelistet.';
 
     public function __construct(
         private readonly string $dataPath,
@@ -24,9 +21,10 @@ final class WikiCatalogSyncService
 
     /**
      * @param  list<array<string, mixed>>  $rawRows
+     * @param  array<string, string>  $covers  Wiki-Pfad => Bild-URL
      * @return array{added: int, marked_missing: int, restored: int, skipped: int, unmapped: list<string>}
      */
-    public function sync(array $rawRows): array
+    public function sync(array $rawRows, array $covers = []): array
     {
         $adventuresPath = $this->dataPath.'/adventures.json';
         $seriesPath = $this->dataPath.'/series.json';
@@ -62,19 +60,27 @@ final class WikiCatalogSyncService
 
             $descriptionRaw = $row['short_description_raw'] ?? null;
             $descriptionRaw = is_string($descriptionRaw) && trim($descriptionRaw) !== '' ? $descriptionRaw : null;
+            $seriesKey = (string) ($row['series_key'] ?? 'a-reihe');
+            $seriesName = (string) ($row['series_name'] ?? $seriesKey);
+            $this->ensureSeries($seriesDoc, $seriesKey, $seriesName !== '' ? $seriesName : $seriesKey);
+
+            $wikiPath = isset($row['wiki_path']) && is_string($row['wiki_path']) ? $row['wiki_path'] : null;
+            $coverUrl = $this->coverFor($wikiPath, $covers);
+            $hasGenreColumn = ($row['has_genre_column'] ?? false) === true;
 
             $typed = [
                 'catalog_number' => (string) ($row['catalog_number'] ?? ''),
                 'title' => $row['title'],
-                'wiki_path' => isset($row['wiki_path']) && is_string($row['wiki_path']) ? $row['wiki_path'] : null,
+                'wiki_path' => $wikiPath,
                 'rules_raw' => (string) ($row['rules_raw'] ?? ''),
                 'place_raw' => (string) ($row['place_raw'] ?? ''),
                 'genre_raw' => (string) ($row['genre_raw'] ?? ''),
                 'complexity_raw' => (string) ($row['complexity_raw'] ?? ''),
                 'experience_raw' => (string) ($row['experience_raw'] ?? ''),
                 'page_count' => isset($row['page_count']) && is_int($row['page_count']) ? $row['page_count'] : null,
-                'series_key' => (string) ($row['series_key'] ?? 'a-reihe'),
+                'series_key' => $seriesKey,
                 'short_description_raw' => $descriptionRaw,
+                'cover_url' => $coverUrl,
             ];
 
             $mapped = $this->mapper->map($typed);
@@ -93,6 +99,8 @@ final class WikiCatalogSyncService
                 'typed' => $typed,
                 'mapped' => $mapped,
                 'path' => $pathKey,
+                'overwrite' => ($row['overwrite'] ?? true) !== false,
+                'has_genre_column' => $hasGenreColumn,
             ];
 
             if ($mapped['unmapped_location']) {
@@ -110,6 +118,11 @@ final class WikiCatalogSyncService
             $slug = (string) $adventure['slug'];
             $titleKey = mb_strtolower((string) $adventure['title']);
 
+            $hasGenreColumn = $entry['has_genre_column'] === true;
+            $genreSlugs = $hasGenreColumn
+                ? $this->storeGenreSlugs($tagsDoc, $entry['typed']['genre_raw'])
+                : null;
+
             $existingSlug = $this->findExistingSlug($bySlug, $slug, $titleKey, $entry['path']);
             if ($existingSlug !== null) {
                 $existing = $bySlug[$existingSlug];
@@ -123,11 +136,34 @@ final class WikiCatalogSyncService
                     $restored++;
                 }
 
+                $cover = $adventure['cover_url'] ?? null;
+                if (is_string($cover) && $cover !== '' && ($existing['cover_url'] ?? null) === null) {
+                    $existing['cover_url'] = $cover;
+                }
+
+                // Chronologische Übersichten ergänzen nur, sie ersetzen keine bestehenden Zeilen.
+                if ($entry['overwrite'] === false) {
+                    if ($genreSlugs !== null) {
+                        $existing['genres'] = $genreSlugs;
+                    }
+                    $bySlug[$existingSlug] = $existing;
+                    $skipped++;
+
+                    continue;
+                }
+
                 // Nur unvollständige Harvest-Stubs aktualisieren; kuratierte Complete bleiben.
                 if (($existing['incomplete'] ?? true) === true) {
                     $adventure['missing_from_wiki'] = false;
+                    if ($existing['cover_url'] ?? null) {
+                        $adventure['cover_url'] = $existing['cover_url'];
+                    }
+                    $adventure['genres'] = $genreSlugs ?? $this->keptGenres($existing);
                     $bySlug[$existingSlug] = $adventure;
                 } else {
+                    if ($genreSlugs !== null) {
+                        $existing['genres'] = $genreSlugs;
+                    }
                     $bySlug[$existingSlug] = $existing;
                     $skipped++;
                 }
@@ -136,20 +172,22 @@ final class WikiCatalogSyncService
             }
 
             $adventure['missing_from_wiki'] = false;
+            $adventure['genres'] = $genreSlugs ?? $this->storeGenreSlugs($tagsDoc, '');
             $bySlug[$slug] = $adventure;
             $added++;
+        }
 
-            foreach ($adventure['genres'] as $genreSlug) {
-                if (is_string($genreSlug) && $genreSlug === 'sonstiges') {
-                    $this->ensureTag($tagsDoc, 'sonstiges', 'Sonstiges');
-                }
+        $trackedSeries = ['va-reihe' => true, 'a-reihe' => true];
+        foreach ($rawRows as $row) {
+            if (isset($row['series_key']) && is_string($row['series_key']) && $row['series_key'] !== '') {
+                $trackedSeries[$row['series_key']] = true;
             }
         }
 
         $markedMissing = 0;
         foreach ($bySlug as $slug => $adventure) {
             $series = (string) ($adventure['series'] ?? '');
-            if (! in_array($series, self::TRACKED_SERIES, true)) {
+            if (! isset($trackedSeries[$series])) {
                 continue;
             }
 
@@ -211,6 +249,20 @@ final class WikiCatalogSyncService
         }
 
         return null;
+    }
+
+    /**
+     * @param  array<string, string>  $covers
+     */
+    private function coverFor(?string $wikiPath, array $covers): ?string
+    {
+        if ($wikiPath === null || $wikiPath === '') {
+            return null;
+        }
+
+        $decoded = rawurldecode($wikiPath);
+
+        return $covers[$decoded] ?? $covers[$wikiPath] ?? null;
     }
 
     private function normalizeWikiPath(?string $wikiPath, string $title, string $wikiUrl = ''): string
@@ -277,6 +329,42 @@ final class WikiCatalogSyncService
 
         $series[] = ['slug' => $slug, 'name' => $name];
         $seriesDoc['series'] = $series;
+    }
+
+    /**
+     * @param  array<string, mixed>  $tagsDoc
+     * @return list<string>
+     */
+    private function storeGenreSlugs(array &$tagsDoc, string $genreRaw): array
+    {
+        $slugs = [];
+        foreach ($this->mapper->mapGenreTags($genreRaw) as $tag) {
+            $this->ensureTag($tagsDoc, $tag['slug'], $tag['name']);
+            $slugs[] = $tag['slug'];
+        }
+
+        return $slugs;
+    }
+
+    /**
+     * @param  array<string, mixed>  $existing
+     * @return list<string>
+     */
+    private function keptGenres(array $existing): array
+    {
+        $genres = $existing['genres'] ?? null;
+        if (! is_array($genres) || $genres === []) {
+            return ['sonstiges'];
+        }
+
+        $slugs = [];
+        foreach ($genres as $genre) {
+            if (is_string($genre) && $genre !== '') {
+                $slugs[] = $genre;
+            }
+        }
+
+        return $slugs === [] ? ['sonstiges'] : $slugs;
     }
 
     /**

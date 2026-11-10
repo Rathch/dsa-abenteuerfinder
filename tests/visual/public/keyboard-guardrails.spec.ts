@@ -105,5 +105,9 @@ test.describe('Tastatur-Leitplanken', () => {
         const footer = page.getByRole('contentinfo');
         await expect(footer.getByRole('link', { name: 'Impressum' })).toHaveAttribute('href', /\/impressum$/);
         await expect(footer.getByRole('link', { name: 'Datenschutz' })).toHaveAttribute('href', /\/datenschutz$/);
+        await expect(footer.getByRole('link', { name: /ELF \(Ulisses\)/ })).toHaveAttribute('href', 'https://elf.ulisses-spiele.de/');
+        await expect(footer.getByRole('link', { name: /GNU GPLv3/ })).toHaveAttribute('href', 'https://www.gnu.org/licenses/gpl-3.0.html');
+        await expect(footer.getByRole('link', { name: /Buy Me a Coffee/ })).toHaveAttribute('href', 'https://buymeacoffee.com/rathch');
+        await expect(footer.getByRole('link', { name: /Fehler melden/ })).toHaveAttribute('href', 'https://github.com/Rathch/dsa-abenteuerfinder/issues/new');
     });
 });

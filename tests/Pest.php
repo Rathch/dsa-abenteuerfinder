@@ -65,17 +65,56 @@ expect()->extend('toBeOne', function () {
  */
 function wizardAnswers(array $overrides = []): WizardAnswers
 {
-    return new WizardAnswers(...array_merge([
+    $values = [
         'experienceLevel' => 'einsteiger',
         'groupSize' => null,
-        'timeframe' => 'evening_short',
-        'regionSlug' => null,
+        'timeframes' => ['evening_short'],
+        'regionSlugs' => [],
+        'regionsAny' => false,
         'placeSlug' => null,
-        'exotic' => 'any',
+        'exotics' => [],
+        'exoticAny' => true,
         'genres' => [],
-        'rules' => 'any',
+        'rules' => [],
+        'rulesAny' => true,
         'gmExperience' => 'einsteiger',
-    ], $overrides));
+    ];
+
+    if (array_key_exists('timeframe', $overrides)) {
+        $timeframe = $overrides['timeframe'];
+        $values['timeframes'] = is_string($timeframe) && $timeframe !== '' ? [$timeframe] : [];
+        unset($overrides['timeframe']);
+    }
+    if (array_key_exists('regionSlug', $overrides)) {
+        $region = $overrides['regionSlug'];
+        $values['regionSlugs'] = is_string($region) && $region !== '' ? [$region] : [];
+        $values['regionsAny'] = false;
+        unset($overrides['regionSlug']);
+    }
+    if (array_key_exists('exotic', $overrides)) {
+        $exotic = $overrides['exotic'];
+        if ($exotic === 'any') {
+            $values['exotics'] = [];
+            $values['exoticAny'] = true;
+        } else {
+            $values['exotics'] = is_string($exotic) && $exotic !== '' ? [$exotic] : [];
+            $values['exoticAny'] = false;
+        }
+        unset($overrides['exotic']);
+    }
+    if (array_key_exists('rules', $overrides) && is_string($overrides['rules'])) {
+        $rules = $overrides['rules'];
+        if ($rules === 'any') {
+            $values['rules'] = [];
+            $values['rulesAny'] = true;
+        } else {
+            $values['rules'] = $rules !== '' ? [$rules] : [];
+            $values['rulesAny'] = false;
+        }
+        unset($overrides['rules']);
+    }
+
+    return new WizardAnswers(...array_merge($values, $overrides));
 }
 
 /**

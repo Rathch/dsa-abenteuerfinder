@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Matching\LocationType;
 use App\Livewire\Admin\AdventureEdit;
 use App\Livewire\Admin\AdventureIndex;
 use App\Models\Adventure;
@@ -86,6 +87,44 @@ it('removes the correction row when values match the json source again', functio
     $service->save($adventure->slug, $payload);
 
     expect(AdventureCorrection::query()->where('adventure_slug', $adventure->slug)->exists())->toBeFalse();
+});
+
+it('lists a dash and an unmapped place under incomplete', function (): void {
+    adminLogin();
+
+    $template = Adventure::query()
+        ->where('incomplete', false)
+        ->whereNotNull('primary_location_id')
+        ->firstOrFail();
+
+    $dash = $template->replicate();
+    $dash->slug = 'platzhalter-strich';
+    $dash->title = 'Platzhalterstrich Abenteuer';
+    $dash->short_description = '-';
+    $dash->incomplete = true;
+    $dash->missing_from_wiki = false;
+    $dash->source_note = 'Kurzbeschreibung fehlt';
+    $dash->save();
+
+    $unmapped = $template->replicate();
+    $unmapped->slug = 'ohne-katalogort';
+    $unmapped->title = 'Ohne Katalogort Abenteuer';
+    $unmapped->short_description = 'Eine vorhandene Kurzbeschreibung mit mehr als zwanzig Zeichen.';
+    $unmapped->primary_location_id = null;
+    $unmapped->location_type = LocationType::Traveling;
+    $unmapped->incomplete = true;
+    $unmapped->missing_from_wiki = false;
+    $unmapped->source_note = 'Schauplatz nicht zugeordnet';
+    $unmapped->save();
+
+    Livewire::test(AdventureIndex::class)
+        ->set('linkFilter', 'incomplete')
+        ->set('search', 'Platzhalterstrich Abenteuer')
+        ->assertSee('Platzhalterstrich Abenteuer')
+        ->set('search', 'Ohne Katalogort Abenteuer')
+        ->assertSee('Ohne Katalogort Abenteuer')
+        ->set('search', $template->title)
+        ->assertDontSee($template->title);
 });
 
 it('filters adventures with a correction', function (): void {

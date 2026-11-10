@@ -27,8 +27,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property LocationType $location_type
  * @property int|null $primary_location_id
  * @property int|null $primary_region_id
+ * @property string|null $place_label
  * @property string $short_description
  * @property string $wiki_url
+ * @property string|null $cover_url
  * @property bool $incomplete
  * @property bool $missing_from_wiki
  * @property string|null $source_note
@@ -53,8 +55,10 @@ class Adventure extends Model
         'location_type',
         'primary_location_id',
         'primary_region_id',
+        'place_label',
         'short_description',
         'wiki_url',
+        'cover_url',
         'incomplete',
         'missing_from_wiki',
         'source_note',

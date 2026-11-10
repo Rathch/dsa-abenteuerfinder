@@ -132,6 +132,141 @@ it('adds new wiki adventures and marks removed ones as missing', function (): vo
     File::deleteDirectory($tmpData);
 });
 
+it('replaces only genres from a wiki genre cell and keeps rows without that column', function (): void {
+    $tmpData = storage_path('app/wiki-catalog-genre-testdata');
+    File::deleteDirectory($tmpData);
+    File::makeDirectory($tmpData, 0775, true);
+
+    $culture = [
+        'slug' => 'das-kulturerlebnis',
+        'title' => 'Das Kulturerlebnis',
+        'series' => 'a-reihe',
+        'experience_level' => 'einsteiger',
+        'page_count' => 32,
+        'duration_category' => 'kurz',
+        'rule_version' => 'dsa5',
+        'exotic' => false,
+        'complexity' => 'niedrig',
+        'group_size_min' => null,
+        'group_size_max' => null,
+        'location_type' => 'point',
+        'primary_location' => 'gareth',
+        'primary_region' => 'mittelaventurien',
+        'regions' => [],
+        'genres' => ['sonstiges'],
+        'short_description' => 'Eine kuratierte Beschreibung, die der Abgleich nicht anfassen darf.',
+        'wiki_url' => 'https://de.wiki-aventurica.de/wiki/Das_Kulturerlebnis',
+        'cover_url' => null,
+        'incomplete' => false,
+        'missing_from_wiki' => false,
+        'source_note' => null,
+    ];
+    $exploration = [
+        'slug' => 'die-erkundung',
+        'title' => 'Die Erkundung',
+        'series' => 'a-reihe',
+        'experience_level' => 'einsteiger',
+        'page_count' => 40,
+        'duration_category' => 'kurz',
+        'rule_version' => 'dsa4',
+        'exotic' => false,
+        'complexity' => 'niedrig',
+        'group_size_min' => null,
+        'group_size_max' => null,
+        'location_type' => 'point',
+        'primary_location' => 'havena',
+        'primary_region' => 'nordmarken',
+        'regions' => [],
+        'genres' => ['exploration'],
+        'short_description' => 'Die Helden folgen einem alten Pfad durch die Nordmarken.',
+        'wiki_url' => 'https://de.wiki-aventurica.de/wiki/Die_Erkundung',
+        'cover_url' => null,
+        'incomplete' => false,
+        'missing_from_wiki' => false,
+        'source_note' => null,
+    ];
+
+    File::put($tmpData.'/adventures.json', json_encode(['adventures' => [$culture, $exploration]], JSON_UNESCAPED_UNICODE));
+    File::put($tmpData.'/series.json', json_encode(['series' => [['slug' => 'a-reihe', 'name' => 'A-Reihe']]], JSON_UNESCAPED_UNICODE));
+    File::put($tmpData.'/tags.json', json_encode(['tags' => [
+        ['slug' => 'exploration', 'name' => 'Erkundung'],
+        ['slug' => 'sonstiges', 'name' => 'Sonstiges'],
+    ]], JSON_UNESCAPED_UNICODE));
+
+    $mapper = new WikiAdventureMapper(
+        json_decode((string) file_get_contents(database_path('data/wiki-harvest/location-aliases.json')), true),
+        json_decode((string) file_get_contents(database_path('data/wiki-harvest/genre-aliases.json')), true),
+    );
+    $sync = new WikiCatalogSyncService($tmpData, $mapper);
+
+    $sync->sync([
+        [
+            'catalog_number' => '',
+            'title' => 'Das Kulturerlebnis',
+            'wiki_path' => '/wiki/Das_Kulturerlebnis',
+            'rules_raw' => 'DSA1',
+            'place_raw' => 'Havena, Albernia',
+            'genre_raw' => 'Kulturerfahrung',
+            'has_genre_column' => true,
+            'complexity_raw' => 'hoch',
+            'experience_raw' => 'Meister',
+            'page_count' => 200,
+            'series_key' => 'a-reihe',
+            'short_description_raw' => 'Diese Beschreibung darf den kuratierten Text nicht ersetzen.',
+            'overwrite' => false,
+        ],
+        [
+            'catalog_number' => '',
+            'title' => 'Die Erkundung',
+            'wiki_path' => '/wiki/Die_Erkundung',
+            'rules_raw' => 'DSA5',
+            'place_raw' => 'Gareth',
+            'genre_raw' => '',
+            'has_genre_column' => false,
+            'complexity_raw' => '',
+            'experience_raw' => '',
+            'page_count' => null,
+            'series_key' => 'a-reihe',
+            'short_description_raw' => null,
+            'overwrite' => true,
+        ],
+        [
+            'catalog_number' => '',
+            'title' => 'Neues Abenteuer ohne Genre',
+            'wiki_path' => '/wiki/Neues_Abenteuer_ohne_Genre',
+            'rules_raw' => 'DSA5',
+            'place_raw' => 'Havena',
+            'genre_raw' => '',
+            'has_genre_column' => false,
+            'complexity_raw' => 'gering',
+            'experience_raw' => 'Einsteiger',
+            'page_count' => 32,
+            'series_key' => 'a-reihe',
+            'short_description_raw' => 'Ein neues Abenteuer aus einer Liste ohne Genre-Spalte mit genug Text.',
+            'overwrite' => true,
+        ],
+    ]);
+
+    $after = json_decode((string) File::get($tmpData.'/adventures.json'), true);
+    $byTitle = collect($after['adventures'])->keyBy('title');
+    $tags = json_decode((string) File::get($tmpData.'/tags.json'), true);
+
+    expect($byTitle['Das Kulturerlebnis']['genres'])->toBe(['kulturerfahrung'])
+        ->and($byTitle['Das Kulturerlebnis']['title'])->toBe('Das Kulturerlebnis')
+        ->and($byTitle['Das Kulturerlebnis']['primary_location'])->toBe('gareth')
+        ->and($byTitle['Das Kulturerlebnis']['rule_version'])->toBe('dsa5')
+        ->and($byTitle['Das Kulturerlebnis']['short_description'])->toBe($culture['short_description'])
+        ->and($byTitle['Die Erkundung']['genres'])->toBe(['exploration'])
+        ->and($byTitle['Die Erkundung']['primary_location'])->toBe('havena')
+        ->and($byTitle['Neues Abenteuer ohne Genre']['genres'])->toBe(['sonstiges'])
+        ->and(collect($tags['tags'])->firstWhere('slug', 'kulturerfahrung'))->toBe([
+            'slug' => 'kulturerfahrung',
+            'name' => 'Kulturerfahrung',
+        ]);
+
+    File::deleteDirectory($tmpData);
+});
+
 it('registers the daily wiki sync schedule', function (): void {
     $this->artisan('schedule:list')
         ->assertSuccessful()

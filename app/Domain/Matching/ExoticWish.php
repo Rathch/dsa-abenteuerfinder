@@ -18,7 +18,7 @@ enum ExoticWish: string
     {
         return match ($this) {
             self::Any => 100,
-            self::No => $exotic ? 0 : 100,
+            self::No => ($exotic || $extraAventurian) ? 0 : 100,
             self::ExtraAventurian => match (true) {
                 $extraAventurian => 100,
                 $exotic => 60,

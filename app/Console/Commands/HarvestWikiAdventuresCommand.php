@@ -3,13 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Services\WikiHarvest\WikiBlurbParser;
+use App\Services\WikiHarvest\WikiCatalogSources;
 use App\Services\WikiHarvest\WikiHttpClient;
 use App\Services\WikiHarvest\WikiIndexTableParser;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Throwable;
 
-#[AsCommand(name: 'adventures:harvest-wiki', description: 'Lädt DSA4/DSA5-Indexseiten und Klappentexte von Wiki Aventurica in database/data/wiki-harvest/')]
+#[AsCommand(name: 'adventures:harvest-wiki', description: 'Lädt die Wiki-Indexseiten und Klappentexte von Wiki Aventurica in database/data/wiki-harvest/')]
 class HarvestWikiAdventuresCommand extends Command
 {
     /** @var string */
@@ -17,17 +18,6 @@ class HarvestWikiAdventuresCommand extends Command
                             {--from-cache : Nur Cache unter storage/app/wiki-cache nutzen}
                             {--pause=1000 : Pause zwischen HTTP-Requests in Millisekunden}
                             {--skip-blurbs : Keine Klappentext-Seiten laden}';
-
-    private const SOURCES = [
-        [
-            'url' => 'https://de.wiki-aventurica.de/wiki/Abenteuer/VA-Reihe',
-            'series_key' => 'va-reihe',
-        ],
-        [
-            'url' => 'https://de.wiki-aventurica.de/wiki/Abenteuer/A-Reihe',
-            'series_key' => 'a-reihe',
-        ],
-    ];
 
     public function handle(WikiIndexTableParser $parser, WikiBlurbParser $blurbParser): int
     {
@@ -39,7 +29,7 @@ class HarvestWikiAdventuresCommand extends Command
         );
 
         $rows = [];
-        foreach (self::SOURCES as $source) {
+        foreach (WikiCatalogSources::all() as $source) {
             $this->info('Lade '.$source['url'].' …');
             try {
                 $html = $client->get($source['url']);
@@ -49,8 +39,8 @@ class HarvestWikiAdventuresCommand extends Command
                 return self::FAILURE;
             }
 
-            $parsed = $parser->parse($html, $source['series_key']);
-            $this->line(sprintf('  → %d DSA4/DSA5-Zeilen', count($parsed)));
+            $parsed = $parser->parse($html, $source['series_key'], $source['series_name'], $source['split_by_heading']);
+            $this->line(sprintf('  → %d Indexzeilen', count($parsed)));
             $rows = array_merge($rows, $parsed);
         }
 
@@ -98,7 +88,7 @@ class HarvestWikiAdventuresCommand extends Command
 
         $payload = [
             'harvested_at' => now()->toIso8601String(),
-            'sources' => array_column(self::SOURCES, 'url'),
+            'sources' => array_column(WikiCatalogSources::all(), 'url'),
             'adventures' => $rows,
         ];
 

@@ -123,4 +123,12 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'elf_url' => 'https://elf.ulisses-spiele.de/',
+
+    'gpl_url' => 'https://www.gnu.org/licenses/gpl-3.0.html',
+
+    'buymeacoffee_url' => 'https://buymeacoffee.com/rathch',
+
+    'bug_report_url' => 'https://github.com/Rathch/dsa-abenteuerfinder/issues/new',
+
 ];

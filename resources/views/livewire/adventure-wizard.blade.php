@@ -29,9 +29,19 @@
                     @foreach ($cards as $card)
                         <li wire:key="card-{{ $card['id'] }}">
                             <article class="card space-y-4" aria-labelledby="adventure-{{ $card['id'] }}-title" data-testid="recommendation">
-                                <header class="space-y-1">
+                                <header class="flex gap-4">
+                                    <img
+                                        src="{{ $card['coverUrl'] ?: asset('images/cover-fallback.svg') }}"
+                                        alt=""
+                                        width="96"
+                                        height="128"
+                                        class="cover-thumb h-32 w-24 shrink-0 object-cover"
+                                        loading="lazy"
+                                    >
+                                    <div class="space-y-1">
                                     <h3 id="adventure-{{ $card['id'] }}-title">{{ $card['title'] }}</h3>
                                     <p class="text-muted">Reihe: {{ $card['series'] }}</p>
+                                    </div>
                                 </header>
 
                                 <dl class="grid gap-x-8 gap-y-3 text-base sm:grid-cols-2">
@@ -78,7 +88,15 @@
                                     </ul>
                                 @endif
 
-                                <p>{{ $card['description'] }}</p>
+                                @if ($card['description'] !== '' && $card['description'] !== '-')
+                                    <p>{{ $card['description'] }}</p>
+                                    <p class="text-sm text-muted">
+                                        — Klappentext von {{ $card['title'] }}; Quelle:
+                                        <a href="{{ $card['blurbUrl'] }}" class="text-link" target="_blank" rel="noopener noreferrer">Wiki Aventurica<span class="sr-only"> (öffnet in neuem Tab)</span></a>;
+                                        zur Weiterverwendung siehe
+                                        <a href="https://de.wiki-aventurica.de/wiki/Wiki_Aventurica:Ulisses-Disclaimer" class="text-link" target="_blank" rel="noopener noreferrer">Ulisses-Disclaimer<span class="sr-only"> (öffnet in neuem Tab)</span></a>.
+                                    </p>
+                                @endif
 
                                 <div>
                                     <h4 class="meta-heading">
@@ -115,8 +133,12 @@
         {{-- ===================== Progressive Reveal ===================== --}}
         @php
             $errorAnchors = [
-                'placeQuery' => 'place-input',
-                'regionSlug' => 'regionSlug-0',
+                'placeQuery' => 'place-list',
+                'regionSlugs' => 'regionSlug-0',
+                'regionConfirmed' => 'region-legend',
+                'rulesDone' => 'ruleset-0',
+                'exoticDone' => 'exotic-0',
+                'timeframeDone' => 'timeframe-0',
             ];
             $current = $fieldsByKey->get($focusField);
         @endphp
@@ -164,8 +186,12 @@
             <p id="focus-status" class="sr-only" role="status" aria-live="polite">
                 @if ($focusField === 'review')
                     Alle Angaben erfasst. Du kannst Empfehlungen anzeigen.
-                @else
-                    Nächste Frage.
+                @elseif ($focusField === 'region')
+                    In welcher Region soll das Abenteuer spielen?
+                @elseif ($focusField === 'genres')
+                    Welche Genres sprechen euch an?
+                @elseif ($current)
+                    {{ $current['question'] }}
                 @endif
             </p>
 
@@ -198,145 +224,202 @@
                     </form>
                 </section>
             @elseif ($focusField === 'region')
-                <fieldset class="min-w-0 space-y-4" aria-describedby="regionSlug-hint">
+                @php
+                    $regionDescribedBy = ['regionSlug-hint'];
+                    if ($errors->has('regionSlugs')) {
+                        $regionDescribedBy[] = 'regionSlugs-error';
+                    }
+                    if ($errors->has('regionConfirmed')) {
+                        $regionDescribedBy[] = 'regionConfirmed-error';
+                    }
+                    $regionInvalid = $errors->has('regionSlugs') || $errors->has('regionConfirmed');
+                    $regionDescribedByAttr = implode(' ', $regionDescribedBy);
+                @endphp
+                <fieldset class="min-w-0 space-y-4" aria-describedby="{{ $regionDescribedByAttr }}" @if ($regionInvalid) aria-invalid="true" @endif>
                     <legend id="region-legend" tabindex="-1" class="ink-rule mb-1 font-serif text-xl font-bold">
                         In welcher Region soll das Abenteuer spielen?
                     </legend>
-                    <p id="regionSlug-hint" class="text-muted">Mit „Egal“ schlagen wir Abenteuer aus allen Regionen vor. Danach kannst du optional einen Ort wählen.</p>
-                    @error('regionSlug')
-                        <p class="error-text" id="regionSlug-error"><span aria-hidden="true">⚠ </span>Fehler: {{ $message }}</p>
+                    <p id="regionSlug-hint" class="text-muted">Mehrfachauswahl möglich. Mit „Egal“ entfällt der Ort. Bei genau einer Region kannst du zusätzlich einen Ort wählen.</p>
+                    @error('regionSlugs')
+                        <p class="error-text" id="regionSlugs-error"><span aria-hidden="true">⚠ </span>Fehler: {{ $message }}</p>
+                    @enderror
+                    @error('regionConfirmed')
+                        <p class="error-text" id="regionConfirmed-error"><span aria-hidden="true">⚠ </span>Fehler: {{ $message }}</p>
                     @enderror
 
                     <div class="grid gap-3 sm:grid-cols-2">
                         @foreach ($regionOptions as $index => $option)
-                            <label class="choice" wire:key="region-{{ $option['value'] }}">
-                                <input
-                                    type="radio"
-                                    id="regionSlug-{{ $index }}"
-                                    name="regionSlug"
-                                    value="{{ $option['value'] }}"
-                                    wire:model.live="regionSlug"
-                                    @error('regionSlug') aria-invalid="true" aria-describedby="regionSlug-error" @enderror
-                                >
-                                <span><span class="choice-label">{{ $option['label'] }}</span></span>
-                            </label>
+                            @if ($option['value'] === 'egal')
+                                <label class="choice" wire:key="region-egal">
+                                    <input
+                                        type="checkbox"
+                                        id="regionSlug-{{ $index }}"
+                                        name="regionsAny"
+                                        value="1"
+                                        wire:model.live="regionsAny"
+                                        aria-describedby="{{ $regionDescribedByAttr }}"
+                                        @if ($regionInvalid) aria-invalid="true" @endif
+                                    >
+                                    <span><span class="choice-label">{{ $option['label'] }}</span></span>
+                                </label>
+                            @else
+                                <label class="choice" wire:key="region-{{ $option['value'] }}">
+                                    <input
+                                        type="checkbox"
+                                        id="regionSlug-{{ $index }}"
+                                        name="regionSlugs[]"
+                                        value="{{ $option['value'] }}"
+                                        wire:model.live="regionSlugs"
+                                        aria-describedby="{{ $regionDescribedByAttr }}"
+                                        @if ($regionInvalid) aria-invalid="true" @endif
+                                    >
+                                    <span><span class="choice-label">{{ $option['label'] }}</span></span>
+                                </label>
+                            @endif
                         @endforeach
                     </div>
-                </fieldset>
 
-                @if ($regionSlug !== '')
-                    @php
-                        $suggestions = $this->suggestions;
-                        $hasSuggestions = count($suggestions) > 0;
-                    @endphp
-                    <div
-                        class="relative space-y-2"
-                        x-data="{
-                            active: -1,
-                            options() { return Array.from($refs.listbox ? $refs.listbox.querySelectorAll('[role=option]') : []); },
-                            mark() {
-                                this.options().forEach((el, i) => {
-                                    el.setAttribute('aria-selected', i === this.active ? 'true' : 'false');
-                                    el.dataset.active = i === this.active ? 'true' : 'false';
-                                });
-                                const current = this.options()[this.active];
-                                if (current) { current.scrollIntoView({ block: 'nearest' }); }
-                            },
-                            move(step) {
-                                const count = this.options().length;
-                                if (count === 0) { return; }
-                                this.active = this.active < 0
-                                    ? (step > 0 ? 0 : count - 1)
-                                    : (this.active + step + count) % count;
-                                this.mark();
-                            },
-                            choose(event) {
-                                const current = this.options()[this.active];
-                                if (current) { event.preventDefault(); current.click(); }
-                            },
-                            close(event) {
-                                if (this.options().length > 0) { event.preventDefault(); $wire.set('placeQuery', ''); this.active = -1; }
-                            }
-                        }"
-                    >
-                        <label for="place-input" class="ink-rule block font-serif text-xl font-bold">
-                            Ort <span class="font-sans text-base font-normal text-muted">(optional)</span>
-                        </label>
-                        <p id="place-hint" class="text-muted">
-                            Tippe den Anfang eines Ortsnamens, zum Beispiel „Gar“ für Gareth.
-                        </p>
-                        @error('placeQuery')
-                            <p class="error-text" id="placeQuery-error"><span aria-hidden="true">⚠ </span>Fehler: {{ $message }}</p>
-                        @enderror
-
-                        <input
-                            type="text"
-                            id="place-input"
-                            class="field-input"
-                            role="combobox"
-                            autocomplete="off"
-                            autocapitalize="off"
-                            spellcheck="false"
-                            aria-autocomplete="list"
-                            aria-expanded="{{ $hasSuggestions ? 'true' : 'false' }}"
-                            aria-controls="place-listbox"
-                            aria-describedby="place-hint place-status{{ $errors->has('placeQuery') ? ' placeQuery-error' : '' }}"
-                            @error('placeQuery') aria-invalid="true" @enderror
-                            wire:model.live.debounce.250ms="placeQuery"
-                            x-on:input="active = -1"
-                            x-on:keydown.arrow-down.prevent="move(1)"
-                            x-on:keydown.arrow-up.prevent="move(-1)"
-                            x-on:keydown.enter="choose($event)"
-                            x-on:keydown.escape="close($event)"
-                            :aria-activedescendant="active >= 0 && options()[active] ? options()[active].id : null"
-                        >
-
-                        <p id="place-status" role="status" class="sr-only">
-                            @if ($hasSuggestions)
-                                {{ count($suggestions) }} {{ count($suggestions) === 1 ? 'Vorschlag' : 'Vorschläge' }} verfügbar.
-                            @elseif ($placeSlug !== '')
-                                Ort {{ $placeQuery }} ausgewählt.
-                            @elseif (trim($placeQuery) !== '')
-                                Keine passenden Orte gefunden.
-                            @endif
-                        </p>
-
-                        <ul id="place-listbox" role="listbox" aria-label="Ortsvorschläge" x-ref="listbox" class="listbox" @unless ($hasSuggestions) hidden @endunless>
-                            @foreach ($suggestions as $suggestion)
-                                <li
-                                    id="place-option-{{ $suggestion['slug'] }}"
-                                    role="option"
-                                    aria-selected="false"
-                                    wire:key="place-option-{{ $suggestion['slug'] }}"
-                                    wire:click="selectPlace('{{ $suggestion['slug'] }}')"
-                                >
-                                    <span class="font-semibold">{{ $suggestion['name'] }}</span>
-                                    @if ($suggestion['region_name'])
-                                        <span class="text-sm text-muted">{{ $suggestion['region_name'] }}</span>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
-
-                        @if ($placeSlug !== '')
-                            <p class="flex flex-wrap items-center gap-3">
-                                <span>Ausgewählter Ort: <strong>{{ $placeQuery }}</strong></span>
-                                <button type="button" class="btn btn-secondary btn-sm" wire:click="clearPlace">Auswahl entfernen</button>
+                    @if (count($regionSlugs) === 1 && ! $regionsAny)
+                        @php
+                            $placeDescribedBy = 'place-hint'.($errors->has('placeQuery') ? ' placeQuery-error' : '');
+                        @endphp
+                        <div id="place-list" tabindex="-1" class="space-y-3" role="radiogroup" aria-labelledby="place-legend" aria-describedby="{{ $placeDescribedBy }}" @if ($errors->has('placeQuery')) aria-invalid="true" @endif>
+                            <p id="place-legend" class="ink-rule font-serif text-xl font-bold">
+                                Ort <span class="font-sans text-base font-normal text-muted">(optional)</span>
                             </p>
-                        @endif
+                            <p id="place-hint" class="text-muted">Diese Orte liegen in der gewählten Region. Ohne Auswahl bleibt der Ort offen.</p>
+                            @error('placeQuery')
+                                <p class="error-text" id="placeQuery-error"><span aria-hidden="true">⚠ </span>Fehler: {{ $message }}</p>
+                            @enderror
+
+                            @if (count($placeOptions) === 0)
+                                <p class="text-muted">In dieser Region sind keine Orte hinterlegt.</p>
+                            @else
+                                <div class="grid gap-3 sm:grid-cols-2">
+                                    <label class="choice" wire:key="place-none">
+                                        <input
+                                            type="radio"
+                                            id="place-none"
+                                            name="placeSlug"
+                                            value=""
+                                            wire:model.live="placeSlug"
+                                            aria-describedby="{{ $placeDescribedBy }}"
+                                            @if ($errors->has('placeQuery')) aria-invalid="true" @endif
+                                        >
+                                        <span><span class="choice-label">Kein bestimmter Ort</span></span>
+                                    </label>
+                                    @foreach ($placeOptions as $place)
+                                        <label class="choice" wire:key="place-{{ $place['slug'] }}">
+                                            <input
+                                                type="radio"
+                                                id="place-{{ $place['slug'] }}"
+                                                name="placeSlug"
+                                                value="{{ $place['slug'] }}"
+                                                wire:model.live="placeSlug"
+                                                aria-describedby="{{ $placeDescribedBy }}"
+                                                @if ($errors->has('placeQuery')) aria-invalid="true" @endif
+                                            >
+                                            <span><span class="choice-label">{{ $place['name'] }}</span></span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    <div class="pt-2">
+                        <button type="button" class="btn btn-primary" wire:click="confirmRegion">Weiter</button>
+                    </div>
+                </fieldset>
+            @elseif (in_array($focusField, ['ruleset', 'exotic', 'timeframe'], true) && $current)
+                @php
+                    $multiModel = match ($focusField) {
+                        'ruleset' => 'rules',
+                        'exotic' => 'exotics',
+                        default => 'timeframes',
+                    };
+                    $multiContinue = match ($focusField) {
+                        'ruleset' => 'continueRules',
+                        'exotic' => 'continueExotic',
+                        default => 'continueTimeframe',
+                    };
+                    $multiAnyModel = match ($focusField) {
+                        'ruleset' => 'rulesAny',
+                        'exotic' => 'exoticAny',
+                        default => null,
+                    };
+                    $multiDescribedBy = [];
+                    if ($current['hint']) {
+                        $multiDescribedBy[] = $focusField.'-hint';
+                    }
+                    $multiDescribedBy[] = $focusField.'-multi';
+                    if ($errors->has($focusField.'Done')) {
+                        $multiDescribedBy[] = $focusField.'-error';
+                    }
+                    $multiDescribedByAttr = implode(' ', $multiDescribedBy);
+                @endphp
+                <fieldset class="min-w-0 space-y-4" aria-describedby="{{ $multiDescribedByAttr }}" @if ($errors->has($focusField.'Done')) aria-invalid="true" @endif>
+                    <legend id="focus-legend" tabindex="-1" class="ink-rule mb-1 font-serif text-xl font-bold">{{ $current['question'] }}</legend>
+                    @if ($current['hint'])
+                        <p id="{{ $focusField }}-hint" class="text-muted">{{ $current['hint'] }}</p>
+                    @endif
+                    <p id="{{ $focusField }}-multi" class="text-muted">Mehrfachauswahl möglich. Ohne Auswahl berücksichtigen wir alle Möglichkeiten.</p>
+                    @error($focusField.'Done')
+                        <p class="error-text" id="{{ $focusField }}-error"><span aria-hidden="true">⚠ </span>Fehler: {{ $message }}</p>
+                    @enderror
+
+                    <div class="grid gap-3">
+                        @foreach ($current['options'] as $index => $option)
+                            @if ($option['value'] === 'any')
+                                <label class="choice" wire:key="{{ $focusField }}-any">
+                                    <input
+                                        type="checkbox"
+                                        id="{{ $focusField }}-{{ $index }}"
+                                        name="{{ $multiAnyModel }}"
+                                        value="1"
+                                        wire:model.live="{{ $multiAnyModel }}"
+                                        aria-describedby="{{ $multiDescribedByAttr }}"
+                                        @if ($errors->has($focusField.'Done')) aria-invalid="true" @endif
+                                    >
+                                    <span>
+                                        <span class="choice-label">{{ $option['label'] }}</span>
+                                        @if ($option['description'])
+                                            <span class="choice-hint">{{ $option['description'] }}</span>
+                                        @endif
+                                    </span>
+                                </label>
+                            @else
+                                <label class="choice" wire:key="{{ $focusField }}-{{ $option['value'] }}">
+                                    <input
+                                        type="checkbox"
+                                        id="{{ $focusField }}-{{ $index }}"
+                                        name="{{ $multiModel }}[]"
+                                        value="{{ $option['value'] }}"
+                                        wire:model.live="{{ $multiModel }}"
+                                        aria-describedby="{{ $multiDescribedByAttr }}"
+                                        @if ($errors->has($focusField.'Done')) aria-invalid="true" @endif
+                                    >
+                                    <span>
+                                        <span class="choice-label">{{ $option['label'] }}</span>
+                                        @if ($option['description'])
+                                            <span class="choice-hint">{{ $option['description'] }}</span>
+                                        @endif
+                                    </span>
+                                </label>
+                            @endif
+                        @endforeach
                     </div>
 
-                    <div class="flex flex-wrap gap-3 pt-2">
-                        @if ($placeSlug !== '' || trim($placeQuery) !== '')
-                            <button type="button" class="btn btn-primary" wire:click="confirmRegion">Weiter</button>
-                        @endif
-                        <button type="button" class="btn {{ $placeSlug === '' && trim($placeQuery) === '' ? 'btn-primary' : 'btn-secondary' }}" wire:click="skipPlaceAndConfirmRegion">
-                            Ohne Ort weiter
-                        </button>
+                    <div class="pt-2">
+                        <button type="button" class="btn btn-primary" wire:click="{{ $multiContinue }}">Weiter</button>
                     </div>
-                @endif
+                </fieldset>
             @elseif ($focusField === 'genres')
-                <fieldset class="min-w-0 space-y-4" aria-describedby="genres-hint">
+                @php
+                    $genresInvalid = collect($errors->keys())->contains(fn (string $key): bool => $key === 'genres' || str_starts_with($key, 'genres.'));
+                    $genresDescribedBy = 'genres-hint'.($genresInvalid ? ' genres-error' : '');
+                @endphp
+                <fieldset class="min-w-0 space-y-4" aria-describedby="{{ $genresDescribedBy }}" @if ($genresInvalid) aria-invalid="true" @endif>
                     <legend id="genres-legend" tabindex="-1" class="ink-rule mb-1 font-serif text-xl font-bold">
                         Welche Genres sprechen euch an?
                     </legend>
@@ -357,6 +440,8 @@
                                         name="genres[]"
                                         value="{{ $genre['slug'] }}"
                                         wire:model.live="genres"
+                                        aria-describedby="{{ $genresDescribedBy }}"
+                                        @if ($genresInvalid) aria-invalid="true" @endif
                                     >
                                     <span><span class="choice-label">{{ $genre['name'] }}</span></span>
                                 </label>
@@ -369,7 +454,19 @@
                     </div>
                 </fieldset>
             @elseif ($current)
-                <fieldset class="min-w-0 space-y-4" @if ($current['hint']) aria-describedby="{{ $focusField }}-hint" @endif>
+                @php
+                    $radioContinue = match ($focusField) {
+                        'gmExperience' => 'continueGmExperience',
+                        'groupSize' => 'continueGroupSize',
+                        default => 'continueExperience',
+                    };
+                    $choiceDescribedBy = array_values(array_filter([
+                        $current['hint'] ? $focusField.'-hint' : null,
+                        $errors->has($focusField) ? $focusField.'-error' : null,
+                    ]));
+                    $choiceDescribedByAttr = implode(' ', $choiceDescribedBy);
+                @endphp
+                <fieldset class="min-w-0 space-y-4" @if ($choiceDescribedByAttr !== '') aria-describedby="{{ $choiceDescribedByAttr }}" @endif @if ($errors->has($focusField)) aria-invalid="true" @endif>
                     <legend id="focus-legend" tabindex="-1" class="ink-rule mb-1 font-serif text-xl font-bold">{{ $current['question'] }}</legend>
                     @if ($current['hint'])
                         <p id="{{ $focusField }}-hint" class="text-muted">{{ $current['hint'] }}</p>
@@ -387,7 +484,8 @@
                                     name="{{ $focusField }}"
                                     value="{{ $option['value'] }}"
                                     wire:model.live="{{ $focusField }}"
-                                    @error($focusField) aria-invalid="true" aria-describedby="{{ $focusField }}-error" @enderror
+                                    @if ($choiceDescribedByAttr !== '') aria-describedby="{{ $choiceDescribedByAttr }}" @endif
+                                    @if ($errors->has($focusField)) aria-invalid="true" @endif
                                 >
                                 <span>
                                     <span class="choice-label">
@@ -407,7 +505,17 @@
                             </label>
                         @endforeach
                     </div>
+
+                    <div class="pt-2">
+                        <button type="button" class="btn btn-primary" wire:click="{{ $radioContinue }}">Weiter</button>
+                    </div>
                 </fieldset>
+            @endif
+
+            @if ($focusField !== 'ruleset' && $focusField !== 'review')
+                <div>
+                    <button type="button" class="btn btn-secondary" wire:click="restart">Neu starten</button>
+                </div>
             @endif
         </div>
     @endif

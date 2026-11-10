@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\WikiHarvest;
 
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
@@ -35,7 +36,7 @@ final class WikiHttpClient
     }
 
     /**
-     * Wie get(), liefert aber null bei fehlendem Cache (--from-cache) oder HTTP-Fehler.
+     * Wie get(), liefert aber null bei fehlendem Cache (--from-cache), HTTP-Fehler oder Verbindungsabbruch.
      */
     public function tryGet(string $url): ?string
     {
@@ -58,10 +59,14 @@ final class WikiHttpClient
 
         usleep($this->pauseMilliseconds * 1000);
 
-        $response = Http::withHeaders([
-            'User-Agent' => self::USER_AGENT,
-            'Accept' => 'text/html',
-        ])->timeout(30)->get($url);
+        try {
+            $response = Http::withHeaders([
+                'User-Agent' => self::USER_AGENT,
+                'Accept' => 'text/html',
+            ])->timeout(30)->get($url);
+        } catch (HttpClientException) {
+            return null;
+        }
 
         if (! $response->successful()) {
             return null;

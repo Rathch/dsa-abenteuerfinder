@@ -78,19 +78,7 @@ SPDX-License-Identifier: GPL-3.0-only
         </div>
     </main>
 
-    <footer class="site-footer">
-        <div class="site-container py-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm text-muted">
-                Inoffizielles, nicht kommerzielles Fanprojekt. DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA, RIESLAND und THE DARK EYE sind eingetragene Marken der Ulisses Spiele GmbH, Waldems.
-            </p>
-            <nav aria-label="Rechtliches">
-                <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                    <li><a href="{{ route('impressum') }}" class="text-link">Impressum</a></li>
-                    <li><a href="{{ route('datenschutz') }}" class="text-link">Datenschutz</a></li>
-                </ul>
-            </nav>
-        </div>
-    </footer>
+    @include('partials.site-footer')
 
     @livewireScripts
 </body>

@@ -102,7 +102,7 @@ describe('shipped fixtures', function (): void {
         expect(Adventure::distinct()->pluck('series_id')->count())->toBeGreaterThanOrEqual(6)
             ->and(Adventure::distinct()->pluck('experience_level')->count())->toBe(4)
             ->and(Adventure::distinct()->pluck('duration_category')->count())->toBe(4)
-            ->and(Adventure::distinct()->pluck('rule_version')->count())->toBe(3);
+            ->and(Adventure::distinct()->pluck('rule_version')->count())->toBe(6);
     });
 
     it('stores spoiler-free descriptions and urls', function (): void {
@@ -192,6 +192,16 @@ describe('schema validation', function (): void {
         });
 
         expect((new AdventureImportService($dir))->validate())->not->toBeEmpty();
+    });
+
+    it('accepts a dash when the short description is missing', function (): void {
+        $dir = copiedDataDir(function (array $data): array {
+            $data['adventures'][0]['short_description'] = '-';
+
+            return $data;
+        });
+
+        expect((new AdventureImportService($dir))->validate())->toBe([]);
     });
 
     it('requires a source note for incomplete adventures', function (): void {

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { setTheme, type Theme } from '../a11y-helpers';
-import { chooseRadioInFieldsetAndPersist, completeWizard, formHeading } from '../wizard-helpers';
+import { chooseChecks, chooseRadioInFieldsetAndPersist, completeWizard, formHeading } from '../wizard-helpers';
 
 const themes: Theme[] = ['light', 'dark'];
 
@@ -28,10 +28,11 @@ for (const theme of themes) {
         test(`Formular teilweise ausgefüllt ${theme}`, async ({ page }) => {
             await setTheme(page, theme);
             await page.goto('/');
-            await chooseRadioInFieldsetAndPersist(page, /Regelwerk/, 'DSA 5');
+            await chooseChecks(page, /Regelwerk/, ['DSA 5']);
             await chooseRadioInFieldsetAndPersist(page, /Heldinnen und Helden/, 'Einsteiger');
-            await chooseRadioInFieldsetAndPersist(page, /Region/, 'Nordmarken');
-            await expect(page.getByRole('button', { name: 'Ohne Ort weiter' })).toBeVisible();
+            await chooseChecks(page, /exotisch/, ['Nur Aventurien']);
+            await page.getByRole('group', { name: /Region/ }).getByRole('checkbox', { name: /^Nordmarken/ }).check();
+            await expect(page.getByRole('radio', { name: 'Havena' })).toBeVisible();
             await expect(formHeading(page)).toBeVisible();
             await stabilize(page);
 
@@ -39,6 +40,7 @@ for (const theme of themes) {
         });
 
         test(`Ergebnisse ${theme}`, async ({ page }) => {
+            test.setTimeout(180_000);
             await setTheme(page, theme);
             await page.goto('/');
             await completeWizard(page);
@@ -71,6 +73,7 @@ for (const theme of themes) {
         });
 
         test(`Ergebnisse mobil ${theme} @mobile`, async ({ page }) => {
+            test.setTimeout(180_000);
             await setTheme(page, theme);
             await page.goto('/');
             await completeWizard(page);

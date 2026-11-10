@@ -60,7 +60,7 @@
                     "enum": ["kurz", "mittel", "lang", "kampagne"]
                 },
                 "rule_version": {
-                    "enum": ["dsa4", "dsa5", "editionunabhaengig"]
+                    "enum": ["dsa1", "dsa2", "dsa3", "dsa4", "dsa5", "editionunabhaengig"]
                 },
                 "exotic": { "type": "boolean" },
                 "complexity": { "enum": ["niedrig", "mittel", "hoch"] },
@@ -69,6 +69,12 @@
                 "location_type": { "enum": ["point", "corridor", "traveling"] },
                 "primary_location": { "$ref": "#/$defs/nullableSlug" },
                 "primary_region": { "$ref": "#/$defs/nullableSlug" },
+                "place_label": {
+                    "oneOf": [
+                        { "type": "string", "minLength": 1, "maxLength": 1000 },
+                        { "type": "null" }
+                    ]
+                },
                 "regions": {
                     "type": "array",
                     "uniqueItems": true,
@@ -82,10 +88,16 @@
                 },
                 "short_description": {
                     "type": "string",
-                    "minLength": 20,
+                    "minLength": 1,
                     "maxLength": 1200
                 },
                 "wiki_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+                "cover_url": {
+                    "oneOf": [
+                        { "type": "string", "format": "uri", "pattern": "^https://" },
+                        { "type": "null" }
+                    ]
+                },
                 "incomplete": { "type": "boolean" },
                 "missing_from_wiki": { "type": "boolean" },
                 "source_note": {

@@ -51,13 +51,15 @@ composer dev            # Server, Logs und Vite parallel → http://127.0.0.1:80
 php artisan adventures:import   # Abenteuer aus database/data/*.json
 ```
 
-### Wiki-Harvest (DSA4/DSA5 Metadaten)
+### Wiki-Harvest
 
-Offizielle Gruppenabenteuer aus den Indexseiten *VA-Reihe* und *A-Reihe* auf
-[Wiki Aventurica](https://de.wiki-aventurica.de/) werden als Metadaten übernommen.
+Abenteuer aus den Indexseiten auf
+[Wiki Aventurica](https://de.wiki-aventurica.de/) werden als Metadaten übernommen:
+VA-Reihe, A-Reihe, Alveraniars, Boten, Boxen, HW-Reihe, Inoffizielle, Kostenlose,
+Weitere Reihen und Wettbewerbe. Die chronologische Übersicht ergänzt nur fehlende Titel.
 Kurzbeschreibungen stammen aus Wiki-Klappentext bzw. Artikelabschnitten (CC-BY-SA,
 Attribution über `wiki_url`). Einträge ohne Wiki-Text werden nicht übernommen; ungemappte
-Orte bleiben `incomplete` und fließen nicht ins Matching ein. Cover werden nicht übernommen.
+Orte bleiben `incomplete` und fließen nicht ins Matching ein. Cover werden als Vorschaubild von der Wiki-Galerie verlinkt, nicht kopiert.
 
 ```bash
 php artisan adventures:harvest-wiki              # Index + Klappentexte (Cache: storage/app/wiki-cache/, Pause ~1s)

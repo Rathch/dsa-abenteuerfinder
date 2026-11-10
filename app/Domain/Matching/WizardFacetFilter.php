@@ -107,7 +107,7 @@ final class WizardFacetFilter
         $values = [];
 
         foreach (DurationWish::cases() as $wish) {
-            $probe = $this->withAnswers($answers, ['timeframe' => $wish->value]);
+            $probe = $this->withAnswers($answers, ['timeframes' => [$wish->value]]);
             if ($this->pool($probe, $base) !== []) {
                 $values[] = $wish->value;
             }
@@ -127,7 +127,8 @@ final class WizardFacetFilter
 
         foreach (RegionKey::cases() as $region) {
             $probe = $this->withAnswers($answers, [
-                'regionSlug' => $region->value,
+                'regionSlugs' => [$region->value],
+                'regionsAny' => false,
                 'placeSlug' => null,
             ]);
             if ($this->pool($probe, $base) !== []) {
@@ -157,7 +158,7 @@ final class WizardFacetFilter
                 continue;
             }
 
-            // „Außerhalb Aventuriens“ nur bei echten Extra-Aventurien-Treffern im Pool.
+            // „Andere Kontinente“ nur bei echten Extra-Aventurien-Treffern im Pool.
             if ($wish === ExoticWish::ExtraAventurian) {
                 foreach ($base as $candidate) {
                     if ($candidate->isExtraAventurian()) {
@@ -169,7 +170,10 @@ final class WizardFacetFilter
                 continue;
             }
 
-            $probe = $this->withAnswers($answers, ['exotic' => $wish->value]);
+            $probe = $this->withAnswers($answers, [
+                'exotics' => [$wish->value],
+                'exoticAny' => false,
+            ]);
             if ($this->pool($probe, $base) !== []) {
                 $values[] = $wish->value;
             }
@@ -179,6 +183,9 @@ final class WizardFacetFilter
     }
 
     /**
+     * Genres, die im Pool noch vorkommen. Ein einzelnes Wunsch-Genre passt genau dann,
+     * wenn ein verbleibender Kandidat es trägt, deshalb reicht ein Durchgang über den Pool.
+     *
      * @param  iterable<AdventureCandidate>  $candidates
      * @param  list<string>  $catalogSlugs
      * @return list<string>
@@ -186,11 +193,18 @@ final class WizardFacetFilter
     public function genreSlugs(WizardAnswers $answers, iterable $candidates, array $catalogSlugs): array
     {
         $base = $this->pool($answers, $candidates, self::FIELD_GENRES);
+        $present = [];
+
+        foreach ($base as $candidate) {
+            foreach ($candidate->genres as $genre) {
+                $present[$genre] = true;
+            }
+        }
+
         $available = [];
 
         foreach ($catalogSlugs as $slug) {
-            $probe = $this->withAnswers($answers, ['genres' => [$slug]]);
-            if ($this->pool($probe, $base) !== []) {
+            if (isset($present[$slug])) {
                 $available[] = $slug;
             }
         }
@@ -210,18 +224,20 @@ final class WizardFacetFilter
         }
 
         $values = [];
-        foreach (RulesWish::cases() as $wish) {
-            if ($wish === RulesWish::Any) {
-                $values[] = $wish->value;
-
+        foreach (RuleVersion::cases() as $version) {
+            if ($version === RuleVersion::EditionUnabhaengig) {
                 continue;
             }
 
-            $probe = $this->withAnswers($answers, ['rules' => $wish->value]);
-            if ($this->pool($probe, $base) !== []) {
-                $values[] = $wish->value;
+            foreach ($base as $candidate) {
+                if ($candidate->ruleVersion === $version) {
+                    $values[] = $version->value;
+                    break;
+                }
             }
         }
+
+        $values[] = 'any';
 
         return $values;
     }
@@ -247,7 +263,7 @@ final class WizardFacetFilter
 
     private function passes(WizardAnswers $answers, AdventureCandidate $candidate, ?string $except): bool
     {
-        if ($candidate->incomplete) {
+        if ($candidate->missingFromWiki) {
             return false;
         }
 
@@ -265,26 +281,24 @@ final class WizardFacetFilter
             }
         }
 
-        if ($except !== self::FIELD_TIMEFRAME && $this->hasTimeframeConstraint($answers)) {
-            if ($this->scores->timeframeScore($answers->durationWish(), $candidate) < self::ACCEPTABLE_FIT) {
+        if ($except !== self::FIELD_TIMEFRAME && $answers->restrictsDuration()) {
+            if ($this->scores->bestTimeframeScore($answers, $candidate) < self::ACCEPTABLE_FIT) {
                 return false;
             }
         }
 
         if ($except !== self::FIELD_REGION && $answers->hasRegionWish()) {
             if ($answers->placeSlug !== null) {
-                if ($candidate->primaryPlaceSlug !== $answers->placeSlug) {
+                if (! $candidate->matchesPlaceSlug($answers->placeSlug)) {
                     return false;
                 }
-            } elseif ($answers->regionSlug !== null
-                && ! in_array($answers->regionSlug, $candidate->allRegionSlugs(), true)) {
+            } elseif (! $answers->acceptsRegion($candidate->allRegionSlugs())) {
                 return false;
             }
         }
 
-        if ($except !== self::FIELD_EXOTIC && $this->hasExoticConstraint($answers)) {
-            $exoticFit = $answers->exoticWish()->fitFor($candidate->exotic, $candidate->isExtraAventurian());
-            if ($exoticFit < self::ACCEPTABLE_FIT) {
+        if ($except !== self::FIELD_EXOTIC && $answers->restrictsExotic()) {
+            if ($this->scores->bestExoticScore($answers, $candidate) < self::ACCEPTABLE_FIT) {
                 return false;
             }
         }
@@ -295,8 +309,8 @@ final class WizardFacetFilter
             }
         }
 
-        if ($except !== self::FIELD_RULES && $this->hasRulesConstraint($answers)) {
-            if (! $answers->rulesWish()->accepts($candidate->ruleVersion)) {
+        if ($except !== self::FIELD_RULES && $answers->rules !== []) {
+            if (! $answers->acceptsRule($candidate->ruleVersion)) {
                 return false;
             }
         }
@@ -315,29 +329,6 @@ final class WizardFacetFilter
         return $answers->experienceLevel !== '' && ExperienceLevel::tryFrom($answers->experienceLevel) !== null;
     }
 
-    private function hasTimeframeConstraint(WizardAnswers $answers): bool
-    {
-        return $answers->timeframe !== '' && DurationWish::tryFrom($answers->timeframe) !== null;
-    }
-
-    private function hasExoticConstraint(WizardAnswers $answers): bool
-    {
-        if ($answers->exotic === '' || $answers->exotic === ExoticWish::Any->value) {
-            return false;
-        }
-
-        return ExoticWish::tryFrom($answers->exotic) !== null;
-    }
-
-    private function hasRulesConstraint(WizardAnswers $answers): bool
-    {
-        if ($answers->rules === '' || $answers->rules === RulesWish::Any->value) {
-            return false;
-        }
-
-        return RulesWish::tryFrom($answers->rules) !== null;
-    }
-
     private function hasGmConstraint(WizardAnswers $answers): bool
     {
         return $answers->gmExperience !== '' && ExperienceLevel::tryFrom($answers->gmExperience) !== null;
@@ -347,12 +338,15 @@ final class WizardFacetFilter
      * @param  array{
      *     experienceLevel?: string,
      *     groupSize?: ?string,
-     *     timeframe?: string,
-     *     regionSlug?: ?string,
+     *     timeframes?: list<string>,
+     *     regionSlugs?: list<string>,
+     *     regionsAny?: bool,
      *     placeSlug?: ?string,
-     *     exotic?: string,
+     *     exotics?: list<string>,
+     *     exoticAny?: bool,
      *     genres?: list<string>,
-     *     rules?: string,
+     *     rules?: list<string>,
+     *     rulesAny?: bool,
      *     gmExperience?: string
      * }  $overrides
      */
@@ -361,12 +355,15 @@ final class WizardFacetFilter
         return new WizardAnswers(
             experienceLevel: $overrides['experienceLevel'] ?? $base->experienceLevel,
             groupSize: array_key_exists('groupSize', $overrides) ? $overrides['groupSize'] : $base->groupSize,
-            timeframe: $overrides['timeframe'] ?? $base->timeframe,
-            regionSlug: array_key_exists('regionSlug', $overrides) ? $overrides['regionSlug'] : $base->regionSlug,
+            timeframes: $overrides['timeframes'] ?? $base->timeframes,
+            regionSlugs: $overrides['regionSlugs'] ?? $base->regionSlugs,
+            regionsAny: $overrides['regionsAny'] ?? $base->regionsAny,
             placeSlug: array_key_exists('placeSlug', $overrides) ? $overrides['placeSlug'] : $base->placeSlug,
-            exotic: $overrides['exotic'] ?? $base->exotic,
+            exotics: $overrides['exotics'] ?? $base->exotics,
+            exoticAny: $overrides['exoticAny'] ?? $base->exoticAny,
             genres: $overrides['genres'] ?? $base->genres,
             rules: $overrides['rules'] ?? $base->rules,
+            rulesAny: $overrides['rulesAny'] ?? $base->rulesAny,
             gmExperience: $overrides['gmExperience'] ?? $base->gmExperience,
         );
     }

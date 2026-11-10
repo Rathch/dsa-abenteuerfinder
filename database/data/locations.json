@@ -10,8 +10,221 @@
                     "name": "Nordmarken",
                     "type": "region",
                     "children": [
-                        { "slug": "havena", "name": "Havena", "type": "place" },
-                        { "slug": "riva", "name": "Riva", "type": "place" }
+                        {
+                            "slug": "havena",
+                            "name": "Havena",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "riva",
+                            "name": "Riva",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "abilacht",
+                            "name": "Abilacht",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "aegis",
+                            "name": "Aegis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "albenhus-am-grossen-fluss",
+                            "name": "Albenhus am Großen Fluss",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "albernia-zwischen-farindelwald-und-seenland",
+                            "name": "Albernia zwischen Farindelwald und Seenland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "angbar",
+                            "name": "Angbar",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-fuxwalden",
+                            "name": "Baronie Fuxwalden",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-moorbrueck",
+                            "name": "Baronie Moorbrück",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-suedhag",
+                            "name": "Baronie Südhag",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bei-ferdok",
+                            "name": "bei Ferdok",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "burg-blaustein-in-der-baronie-drakfold",
+                            "name": "Burg Blaustein in der Baronie Drakfold",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "burg-harpenstein",
+                            "name": "Burg Harpenstein",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "der-grosse-fluss",
+                            "name": "Der Große Fluss",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "die-stadt-angbar",
+                            "name": "die Stadt Angbar",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "die-stadt-calbrozim-und-die-ingrakuppen",
+                            "name": "die Stadt Calbrozim und die Ingrakuppen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "dorf-wirselgrund",
+                            "name": "Dorf Wirselgrund",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eiras",
+                            "name": "Eiras",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "elenvina",
+                            "name": "Elenvina",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "gratia-lapis",
+                            "name": "Gratia Lapis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "harben",
+                            "name": "Harben",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "honingen",
+                            "name": "Honingen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ila",
+                            "name": "Ila",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ingrakuppen",
+                            "name": "Ingrakuppen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kyndoch",
+                            "name": "Kyndoch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "markgrafschaft-windhag",
+                            "name": "Markgrafschaft Windhag",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mine-in-der-baronie-hammerschlag",
+                            "name": "Mine in der Baronie Hammerschlag",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "murolosch",
+                            "name": "Murolosch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nahe-angbar",
+                            "name": "nahe Angbar",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nahe-ferdok",
+                            "name": "nahe Ferdok",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "orkendorf",
+                            "name": "Orkendorf",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ortis",
+                            "name": "Ortis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "pfalz-weissenstein",
+                            "name": "Pfalz Weißenstein",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "seenland",
+                            "name": "Seenland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "seshwick",
+                            "name": "Seshwick",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "siebenwindkueste",
+                            "name": "Siebenwindküste",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "start-und-ziel-in-winhall",
+                            "name": "Start und Ziel in Winhall",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "thunklipp",
+                            "name": "Thunklipp",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "widdernhall",
+                            "name": "Widdernhall",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "windhag",
+                            "name": "Windhag",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "windhagberge",
+                            "name": "Windhagberge",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "xorlosch",
+                            "name": "Xorlosch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "zwischen-arvun-und-kellun",
+                            "name": "zwischen Arvun und Kellun",
+                            "type": "place"
+                        }
                     ]
                 },
                 {
@@ -19,8 +232,561 @@
                     "name": "Mittelaventurien",
                     "type": "region",
                     "children": [
-                        { "slug": "gareth", "name": "Gareth", "type": "place" },
-                        { "slug": "punin", "name": "Punin", "type": "place" }
+                        {
+                            "slug": "gareth",
+                            "name": "Gareth",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "punin",
+                            "name": "Punin",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "alriksmark",
+                            "name": "Alriksmark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ambossgebirge",
+                            "name": "Ambossgebirge",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "amhallah",
+                            "name": "Amhallah",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "amhallassih",
+                            "name": "Amhallassih",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "arvepass",
+                            "name": "Arvepass",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-aschenfeld",
+                            "name": "Baronie Aschenfeld",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-becherlingen",
+                            "name": "Baronie Becherlingen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-haffith-almada",
+                            "name": "Baronie Haffith (Almada)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-koenigsweber",
+                            "name": "Baronie Königsweber",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-radromsbusch",
+                            "name": "Baronie Radromsbusch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-schrotenstein",
+                            "name": "Baronie Schrotenstein",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bergkoenigreich-aradolosch",
+                            "name": "Bergkönigreich Aradolosch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "binge-im-ambossgebirge",
+                            "name": "Binge im Amboßgebirge",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "blautann",
+                            "name": "Blautann",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bosparanische-nordprovinzen-mittelaventurien",
+                            "name": "bosparanische Nordprovinzen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bosquirien",
+                            "name": "Bosquirien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "briskengrund",
+                            "name": "Briskengrund",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "burg-aulebein",
+                            "name": "Burg Aulebein",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "das-dorf-weidenstein",
+                            "name": "das Dorf Weidenstein",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "der-reichsforst-und-der-finsterkamm",
+                            "name": "der Reichsforst und der Finsterkamm",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "dergelmund",
+                            "name": "Dergelmund",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "die-festung-okdragosch",
+                            "name": "die Festung Okdrâgosch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "donnerbach",
+                            "name": "Donnerbach",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "drachensteine",
+                            "name": "Drachensteine",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "drakonia",
+                            "name": "Drakonia",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "duesterrode",
+                            "name": "Düsterrode",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ebene-von-hardorp",
+                            "name": "Ebene von Hardorp",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ein-kleines-weindorf-in-almada",
+                            "name": "ein kleines Weindorf in Almada",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eisenwald",
+                            "name": "Eisenwald",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eslamsberge",
+                            "name": "Eslamsberge",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eslamsgrund",
+                            "name": "Eslamsgrund",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "festung-okdragosch",
+                            "name": "Festung Okdrâgosch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "finsterkamm",
+                            "name": "Finsterkamm",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "finsterkamm-und-suedliches-svellttal-mittelaventurien",
+                            "name": "Finsterkamm und südliches Svellttal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "finsterkoppen",
+                            "name": "Finsterkoppen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "finstertann",
+                            "name": "Finstertann",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grafschaft-heldentrutz",
+                            "name": "Grafschaft Heldentrutz",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grafschaft-perricum",
+                            "name": "Grafschaft Perricum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grafschaft-wehrheim",
+                            "name": "Grafschaft Wehrheim",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "greifenberg",
+                            "name": "Greifenberg",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "greifenfurt",
+                            "name": "Greifenfurt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grenzmark",
+                            "name": "Grenzmark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grotten-des-schweigens",
+                            "name": "Grotten des Schweigens",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hagenshain",
+                            "name": "Hagenshain",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hendweiler-in-markgraeflich-knoppsberg-markgrafschaft-perricum",
+                            "name": "Hendweiler in Markgräflich Knoppsberg (Markgrafschaft Perricum)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "herz-des-kontinents",
+                            "name": "Herz des Kontinents",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hiltorp",
+                            "name": "Hiltorp",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "horaskrug",
+                            "name": "Horaskrug",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "insel-fogstor",
+                            "name": "Insel Fogstor",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "irgendwo-im-suedlichen-aventurien",
+                            "name": "irgendwo im südlichen Aventurien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kloster-arras-de-mott",
+                            "name": "Kloster Arras de Mott",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kreta",
+                            "name": "Kreta",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "landgut-marschenhof",
+                            "name": "Landgut Marschenhof",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "las-ramiras",
+                            "name": "Las Ramiras",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "limbus",
+                            "name": "Limbus",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "markgrafschaft-greifenfurt",
+                            "name": "Markgrafschaft Greifenfurt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "markgrafschaft-perricum",
+                            "name": "Markgrafschaft Perricum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "markgrafschaft-rommilyser-mark",
+                            "name": "Markgrafschaft Rommilyser Mark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "markgrafschaft-warunk",
+                            "name": "Markgrafschaft Warunk",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "markgrafschaft-warunk-an-der-grenze-zu-transysilien",
+                            "name": "Markgrafschaft Warunk an der Grenze zu Transysilien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mittel-mittelaventurien",
+                            "name": "Mittel-",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mittleres-mittelaventurien",
+                            "name": "Mittleres",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nebelmoor",
+                            "name": "Nebelmoor",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nordaventurien-mittelaventurien",
+                            "name": "Nordaventurien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nordwall",
+                            "name": "Nordwall",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nordwestliches-und-zentrales-mittelreich",
+                            "name": "nordwestliches und zentrales Mittelreich",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "noerdliches-aventurien-mittelaventurien",
+                            "name": "nördliches Aventurien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ogermauer",
+                            "name": "Ogermauer",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "okdragosch",
+                            "name": "Okdrâgosch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "olat",
+                            "name": "Olat",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ordenskloster-des-bundes-des-wahren-glaubens-zu-marano",
+                            "name": "Ordenskloster des Bundes des wahren Glaubens zu Marano",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "perricum",
+                            "name": "Perricum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "perricumer-land",
+                            "name": "Perricumer Land",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "quastenbroich",
+                            "name": "Quastenbroich",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rabenmark",
+                            "name": "Rabenmark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ragath",
+                            "name": "Ragath",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ragathium",
+                            "name": "Ragathium",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rakulahuegel",
+                            "name": "Rakulahügel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "raschtulswall",
+                            "name": "Raschtulswall",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "reichsforst",
+                            "name": "Reichsforst",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "reichsstrasse-2",
+                            "name": "Reichsstraße 2",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "reichsstrasse-2-suedlich-von-silkwiesen",
+                            "name": "Reichsstraße 2 südlich von Silkwiesen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "reichsstrasse-zwischen-skorpsky-und-rommilys-mittelaventurien",
+                            "name": "Reichsstraße zwischen Skorpsky und Rommilys",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rommilys",
+                            "name": "Rommilys",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rommilyser-mark-region",
+                            "name": "Rommilyser Mark (Region)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "sancta-boronia",
+                            "name": "Sancta Boronia",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "schlangenfurt",
+                            "name": "Schlangenfurt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "schwarze-sichel",
+                            "name": "Schwarze Sichel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "stadt-mit-theater",
+                            "name": "Stadt mit Theater",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "stadt-perricum",
+                            "name": "Stadt Perricum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "suedlicher-eisenwald",
+                            "name": "südlicher Eisenwald",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "taladur",
+                            "name": "Taladur",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "traviamark",
+                            "name": "Traviamark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "travinspforte-mittelaventurien",
+                            "name": "Travinspforte",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "trollpforte",
+                            "name": "Trollpforte",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "trollzacken",
+                            "name": "Trollzacken",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tsabrunn",
+                            "name": "Tsabrunn",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "um-punin",
+                            "name": "um Punin",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "vierbyrgen",
+                            "name": "Vierbyrgen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wagenhalt",
+                            "name": "Wagenhalt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "waldenbrueck",
+                            "name": "Waldenbrück",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "waldgebiet-in-mittelaventurien",
+                            "name": "Waldgebiet in Mittelaventurien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "waldleuen",
+                            "name": "Waldleuen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wehrheimer-land",
+                            "name": "Wehrheimer Land",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wildenfest",
+                            "name": "Wildenfest",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wildermark",
+                            "name": "Wildermark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "zentrales-bis-westliches-mittelreich",
+                            "name": "zentrales bis westliches Mittelreich",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "zerstoertes-heiligtum-am-schlund",
+                            "name": "zerstörtes Heiligtum am Schlund",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "zwerch",
+                            "name": "Zwerch",
+                            "type": "place"
+                        }
                     ]
                 },
                 {
@@ -28,8 +794,121 @@
                     "name": "Tulamidenlande",
                     "type": "region",
                     "children": [
-                        { "slug": "fasar", "name": "Fasar", "type": "place" },
-                        { "slug": "khunchom", "name": "Khunchom", "type": "place" }
+                        {
+                            "slug": "fasar",
+                            "name": "Fasar",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "khunchom",
+                            "name": "Khunchom",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ain-turamesh",
+                            "name": "Ain Turamesh",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "alsuq",
+                            "name": "Al'Suq",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "awalakim",
+                            "name": "Awalakim",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "balash",
+                            "name": "Balash",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "chefe",
+                            "name": "Chefe",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kalifat",
+                            "name": "Kalifat",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "khunchom-auslaeufer-des-amdeggynmassivs",
+                            "name": "Khunchom & Ausläufer des Amdeggynmassivs",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "khomwueste",
+                            "name": "Khômwüste",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mhanadi-delta-tulamidenlande",
+                            "name": "Mhanadi-Delta Tulamidenlande",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mhanadidelta",
+                            "name": "Mhanadidelta",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nabatil",
+                            "name": "Nabatil",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ras-tabor",
+                            "name": "Ras Tabor",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rashdul",
+                            "name": "Rashdul",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rashdul-diamantenes-sultanat",
+                            "name": "Rashdul (Diamantenes Sultanat)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "stierbuckel",
+                            "name": "Stierbuckel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "thalusa",
+                            "name": "Thalusa",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "thalusien",
+                            "name": "Thalusien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tor-der-welten-in-einem-kloster-im-wal-el-khomchra-massiv-in-der-khom",
+                            "name": "Tor der Welten in einem Kloster im Wal-el-Khômchra-Massiv in der Khôm",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wal-el-khomchra",
+                            "name": "Wal-el-Khômchra",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wueste-khom",
+                            "name": "Wüste Khôm",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "zauberschule-des-kalifen-in-mherwed",
+                            "name": "Zauberschule des Kalifen in Mherwed",
+                            "type": "place"
+                        }
                     ]
                 },
                 {
@@ -37,8 +916,66 @@
                     "name": "Südaventurien",
                     "type": "region",
                     "children": [
-                        { "slug": "al-anfa", "name": "Al'Anfa", "type": "place" },
-                        { "slug": "brabak", "name": "Brabak", "type": "place" }
+                        {
+                            "slug": "al-anfa",
+                            "name": "Al'Anfa",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "brabak",
+                            "name": "Brabak",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "goldfelsen",
+                            "name": "Goldfelsen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hohe-eternen",
+                            "name": "Hohe Eternen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "irgendwo-im-suedlichen-aventurien-suedaventurien",
+                            "name": "irgendwo im südlichen Aventurien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "jilaskan",
+                            "name": "Jilaskan",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "khunchom-auslaeufer-des-amdeggynmassivs-suedaventurien",
+                            "name": "Khunchom & Ausläufer des Amdeggynmassivs",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "praiosdank",
+                            "name": "Praiosdank",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "raschtulsturm",
+                            "name": "Raschtulsturm",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tuzak",
+                            "name": "Tuzak",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "umland",
+                            "name": "Umland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "waldinseln-bilku-archipel",
+                            "name": "Waldinseln (Bilku-Archipel)",
+                            "type": "place"
+                        }
                     ]
                 },
                 {
@@ -46,8 +983,116 @@
                     "name": "Südwest",
                     "type": "region",
                     "children": [
-                        { "slug": "kuslik", "name": "Kuslik", "type": "place" },
-                        { "slug": "vinsalt", "name": "Vinsalt", "type": "place" }
+                        {
+                            "slug": "kuslik",
+                            "name": "Kuslik",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "vinsalt",
+                            "name": "Vinsalt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "belhanka",
+                            "name": "Belhanka",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bethana",
+                            "name": "Bethana",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bomed",
+                            "name": "Bomed",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "calruna",
+                            "name": "Calruna",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "chababien",
+                            "name": "Chababien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "cuslicum",
+                            "name": "Cuslicum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "das-dorf-bawatar-vor-der-kabashpforte-und-umgebung",
+                            "name": "das Dorf Bawatar vor der Kabashpforte und Umgebung",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "drol",
+                            "name": "Drôl",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grafschaft-bomed",
+                            "name": "Grafschaft Bomed",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grafschaft-thegun",
+                            "name": "Grafschaft Thegûn",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grangor",
+                            "name": "Grangor",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kleines-staedtchen-im-horasreich",
+                            "name": "kleines Städtchen im Horasreich",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kloster-mantrashmor-nahe-oberfels-im-horasreich",
+                            "name": "Kloster Mantrash'Mor nahe Oberfels im Horasreich",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "methumis",
+                            "name": "Methumis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "neetha",
+                            "name": "Neetha",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "oberfels",
+                            "name": "Oberfels",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "observatorium-sancielo-in-den-goldfelsen",
+                            "name": "Observatorium Sancielo in den Goldfelsen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "thegun",
+                            "name": "Thegûn",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "yaquirbruch",
+                            "name": "Yaquirbruch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "zwischen-bethana-und-nevorten",
+                            "name": "zwischen Bethana und Nevorten",
+                            "type": "place"
+                        }
                     ]
                 },
                 {
@@ -55,7 +1100,1247 @@
                     "name": "Seefahrt",
                     "type": "region",
                     "children": [
-                        { "slug": "zyklopeninseln", "name": "Zyklopeninseln", "type": "place" }
+                        {
+                            "slug": "zyklopeninseln",
+                            "name": "Zyklopeninseln",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baltraea",
+                            "name": "Balträa",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "golf-von-perricum",
+                            "name": "Golf von Perricum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "heliopolos",
+                            "name": "Heliopolos",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "meer-der-sieben-winde",
+                            "name": "Meer der Sieben Winde",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nagalosch",
+                            "name": "Nagalosch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "phrygaios",
+                            "name": "Phrygaios",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rethis",
+                            "name": "Rethis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "stachelinsel",
+                            "name": "Stachelinsel",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "hoher-norden",
+                    "name": "Hoher Norden",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "himmelsturm-ometheon",
+                            "name": "Himmelsturm Ometheon",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "klirrfrostwueste",
+                            "name": "Klirrfrostwüste",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rylarc",
+                            "name": "Ryl'Arc",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "nordaventurien",
+                    "name": "Nordaventurien",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "alavi-see",
+                            "name": "Alavi-See",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bjaldorn",
+                            "name": "Bjaldorn",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "brinasker-marschen",
+                            "name": "Brinasker Marschen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "brydia",
+                            "name": "Brydia",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eestiva",
+                            "name": "Eestiva",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "elfenlande",
+                            "name": "Elfenlande",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "farlorn",
+                            "name": "Farlorn",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "finsterkamm-und-suedliches-svellttal",
+                            "name": "Finsterkamm und südliches Svellttal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "firnklippen",
+                            "name": "Firnklippen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "gerasim",
+                            "name": "Gerasim",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "golf-von-riva",
+                            "name": "Golf von Riva",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grimmsvell",
+                            "name": "Grimmsvell",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hilgerds-heim",
+                            "name": "Hilgerds Heim",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hilvalla",
+                            "name": "Hilvalla",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "in-und-um-gerasim-und-eichenhain",
+                            "name": "In und um Gerasim und Eichenhain",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kvillwaelder",
+                            "name": "Kvillwälder",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "lowangen",
+                            "name": "Lowangen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mittel",
+                            "name": "Mittel-",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mittleres",
+                            "name": "Mittleres",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "naauki-myrkkui-kuuien",
+                            "name": "Naauki-myrkkui-Kuuien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nebelzinnen",
+                            "name": "Nebelzinnen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nordaventurien-nordaventurien",
+                            "name": "Nordaventurien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "noerdlich-der-salamandersteine",
+                            "name": "nördlich der Salamandersteine",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "noerdliches-aventurien",
+                            "name": "nördliches Aventurien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "paavi",
+                            "name": "Paavi",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rorwhed",
+                            "name": "Rorwhed",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "salamandersteine",
+                            "name": "Salamandersteine",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "sibra",
+                            "name": "Sibra",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "svellttal",
+                            "name": "Svellttal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tiefhusen",
+                            "name": "Tiefhusen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tjolmar",
+                            "name": "Tjolmar",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "yrramis",
+                            "name": "Yrramis",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "thorwal",
+                    "name": "Thorwal",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "bodirtal",
+                            "name": "Bodirtal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "die-kuesten-des-nordens-thorwal",
+                            "name": "die Küsten des Nordens (Thorwal)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "dorf-im-westen-der-premer-halbinsel-fjord-zwischen-hjalsingor-und-rovik",
+                            "name": "Dorf im Westen der Premer Halbinsel (Fjord zwischen Hjalsingor und Rovik)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "gandar",
+                            "name": "Gandar",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "gjalskerland",
+                            "name": "Gjalskerland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "goldsholmr",
+                            "name": "Goldsholmr",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nordthorwal",
+                            "name": "Nordthorwal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "noerdliche-olportsteine",
+                            "name": "Nördliche Olportsteine",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "olport",
+                            "name": "Olport",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "olportsteine",
+                            "name": "Olportsteine",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "skjaldjara",
+                            "name": "Skjaldjara",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "suedthorwal",
+                            "name": "Südthorwal",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "bornland",
+                    "name": "Bornland",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "bangra",
+                            "name": "Bangra",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bornische-mark",
+                            "name": "Bornische Mark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bornstrasse",
+                            "name": "Bornstraße",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "das-bornische-festenland",
+                            "name": "Das bornische Festenland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "die-bornische-mark",
+                            "name": "Die bornische Mark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "die-grosse-mosse",
+                            "name": "die Große Mosse",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eschenfurt",
+                            "name": "Eschenfurt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "festum",
+                            "name": "Festum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "festum-im-bornland",
+                            "name": "Festum im Bornland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hardener-seenplatte",
+                            "name": "Hardener Seenplatte",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hinterbruch",
+                            "name": "Hinterbruch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "korswandt",
+                            "name": "Korswandt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kreiben",
+                            "name": "Kreiben",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mark",
+                            "name": "Mark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "misa-auen",
+                            "name": "Misa-Auen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nahe-uhdenberg",
+                            "name": "nahe Uhdenberg",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "neersand",
+                            "name": "Neersand",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "neu-wulzen-an-der-kuestenstrasse-der-niedermark-im-bornland",
+                            "name": "Neu-Wulzen an der Küstenstraße der Niedermark im Bornland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "niamhs-silvanden-faeden-karen",
+                            "name": "Niamhs Silvanden Fae'den Karen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "notmark",
+                            "name": "Notmark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "pervin",
+                            "name": "Pervin",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "pilkamm",
+                            "name": "Pilkamm",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "reichsstrasse-zwischen-skorpsky-und-rommilys",
+                            "name": "Reichsstraße zwischen Skorpsky und Rommilys",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rodebrannt",
+                            "name": "Rodebrannt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rote-sichel",
+                            "name": "Rote Sichel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "sewerien",
+                            "name": "Sewerien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "totenmoor",
+                            "name": "Totenmoor",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "totenmoor-mit-feste-shiyadur",
+                            "name": "Totenmoor mit Feste Shiyadur",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "travinspforte",
+                            "name": "Travinspforte",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "uhdenberg",
+                            "name": "Uhdenberg",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "uhdenberg-und-die-umliegende-rote-sichel",
+                            "name": "Uhdenberg und die umliegende Rote Sichel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "umgebung",
+                            "name": "Umgebung",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "vallusa",
+                            "name": "Vallusa",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wosna",
+                            "name": "Wosna",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wulzen",
+                            "name": "Wulzen",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "orkland",
+                    "name": "Orkland",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "blutzinnen",
+                            "name": "Blutzinnen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "enqui",
+                            "name": "Enqui",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "firunswall",
+                            "name": "Firunswall",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "khezzara",
+                            "name": "Khezzara",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ogerzaehne-und-oestliches-orkland",
+                            "name": "Ogerzähne und östliches Orkland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ohort",
+                            "name": "Ohort",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "orkland-orkland",
+                            "name": "Orkland",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "orkschaedelsteppe",
+                            "name": "Orkschädelsteppe",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "phexcaer",
+                            "name": "Phexcaer",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "thasch",
+                            "name": "Thasch",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "andergast-und-nostria",
+                    "name": "Andergast und Nostria",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "andergast",
+                            "name": "Andergast",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "andrafall",
+                            "name": "Andrafall",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "andraquell",
+                            "name": "Andraquell",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "beilstatt",
+                            "name": "Beilstatt",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "bosparanische-nordprovinzen",
+                            "name": "bosparanische Nordprovinzen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "das-nostrisch-andergastische-grenzgebiet-am-ornib",
+                            "name": "Das Nostrisch-Andergastische Grenzgebiet am Ornib",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "der-ingval-im-nostrisch-andergastischen-grenzgebiet",
+                            "name": "der Ingval im Nostrisch-Andergastischen Grenzgebiet",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "der-wald",
+                            "name": "der Wald",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "die-waldwildnis",
+                            "name": "die Waldwildnis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eichhafen",
+                            "name": "Eichhafen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eichthal",
+                            "name": "Eichthal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "eine-feenglobule",
+                            "name": "eine Feenglobule",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "engasal",
+                            "name": "Engasal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "fuerstentum-andergast",
+                            "name": "Fürstentum Andergast",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "fuerstentum-nostria",
+                            "name": "Fürstentum Nostria",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grenzlande-der-waldwildnis",
+                            "name": "Grenzlande der Waldwildnis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "joborn",
+                            "name": "Joborn",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "koenigreich-andergast",
+                            "name": "Königreich Andergast",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "koenigreich-nostria",
+                            "name": "Königreich Nostria",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nordvest",
+                            "name": "Nordvest",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nostria",
+                            "name": "Nostria",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "radefalg",
+                            "name": "Radefalg",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "salza",
+                            "name": "Salza",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "stadt-andergast",
+                            "name": "Stadt Andergast",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "steineichenwald",
+                            "name": "Steineichenwald",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "streitende-koenigreiche",
+                            "name": "Streitende Königreiche",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "talschaft-daemmerwacht",
+                            "name": "Talschaft Dämmerwacht",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "teshkalien",
+                            "name": "Teshkalien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "waldgrafschaft-thuransteg",
+                            "name": "Waldgrafschaft Thuransteg",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "schattenlande-tobrien",
+                    "name": "Schattenlande \/ Tobrien",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "befreites-tobrien",
+                            "name": "(befreites) Tobrien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "beilunk",
+                            "name": "Beilunk",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "beilunker-berge",
+                            "name": "Beilunker Berge",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "burg-kurkum",
+                            "name": "Burg Kurkum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "calador",
+                            "name": "Calador",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ebelried",
+                            "name": "Ebelried",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "feuerhafen",
+                            "name": "Feuerhafen",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "freies-besetztes-tobrien",
+                            "name": "freies & besetztes Tobrien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "grenzregion-der-befreiten-warunkei",
+                            "name": "Grenzregion der befreiten Warunkei",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "gruenau",
+                            "name": "Grünau",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "haderstein",
+                            "name": "Haderstein",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "herzogtum-tobrien",
+                            "name": "Herzogtum Tobrien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "herzogtum-transysilien",
+                            "name": "Herzogtum Transysilien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "herzogtum-transysilien-yol-ghurmak",
+                            "name": "Herzogtum Transysilien (Yol-Ghurmak)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ilsur",
+                            "name": "Ilsur",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kibrom",
+                            "name": "Kibrom",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "misamund",
+                            "name": "Misamund",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nahe-schwarztobrien",
+                            "name": "nahe Schwarztobrien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ogerbusch",
+                            "name": "Ogerbusch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "perainefurten",
+                            "name": "Perainefurten",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "schattenlande",
+                            "name": "Schattenlande",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "shamaham",
+                            "name": "Shamaham",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "sonnenmark",
+                            "name": "Sonnenmark",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "stadt-ohne-sonne",
+                            "name": "Stadt ohne Sonne",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tobimorien",
+                            "name": "Tobimorien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tobrien",
+                            "name": "Tobrien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tobrien-region",
+                            "name": "Tobrien (Region)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "vennhag",
+                            "name": "Vennhag",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "vildromtal",
+                            "name": "Vildromtal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "warunk",
+                            "name": "Warunk",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "warunkei-region",
+                            "name": "Warunkei (Region)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "warunkei-an-der-grenze-nach-transysilien",
+                            "name": "Warunkei an der Grenze nach Transysilien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "weisstobrien",
+                            "name": "Weißtobrien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "xeraanien",
+                            "name": "Xeraanien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "yergesheim",
+                            "name": "Yergesheim",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "echsensuempf",
+                    "name": "Echsensümpfe",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "chikhro",
+                            "name": "Chi'Khro",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "echsensuempfe",
+                            "name": "Echsensümpfe",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "elem",
+                            "name": "Elem",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "kannemuende",
+                            "name": "Kannemünde",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ouroboch",
+                            "name": "Ou'Roboch",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "rashid-raad",
+                            "name": "Rashid Ra'ad",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "selem",
+                            "name": "Selem",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "ssdl",
+                            "name": "Ssd'L",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "charyptik",
+                    "name": "Charyptik",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "charyptik-charyptik",
+                            "name": "Charyptik",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "strasse-von-sylla",
+                            "name": "Straße von Sylla",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "sturminsel",
+                            "name": "Sturminsel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "sylla",
+                            "name": "Sylla",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "syllanische-halbinsel",
+                            "name": "Syllanische Halbinsel",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "aranien",
+                    "name": "Aranien",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "alahabad",
+                            "name": "Al'Ahabad",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baburien",
+                            "name": "Baburien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baburin",
+                            "name": "Baburin",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "dagash",
+                            "name": "Dagash",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "elburische-halbinsel",
+                            "name": "Elburische Halbinsel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "elburum",
+                            "name": "Elburum",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "elburum-aranien",
+                            "name": "Elburum (Aranien)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "farsh-maharbi",
+                            "name": "Farsh Maharbi",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "gorien",
+                            "name": "Gorien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "gorische-wueste",
+                            "name": "Gorische Wüste",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "krshtkar-das-heutige-alahabad",
+                            "name": "Krsh'Tkar (das heutige Al'Ahabad)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "malqis",
+                            "name": "Malqis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mhaharanyat-aranien-aranien",
+                            "name": "Mhaharanyat Aranien Aranien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "narhuabad-im-dornenreich-aranien",
+                            "name": "Narhuabad im Dornenreich Aranien",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "radjarat-palmyramis",
+                            "name": "Radjarat Palmyramis",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "raslamasshu",
+                            "name": "Ras'Lamasshu",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "schwarze-feste-gor",
+                            "name": "Schwarze Feste (Gor)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "yalaiad",
+                            "name": "Yalaiad",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "zorgan",
+                            "name": "Zorgan",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "meridiana",
+                    "name": "Meridiana",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "brabak-und-eine-klosterruine-nahe-ranak",
+                            "name": "Brabak und eine Klosterruine nahe Ranak",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "emirat-mirham",
+                            "name": "Emirat Mirham",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "goldene-bucht",
+                            "name": "Goldene Bucht",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hrabaal",
+                            "name": "H'Rabaal",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "hot-alem",
+                            "name": "Hôt-Alem",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "leconista",
+                            "name": "Leconista",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "loch-harodrol",
+                            "name": "Loch Harodrôl",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "malatuda",
+                            "name": "Malatuda",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mehat",
+                            "name": "Mehat",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mengbilla",
+                            "name": "Mengbilla",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "meridianischer-dschungel",
+                            "name": "meridianischer Dschungel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "mirham",
+                            "name": "Mirham",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "nahe-lhasor-im-grossemirat-mengbilla",
+                            "name": "nahe Lhasor im Großemirat Mengbilla",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "noerdliches-regengebirge",
+                            "name": "Nördliches Regengebirge",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "noerdliches-regengebirge-meridiana",
+                            "name": "nördliches Regengebirge",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "sant-ascanio-auf-der-insel-token",
+                            "name": "Sant Ascanio auf der Insel Token",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "seitenarm-des-hanfla",
+                            "name": "Seitenarm des Hanfla",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "setokan",
+                            "name": "Setokan",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "spinnenberge",
+                            "name": "Spinnenberge",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "stammesgebiet-der-chirakah",
+                            "name": "Stammesgebiet der Chirakah",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "tiefer-sueden",
+                            "name": "Tiefer Süden",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "trahelien",
+                            "name": "Trahelien",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "tiefenreich",
+                    "name": "Tiefenreich",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "tiefenreich-tiefenreich",
+                            "name": "Tiefenreich",
+                            "type": "place"
+                        }
+                    ]
+                },
+                {
+                    "slug": "auf-reisen",
+                    "name": "Auf Reisen",
+                    "type": "region",
+                    "children": [
+                        {
+                            "slug": "an-einer-reichsstrasse",
+                            "name": "an einer Reichsstraße",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "baronie-rotengrund",
+                            "name": "Baronie Rotengrund",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "beliebig",
+                            "name": "beliebig",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "beliebig-im-regenwald-norduthurias",
+                            "name": "beliebig im Regenwald Norduthurias",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "beliebig-in-der-noerdlichen-haelfte-aventuriens",
+                            "name": "beliebig in der nördlichen Hälfte Aventuriens",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "beliebige-reichsstrasse",
+                            "name": "beliebige Reichsstraße",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "beliebiges-dorf-am-wald",
+                            "name": "beliebiges Dorf am Wald",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "flexibel",
+                            "name": "flexibel",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "westkueste-variabel",
+                            "name": "Westküste (variabel)",
+                            "type": "place"
+                        },
+                        {
+                            "slug": "wo-die-tradition-der-hexen-bekannt-ist",
+                            "name": "wo die Tradition der Hexen bekannt ist",
+                            "type": "place"
+                        }
                     ]
                 }
             ]
@@ -65,7 +2350,372 @@
             "name": "Myranor",
             "type": "continent",
             "children": [
-                { "slug": "pelagos", "name": "Pelagos", "type": "place" }
+                {
+                    "slug": "pelagos",
+                    "name": "Pelagos",
+                    "type": "place"
+                },
+                {
+                    "slug": "alonka",
+                    "name": "Alonka",
+                    "type": "place"
+                },
+                {
+                    "slug": "angrenzende-gebiete",
+                    "name": "angrenzende Gebiete",
+                    "type": "place"
+                },
+                {
+                    "slug": "anthalia",
+                    "name": "Anthalia",
+                    "type": "place"
+                },
+                {
+                    "slug": "archipel-von-shindrabar",
+                    "name": "Archipel von Shindrabar",
+                    "type": "place"
+                },
+                {
+                    "slug": "azur-kanti",
+                    "name": "Azur-Kanti",
+                    "type": "place"
+                },
+                {
+                    "slug": "balan-cantara",
+                    "name": "Balan Cantara",
+                    "type": "place"
+                },
+                {
+                    "slug": "balan-cranyar",
+                    "name": "Balan Cranyar",
+                    "type": "place"
+                },
+                {
+                    "slug": "balan-mayek",
+                    "name": "Balan Mayek",
+                    "type": "place"
+                },
+                {
+                    "slug": "belenya",
+                    "name": "Belenya",
+                    "type": "place"
+                },
+                {
+                    "slug": "beliebige-myranische-stadt",
+                    "name": "beliebige myranische Stadt",
+                    "type": "place"
+                },
+                {
+                    "slug": "berge-von-xarxaron",
+                    "name": "Berge von Xarxaron",
+                    "type": "place"
+                },
+                {
+                    "slug": "brajanopolis",
+                    "name": "Brajanopolis",
+                    "type": "place"
+                },
+                {
+                    "slug": "cantera",
+                    "name": "Cantera",
+                    "type": "place"
+                },
+                {
+                    "slug": "daranel",
+                    "name": "Daranel",
+                    "type": "place"
+                },
+                {
+                    "slug": "demelion",
+                    "name": "Demelion",
+                    "type": "place"
+                },
+                {
+                    "slug": "dorinthapolis",
+                    "name": "Dorinthapolis",
+                    "type": "place"
+                },
+                {
+                    "slug": "erasumu",
+                    "name": "Era'Sumu",
+                    "type": "place"
+                },
+                {
+                    "slug": "eshbathmar",
+                    "name": "Eshbathmar",
+                    "type": "place"
+                },
+                {
+                    "slug": "gebirgsstadt-in-zentral-myranor",
+                    "name": "Gebirgsstadt in Zentral-Myranor",
+                    "type": "place"
+                },
+                {
+                    "slug": "hardun",
+                    "name": "Hardun",
+                    "type": "place"
+                },
+                {
+                    "slug": "hira-kara",
+                    "name": "Hira-Kara",
+                    "type": "place"
+                },
+                {
+                    "slug": "hjaldingard",
+                    "name": "Hjaldingard",
+                    "type": "place"
+                },
+                {
+                    "slug": "horasiat-cantera",
+                    "name": "Horasiat Cantera",
+                    "type": "place"
+                },
+                {
+                    "slug": "horasiat-h-ldingard",
+                    "name": "Horasiat Hældingard",
+                    "type": "place"
+                },
+                {
+                    "slug": "horasiat-iolon",
+                    "name": "Horasiat Iolon",
+                    "type": "place"
+                },
+                {
+                    "slug": "horasiat-mayenios",
+                    "name": "Horasiat Mayenios",
+                    "type": "place"
+                },
+                {
+                    "slug": "iolon",
+                    "name": "Iolon",
+                    "type": "place"
+                },
+                {
+                    "slug": "iolona",
+                    "name": "Iolona",
+                    "type": "place"
+                },
+                {
+                    "slug": "kentorikan-steppe",
+                    "name": "Kentorikan-Steppe",
+                    "type": "place"
+                },
+                {
+                    "slug": "koral-rhun-hoehle-der-adoru",
+                    "name": "Koral-Rhun (Höhle der Adoru)",
+                    "type": "place"
+                },
+                {
+                    "slug": "koromanthia",
+                    "name": "Koromanthia",
+                    "type": "place"
+                },
+                {
+                    "slug": "kyrbluthaven",
+                    "name": "Kyrbluthaven",
+                    "type": "place"
+                },
+                {
+                    "slug": "lagor",
+                    "name": "Lagor",
+                    "type": "place"
+                },
+                {
+                    "slug": "lorthalion",
+                    "name": "Lorthalion",
+                    "type": "place"
+                },
+                {
+                    "slug": "makshapuram",
+                    "name": "Makshapuram",
+                    "type": "place"
+                },
+                {
+                    "slug": "mayenios",
+                    "name": "Mayenios",
+                    "type": "place"
+                },
+                {
+                    "slug": "meer-der-schwimmenden-inseln",
+                    "name": "Meer der Schwimmenden Inseln",
+                    "type": "place"
+                },
+                {
+                    "slug": "myripedensteppe",
+                    "name": "Myripedensteppe",
+                    "type": "place"
+                },
+                {
+                    "slug": "nahambath",
+                    "name": "Nahambath",
+                    "type": "place"
+                },
+                {
+                    "slug": "narinion",
+                    "name": "Narinion",
+                    "type": "place"
+                },
+                {
+                    "slug": "narkramar",
+                    "name": "Narkramar",
+                    "type": "place"
+                },
+                {
+                    "slug": "ostkueste-des-imperiums",
+                    "name": "Ostküste des Imperiums",
+                    "type": "place"
+                },
+                {
+                    "slug": "panthyrsa",
+                    "name": "Panthyrsa",
+                    "type": "place"
+                },
+                {
+                    "slug": "pilzhoehlen",
+                    "name": "Pilzhöhlen",
+                    "type": "place"
+                },
+                {
+                    "slug": "serovia",
+                    "name": "Serovia",
+                    "type": "place"
+                },
+                {
+                    "slug": "shanali",
+                    "name": "Shanali",
+                    "type": "place"
+                },
+                {
+                    "slug": "sidor-corabis",
+                    "name": "Sidor Corabis",
+                    "type": "place"
+                },
+                {
+                    "slug": "sidor-harpax",
+                    "name": "Sidor Harpax",
+                    "type": "place"
+                },
+                {
+                    "slug": "sidor-valantis",
+                    "name": "Sidor Valantis",
+                    "type": "place"
+                },
+                {
+                    "slug": "skagafjall",
+                    "name": "Skagafjall",
+                    "type": "place"
+                },
+                {
+                    "slug": "stachelsee-im-meer-der-schwimmenden-inseln",
+                    "name": "Stachelsee im Meer der Schwimmenden Inseln",
+                    "type": "place"
+                },
+                {
+                    "slug": "sternenwagen-der-ausserderischen-schwarzaugen",
+                    "name": "Sternenwagen der Außerderischen Schwarzaugen",
+                    "type": "place"
+                },
+                {
+                    "slug": "suedliches-imperium",
+                    "name": "südliches Imperium",
+                    "type": "place"
+                },
+                {
+                    "slug": "tharpura",
+                    "name": "Tharpura",
+                    "type": "place"
+                },
+                {
+                    "slug": "trivina",
+                    "name": "Trivina",
+                    "type": "place"
+                },
+                {
+                    "slug": "tuerme-des-morgens",
+                    "name": "Türme des Morgens",
+                    "type": "place"
+                },
+                {
+                    "slug": "valdur-kentorix",
+                    "name": "Valdur Kentorix",
+                    "type": "place"
+                },
+                {
+                    "slug": "vinerata",
+                    "name": "Vinerata",
+                    "type": "place"
+                },
+                {
+                    "slug": "xarxaron",
+                    "name": "Xarxaron",
+                    "type": "place"
+                }
+            ]
+        },
+        {
+            "slug": "uthuria",
+            "name": "Uthuria",
+            "type": "continent",
+            "children": [
+                {
+                    "slug": "amakun",
+                    "name": "Amakun",
+                    "type": "place"
+                },
+                {
+                    "slug": "itocatl",
+                    "name": "Itocatl",
+                    "type": "place"
+                },
+                {
+                    "slug": "nord-uthuria",
+                    "name": "Nord-Uthuria",
+                    "type": "place"
+                },
+                {
+                    "slug": "nova-methumisa",
+                    "name": "Nova Methumisa",
+                    "type": "place"
+                },
+                {
+                    "slug": "noerdliches-uthuria",
+                    "name": "nördliches Uthuria",
+                    "type": "place"
+                },
+                {
+                    "slug": "porto-velvenya",
+                    "name": "Porto Velvenya",
+                    "type": "place"
+                },
+                {
+                    "slug": "tipoxatl",
+                    "name": "Tipoxatl",
+                    "type": "place"
+                }
+            ]
+        },
+        {
+            "slug": "tharun",
+            "name": "Tharun",
+            "type": "continent",
+            "children": [
+                {
+                    "slug": "hamur",
+                    "name": "Hamur",
+                    "type": "place"
+                }
+            ]
+        },
+        {
+            "slug": "rakshazar",
+            "name": "Rakshazar",
+            "type": "continent",
+            "children": [
+                {
+                    "slug": "rakshazar-rakshazar",
+                    "name": "Rakshazar",
+                    "type": "place"
+                }
             ]
         }
     ]

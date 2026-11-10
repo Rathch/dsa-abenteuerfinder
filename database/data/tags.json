@@ -35,6 +35,518 @@
         {
             "slug": "sonstiges",
             "name": "Sonstiges"
+        },
+        {
+            "slug": "katastrophenszenario",
+            "name": "Katastrophenszenario"
+        },
+        {
+            "slug": "verfolgungsjagd",
+            "name": "Verfolgungsjagd"
+        },
+        {
+            "slug": "abenteuergeschichte",
+            "name": "Abenteuergeschichte"
+        },
+        {
+            "slug": "kriegstagebuch",
+            "name": "Kriegstagebuch"
+        },
+        {
+            "slug": "kampfszenario",
+            "name": "Kampfszenario"
+        },
+        {
+            "slug": "kulturerfahrung",
+            "name": "Kulturerfahrung"
+        },
+        {
+            "slug": "adelsepos",
+            "name": "Adelsepos"
+        },
+        {
+            "slug": "rennabenteuer",
+            "name": "Rennabenteuer"
+        },
+        {
+            "slug": "mysterienabenteuer",
+            "name": "Mysterienabenteuer"
+        },
+        {
+            "slug": "reise",
+            "name": "Reise"
+        },
+        {
+            "slug": "handwerksabenteuer",
+            "name": "Handwerksabenteuer"
+        },
+        {
+            "slug": "maerchenhafte-reise",
+            "name": "märchenhafte Reise"
+        },
+        {
+            "slug": "suchqueste",
+            "name": "Suchqueste"
+        },
+        {
+            "slug": "kampf",
+            "name": "Kampf"
+        },
+        {
+            "slug": "mystische-geschichte",
+            "name": "mystische Geschichte"
+        },
+        {
+            "slug": "natur",
+            "name": "Natur"
+        },
+        {
+            "slug": "ueberleben",
+            "name": "Überleben"
+        },
+        {
+            "slug": "naturabenteuer",
+            "name": "Naturabenteuer"
+        },
+        {
+            "slug": "kampfteil",
+            "name": "Kampfteil"
+        },
+        {
+            "slug": "kampfabenteuer",
+            "name": "Kampfabenteuer"
+        },
+        {
+            "slug": "horroabenteuer-mit-psychologischem-fokus",
+            "name": "Horroabenteuer mit psychologischem Fokus"
+        },
+        {
+            "slug": "entdeckungsmission",
+            "name": "Entdeckungsmission"
+        },
+        {
+            "slug": "kriegsabenteuer",
+            "name": "Kriegsabenteuer"
+        },
+        {
+            "slug": "maerchenhafte-fantasy",
+            "name": "märchenhafte Fantasy"
+        },
+        {
+            "slug": "verschwoerung",
+            "name": "Verschwörung"
+        },
+        {
+            "slug": "spurensuche-mit-mystischem-hintergrund",
+            "name": "Spurensuche mit mystischem Hintergrund"
+        },
+        {
+            "slug": "erforschen-alter-mysterien",
+            "name": "Erforschen alter Mysterien"
+        },
+        {
+            "slug": "recherche",
+            "name": "Recherche"
+        },
+        {
+            "slug": "schatzsuche",
+            "name": "Schatzsuche"
+        },
+        {
+            "slug": "schlachtenepos",
+            "name": "Schlachtenepos"
+        },
+        {
+            "slug": "erforschen-eines-alten-buendnis",
+            "name": "Erforschen eines alten Bündnis"
+        },
+        {
+            "slug": "unterwasserabenteuer",
+            "name": "Unterwasserabenteuer"
+        },
+        {
+            "slug": "gefaengnis-abenteuer",
+            "name": "Gefängnis-Abenteuer"
+        },
+        {
+            "slug": "befreiungsszenario",
+            "name": "Befreiungsszenario"
+        },
+        {
+            "slug": "fluchtszenario",
+            "name": "Fluchtszenario"
+        },
+        {
+            "slug": "actionszenario",
+            "name": "Actionszenario"
+        },
+        {
+            "slug": "kommandomission",
+            "name": "Kommandomission"
+        },
+        {
+            "slug": "traumreise",
+            "name": "Traumreise"
+        },
+        {
+            "slug": "globulenabenteuer",
+            "name": "Globulenabenteuer"
+        },
+        {
+            "slug": "infiltrationsabenteuer",
+            "name": "Infiltrationsabenteuer"
+        },
+        {
+            "slug": "geistergeschichte",
+            "name": "Geistergeschichte"
+        },
+        {
+            "slug": "schlachtenszenario",
+            "name": "Schlachtenszenario"
+        },
+        {
+            "slug": "nachforschungen",
+            "name": "Nachforschungen"
+        },
+        {
+            "slug": "kultisten",
+            "name": "Kultisten"
+        },
+        {
+            "slug": "goettermythos",
+            "name": "Göttermythos"
+        },
+        {
+            "slug": "verhandlungen",
+            "name": "Verhandlungen"
+        },
+        {
+            "slug": "diplomatie-abenteuer",
+            "name": "Diplomatie-Abenteuer"
+        },
+        {
+            "slug": "forschungsabenteuer",
+            "name": "Forschungsabenteuer"
+        },
+        {
+            "slug": "stadtszenario",
+            "name": "Stadtszenario"
+        },
+        {
+            "slug": "mysterienabenteuer-mit-unterschwelligem-grauen",
+            "name": "Mysterienabenteuer mit unterschwelligem Grauen"
+        },
+        {
+            "slug": "aufklaerung-eines-goettlichen-mysteriums",
+            "name": "Aufklärung eines göttlichen Mysteriums"
+        },
+        {
+            "slug": "planungsabenteuer",
+            "name": "Planungsabenteuer"
+        },
+        {
+            "slug": "rechercheabenteuer",
+            "name": "Rechercheabenteuer"
+        },
+        {
+            "slug": "raetselabenteuer",
+            "name": "Rätselabenteuer"
+        },
+        {
+            "slug": "griechisch-anmutende-heldensage",
+            "name": "griechisch anmutende Heldensage"
+        },
+        {
+            "slug": "feeisches-kriegsszenario",
+            "name": "feeisches Kriegsszenario"
+        },
+        {
+            "slug": "einbruchabenteuer",
+            "name": "Einbruchabenteuer"
+        },
+        {
+            "slug": "einbruchsszenario",
+            "name": "Einbruchsszenario"
+        },
+        {
+            "slug": "heldengeschichte",
+            "name": "Heldengeschichte"
+        },
+        {
+            "slug": "ueberlebenskampf",
+            "name": "Überlebenskampf"
+        },
+        {
+            "slug": "vampire",
+            "name": "Vampire"
+        },
+        {
+            "slug": "kriminalabenteuer",
+            "name": "Kriminalabenteuer"
+        },
+        {
+            "slug": "wettstreit",
+            "name": "Wettstreit"
+        },
+        {
+            "slug": "globulenabenteuer-mit-maerchenelementen",
+            "name": "Globulenabenteuer mit Märchenelementen"
+        },
+        {
+            "slug": "diplomatieabenteuer",
+            "name": "Diplomatieabenteuer"
+        },
+        {
+            "slug": "schlachtenabenteuer",
+            "name": "Schlachtenabenteuer"
+        },
+        {
+            "slug": "zeitreise",
+            "name": "Zeitreise"
+        },
+        {
+            "slug": "survival-abenteuer",
+            "name": "Survival-Abenteuer"
+        },
+        {
+            "slug": "piratenabenteuer",
+            "name": "Piratenabenteuer"
+        },
+        {
+            "slug": "maerchen",
+            "name": "Märchen"
+        },
+        {
+            "slug": "closed-room-szenario",
+            "name": "Closed-Room-Szenario"
+        },
+        {
+            "slug": "bewachungsszenario",
+            "name": "Bewachungsszenario"
+        },
+        {
+            "slug": "burgabenteuer",
+            "name": "Burgabenteuer"
+        },
+        {
+            "slug": "kriegsszenario",
+            "name": "Kriegsszenario"
+        },
+        {
+            "slug": "2teil-mysterienabenteuer",
+            "name": "2.Teil: Mysterienabenteuer"
+        },
+        {
+            "slug": "burgabenteuer2teil-suchqueste",
+            "name": "Burgabenteuer2.Teil: Suchqueste"
+        },
+        {
+            "slug": "geiselbefreiung",
+            "name": "Geiselbefreiung"
+        },
+        {
+            "slug": "aventurio",
+            "name": "Aventurio"
+        },
+        {
+            "slug": "suchszenario",
+            "name": "Suchszenario"
+        },
+        {
+            "slug": "closed-room",
+            "name": "Closed-Room"
+        },
+        {
+            "slug": "verfolgungsabenteuer",
+            "name": "Verfolgungsabenteuer"
+        },
+        {
+            "slug": "befreiungsabenteuer",
+            "name": "Befreiungsabenteuer"
+        },
+        {
+            "slug": "strassenschlacht-doku",
+            "name": "Straßenschlacht-Doku"
+        },
+        {
+            "slug": "kuestenabenteuer-mit-duesteren-elementen",
+            "name": "Küstenabenteuer mit düsteren Elementen"
+        },
+        {
+            "slug": "feengeschichte",
+            "name": "Feengeschichte"
+        },
+        {
+            "slug": "eskortabenteuer",
+            "name": "Eskortabenteuer"
+        },
+        {
+            "slug": "oper",
+            "name": "Oper"
+        },
+        {
+            "slug": "agentenabenteuer",
+            "name": "Agentenabenteuer"
+        },
+        {
+            "slug": "bergungsmission",
+            "name": "Bergungsmission"
+        },
+        {
+            "slug": "eskortmission",
+            "name": "Eskortmission"
+        },
+        {
+            "slug": "befreiungsmission",
+            "name": "Befreiungsmission"
+        },
+        {
+            "slug": "dschungelabenteuer",
+            "name": "Dschungelabenteuer"
+        },
+        {
+            "slug": "entdeckerabenteuer",
+            "name": "Entdeckerabenteuer"
+        },
+        {
+            "slug": "infiltration",
+            "name": "Infiltration"
+        },
+        {
+            "slug": "ausseraventurische-erfahrung",
+            "name": "Außeraventurische Erfahrung"
+        },
+        {
+            "slug": "konfliktabenteuer",
+            "name": "Konfliktabenteuer"
+        },
+        {
+            "slug": "ermittelnden-anteilen",
+            "name": "ermittelnden Anteilen"
+        },
+        {
+            "slug": "kammerspiel",
+            "name": "Kammerspiel"
+        },
+        {
+            "slug": "gruselabenteuer",
+            "name": "Gruselabenteuer"
+        },
+        {
+            "slug": "gruppenzusammenfuehrung",
+            "name": "Gruppenzusammenführung"
+        },
+        {
+            "slug": "dorfabenteuer",
+            "name": "Dorfabenteuer"
+        },
+        {
+            "slug": "diplomatie",
+            "name": "Diplomatie"
+        },
+        {
+            "slug": "diplomatieanteilen",
+            "name": "Diplomatieanteilen"
+        },
+        {
+            "slug": "einbruchszenario",
+            "name": "Einbruchszenario"
+        },
+        {
+            "slug": "diverse",
+            "name": "diverse"
+        },
+        {
+            "slug": "1-teil-stadt",
+            "name": "1. Teil: Stadt"
+        },
+        {
+            "slug": "grusel-abenteuer",
+            "name": "Grusel abenteuer"
+        },
+        {
+            "slug": "krawallabenteuer",
+            "name": "Krawallabenteuer"
+        },
+        {
+            "slug": "krimi",
+            "name": "Krimi"
+        },
+        {
+            "slug": "epische-heldenreise",
+            "name": "epische Heldenreise"
+        },
+        {
+            "slug": "komplexe-kampagne",
+            "name": "Komplexe Kampagne"
+        },
+        {
+            "slug": "eine-pruefung-absolvieren",
+            "name": "Eine Prüfung absolvieren"
+        },
+        {
+            "slug": "finden-eines-saboteurs",
+            "name": "Finden eines Saboteurs"
+        },
+        {
+            "slug": "gewoelbeabenteuer",
+            "name": "Gewölbeabenteuer"
+        },
+        {
+            "slug": "spektakulaerer-raubzug",
+            "name": "Spektakulärer Raubzug"
+        },
+        {
+            "slug": "kreatives-erzaehlen",
+            "name": "kreatives Erzählen"
+        },
+        {
+            "slug": "rettungsmission",
+            "name": "Rettungsmission"
+        },
+        {
+            "slug": "unterstuetzung",
+            "name": "Unterstützung"
+        },
+        {
+            "slug": "stadt",
+            "name": "Stadt"
+        },
+        {
+            "slug": "verschwoerungs-abenteuer",
+            "name": "Verschwörungs-abenteuer"
+        },
+        {
+            "slug": "grusel-action",
+            "name": "Grusel-Action"
+        },
+        {
+            "slug": "raub",
+            "name": "Raub"
+        },
+        {
+            "slug": "actionkomoedie",
+            "name": "Actionkomödie"
+        },
+        {
+            "slug": "entdeckung",
+            "name": "Entdeckung"
+        },
+        {
+            "slug": "jagd-nach-einem-artefakt",
+            "name": "Jagd nach einem Artefakt"
+        },
+        {
+            "slug": "reise-an-einen-gefaehrlichen",
+            "name": "Reise an einen gefährlichen"
+        },
+        {
+            "slug": "mysterioesen-ort",
+            "name": "mysteriösen Ort"
+        },
+        {
+            "slug": "kampagnenauftakt",
+            "name": "Kampagnenauftakt"
         }
     ]
 }

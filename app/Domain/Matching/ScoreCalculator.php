@@ -37,9 +37,9 @@ final class ScoreCalculator
     public function score(WizardAnswers $answers, AdventureCandidate $candidate): ScoreBreakdown
     {
         [$region, $regionKind, $matchedRegion] = $this->regionScore($answers, $candidate);
-        $timeframe = $this->timeframeScore($answers->durationWish(), $candidate);
+        $timeframe = $this->bestTimeframeScore($answers, $candidate);
         $genre = $this->genreScore($answers->genres, $candidate->genres);
-        $exotic = $answers->exoticWish()->fitFor($candidate->exotic, $candidate->isExtraAventurian());
+        $exotic = $this->bestExoticScore($answers, $candidate);
         $gm = $this->gmScore($answers->gmLevel(), $candidate->complexity);
         $distance = $answers->experience()->distanceTo($candidate->experienceLevel);
         $experience = $this->experienceScore($distance);
@@ -76,31 +76,35 @@ final class ScoreCalculator
             return [100, RegionMatchKind::Any, null];
         }
 
-        if ($answers->placeSlug !== null && $candidate->primaryPlaceSlug === $answers->placeSlug) {
+        if ($answers->placeSlug !== null && $candidate->matchesPlaceSlug($answers->placeSlug)) {
             return [self::REGION_PLACE, RegionMatchKind::Place, $candidate->primaryRegionSlug];
         }
 
         $traveling = $candidate->locationType === LocationType::Traveling;
-        $wanted = $answers->regionSlug;
+        $wanted = $answers->regionSlugs;
 
-        if ($wanted === null) {
+        if ($wanted === []) {
             return $traveling
                 ? [self::REGION_TRAVELING, RegionMatchKind::Traveling, null]
                 : [self::REGION_OTHER, RegionMatchKind::None, null];
         }
 
         $regions = $candidate->allRegionSlugs();
+        $exact = array_values(array_intersect($wanted, $regions));
 
-        if (in_array($wanted, $regions, true)) {
-            return [self::REGION_REGION, RegionMatchKind::Region, $wanted];
+        if ($exact !== []) {
+            return [self::REGION_REGION, RegionMatchKind::Region, $exact[0]];
         }
 
         if ($traveling) {
             return [self::REGION_TRAVELING, RegionMatchKind::Traveling, null];
         }
 
-        $wantedKey = RegionKey::tryFrom($wanted);
-        if ($wantedKey !== null) {
+        foreach ($wanted as $wantedSlug) {
+            $wantedKey = RegionKey::tryFrom($wantedSlug);
+            if ($wantedKey === null) {
+                continue;
+            }
             foreach ($regions as $slug) {
                 $key = RegionKey::tryFrom($slug);
                 if ($key !== null && $wantedKey->isNeighborOf($key)) {
@@ -110,6 +114,35 @@ final class ScoreCalculator
         }
 
         return [self::REGION_OTHER, RegionMatchKind::None, null];
+    }
+
+    public function bestTimeframeScore(WizardAnswers $answers, AdventureCandidate $candidate): int
+    {
+        $wishes = $answers->durationWishes();
+        if ($wishes === []) {
+            return 100;
+        }
+
+        $best = 0;
+        foreach ($wishes as $wish) {
+            $best = max($best, $this->timeframeScore($wish, $candidate));
+        }
+
+        return $best;
+    }
+
+    public function bestExoticScore(WizardAnswers $answers, AdventureCandidate $candidate): int
+    {
+        if (! $answers->restrictsExotic()) {
+            return 100;
+        }
+
+        $best = 0;
+        foreach ($answers->exoticWishes() as $wish) {
+            $best = max($best, $wish->fitFor($candidate->exotic, $candidate->isExtraAventurian()));
+        }
+
+        return $best;
     }
 
     public function timeframeScore(DurationWish $wish, AdventureCandidate $candidate): int

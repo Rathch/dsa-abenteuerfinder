@@ -20,10 +20,39 @@ async function waitForLivewire(page: Page): Promise<void> {
     );
 }
 
+/** Wählt eine Checkbox und bestätigt die Mehrfachfrage mit Weiter. */
+export async function chooseCheckboxAndContinue(page: Page, label: string | RegExp): Promise<void> {
+    const name = typeof label === 'string' ? new RegExp(`^${label}`) : label;
+    await Promise.all([waitForLivewire(page), page.getByRole('checkbox', { name }).check()]);
+    await Promise.all([
+        waitForLivewire(page),
+        page.getByRole('button', { name: 'Weiter', exact: true }).click(),
+    ]);
+}
+
 /** Wählt eine Radio-Option (Name beginnt mit `label`). */
 export async function chooseRadio(page: Page, label: string | RegExp): Promise<void> {
     const name = typeof label === 'string' ? new RegExp(`^${label}`) : label;
     await Promise.all([waitForLivewire(page), page.getByRole('radio', { name }).check()]);
+}
+
+/** Setzt eine Checkbox und bestätigt Mehrfachfelder mit Weiter. */
+export async function chooseChecks(
+    page: Page,
+    legend: string | RegExp,
+    labels: string[],
+): Promise<void> {
+    const fieldset = page.getByRole('group', { name: legend });
+    for (const label of labels) {
+        await Promise.all([
+            waitForLivewire(page),
+            fieldset.getByRole('checkbox', { name: new RegExp(`^${label}`) }).check(),
+        ]);
+    }
+    await Promise.all([
+        waitForLivewire(page),
+        fieldset.getByRole('button', { name: 'Weiter', exact: true }).click(),
+    ]);
 }
 
 /** Wählt eine Radio-Option innerhalb des sichtbaren Fieldsets. */
@@ -42,7 +71,12 @@ export async function chooseRadioInFieldsetAndPersist(
     legend: string | RegExp,
     label: string | RegExp,
 ): Promise<void> {
+    const fieldset = page.getByRole('group', { name: legend });
     await chooseRadioInFieldset(page, legend, label);
+    await Promise.all([
+        waitForLivewire(page),
+        fieldset.getByRole('button', { name: 'Weiter', exact: true }).click(),
+    ]);
 }
 
 export async function submitForm(page: Page): Promise<void> {
@@ -57,24 +91,27 @@ export async function completeWizard(page: Page): Promise<void> {
     await expect(formHeading(page)).toBeVisible();
 
     await expect(page.getByRole('group', { name: /Regelwerk/ })).toBeVisible();
-    await chooseRadioInFieldsetAndPersist(page, /Regelwerk/, 'DSA 5');
+    await chooseChecks(page, /Regelwerk/, ['DSA 5']);
 
     await expect(page.getByRole('group', { name: /Heldinnen und Helden/ })).toBeVisible();
     await chooseRadioInFieldsetAndPersist(page, /Heldinnen und Helden/, 'Einsteiger');
 
+    await expect(page.getByRole('group', { name: /exotisch/ })).toBeVisible();
+    await chooseChecks(page, /exotisch/, ['Nur Aventurien']);
+
     await expect(page.getByRole('group', { name: /Region/ })).toBeVisible();
-    await chooseRadioInFieldsetAndPersist(page, /Region/, 'Nordmarken');
-    await expect(page.getByRole('button', { name: 'Ohne Ort weiter' })).toBeVisible();
     await Promise.all([
         waitForLivewire(page),
-        page.getByRole('button', { name: 'Ohne Ort weiter' }).click(),
+        page.getByRole('group', { name: /Region/ }).getByRole('checkbox', { name: /^Nordmarken/ }).check(),
+    ]);
+    await expect(page.getByRole('radio', { name: 'Havena' })).toBeVisible();
+    await Promise.all([
+        waitForLivewire(page),
+        page.getByRole('button', { name: 'Weiter', exact: true }).click(),
     ]);
 
-    await expect(page.getByRole('group', { name: /exotisch/ })).toBeVisible();
-    await chooseRadioInFieldsetAndPersist(page, /exotisch/, 'Klassisches Aventurien');
-
     await expect(page.getByRole('group', { name: /Zeit/ })).toBeVisible();
-    await chooseRadioInFieldsetAndPersist(page, /Zeit/, 'Ein kurzer Abend');
+    await chooseChecks(page, /Zeit/, ['Ein kurzer Abend']);
 
     await expect(page.getByRole('group', { name: /Genres/ })).toBeVisible();
     const investigation = page.getByRole('checkbox', { name: 'Ermittlung' });

@@ -14,6 +14,8 @@ final class WikiAdventureMapper
 {
     public const SOURCE_NOTE_DESCRIPTION = 'Kurzbeschreibung im Wiki nicht gefunden (Wiki-Harvest).';
 
+    public const MISSING_DESCRIPTION = '-';
+
     /**
      * @param  array{
      *     places: array<string, array{place: string, region: string}>,
@@ -38,7 +40,8 @@ final class WikiAdventureMapper
      *     experience_raw: string,
      *     page_count: ?int,
      *     series_key: string,
-     *     short_description_raw?: ?string
+     *     short_description_raw?: ?string,
+     *     cover_url?: ?string
      * }  $row
      * @return array{
      *     adventure: array<string, mixed>,
@@ -70,10 +73,7 @@ final class WikiAdventureMapper
             $notes[] = 'Seitenzahl fehlt; Dauer geschätzt.';
         }
 
-        $series = match ($row['series_key']) {
-            'va-reihe' => 'va-reihe',
-            default => 'a-reihe',
-        };
+        $series = $row['series_key'] !== '' ? $row['series_key'] : 'a-reihe';
 
         $slug = $this->slugFor($row['title'], $row['catalog_number'], $series);
         $wikiUrl = $this->wikiUrl($row['title'], $row['wiki_path']);
@@ -82,7 +82,7 @@ final class WikiAdventureMapper
         $missingDescription = $description === null;
         if ($missingDescription) {
             $notes[] = self::SOURCE_NOTE_DESCRIPTION;
-            $description = 'Kurzbeschreibung aus Wiki Aventurica steht noch aus; Metadaten wurden übernommen.';
+            $description = self::MISSING_DESCRIPTION;
         }
 
         // Nur fehlende Beschreibung oder ungemappter Ort → incomplete (Erfahrung/Seiten sind soft).
@@ -106,10 +106,12 @@ final class WikiAdventureMapper
             'location_type' => $location['location_type'],
             'primary_location' => $location['primary_location'],
             'primary_region' => $location['primary_region'],
+            'place_label' => $this->placeLabel($row['place_raw']),
             'regions' => $location['regions'],
             'genres' => $genres,
             'short_description' => $description,
             'wiki_url' => $wikiUrl,
+            'cover_url' => is_string($row['cover_url'] ?? null) && $row['cover_url'] !== '' ? $row['cover_url'] : null,
             'incomplete' => $incomplete,
             'missing_from_wiki' => false,
             'source_note' => $incomplete ? implode(' ', array_unique($notes)) : null,
@@ -125,11 +127,21 @@ final class WikiAdventureMapper
     public function mapRules(string $raw): string
     {
         $normalized = mb_strtolower($raw);
-        if (preg_match('/\bdsa\s*5\b/u', $normalized) === 1) {
-            return 'dsa5';
+        preg_match_all('/\bdsa\s*([1-5])(?:\.1)?\b/u', $normalized, $matches);
+        $editions = array_values(array_unique($matches[1]));
+
+        if (count($editions) !== 1) {
+            return 'editionunabhaengig';
         }
 
-        return 'dsa4';
+        return match ($editions[0]) {
+            '1' => 'dsa1',
+            '2' => 'dsa2',
+            '3' => 'dsa3',
+            '4' => 'dsa4',
+            '5' => 'dsa5',
+            default => 'editionunabhaengig',
+        };
     }
 
     /**
@@ -181,28 +193,137 @@ final class WikiAdventureMapper
      */
     public function mapGenres(string $raw): array
     {
-        $aliases = $this->genreAliases['aliases'];
-        $fallback = $this->genreAliases['fallback'];
+        $slugs = [];
+        foreach ($this->mapGenreTags($raw) as $tag) {
+            $slugs[] = $tag['slug'];
+        }
+
+        return $slugs;
+    }
+
+    /**
+     * @return list<array{slug: string, name: string}>
+     */
+    public function mapGenreTags(string $raw): array
+    {
+        /** @var array<string, string> $found */
         $found = [];
 
-        $chunks = preg_split('/[,;&\/]| und /u', mb_strtolower($raw)) ?: [];
-        foreach ($chunks as $chunk) {
-            $chunk = trim($chunk);
-            if ($chunk === '') {
-                continue;
-            }
-            foreach ($aliases as $needle => $slug) {
-                if (str_contains($chunk, $needle) || str_contains($needle, $chunk)) {
-                    $found[$slug] = true;
+        foreach ($this->genrePhrases($raw) as $phrase) {
+            $lower = mb_strtolower($phrase);
+            $matched = false;
+
+            foreach ($this->genreAliases['aliases'] as $needle => $slug) {
+                if ($needle !== '' && str_contains($lower, $needle)) {
+                    $found[$slug] = $this->genreName($slug, $phrase);
+                    $matched = true;
                 }
             }
+
+            if ($matched) {
+                continue;
+            }
+
+            $slug = Str::slug($phrase, '-', 'de');
+            if ($slug === '' || isset($found[$slug])) {
+                continue;
+            }
+
+            $found[$slug] = $this->genreName($slug, $phrase);
         }
 
         if ($found === []) {
-            return [$fallback];
+            $fallback = $this->genreAliases['fallback'];
+
+            return [['slug' => $fallback, 'name' => $this->genreName($fallback, 'Sonstiges')]];
         }
 
-        return array_keys($found);
+        $tags = [];
+        foreach ($found as $slug => $name) {
+            $tags[] = ['slug' => $slug, 'name' => $name];
+        }
+
+        return $tags;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function genrePhrases(string $raw): array
+    {
+        $parts = preg_split('/[,;&\/]| und /u', $raw) ?: [];
+        $phrases = [];
+        foreach ($parts as $part) {
+            $part = trim($part);
+            if ($part !== '') {
+                $phrases[] = $part;
+            }
+        }
+
+        $suffixes = ['abenteuer', 'szenario', 'mission', 'queste', 'reise', 'epos'];
+        $count = count($phrases);
+        for ($index = 0; $index < $count; $index++) {
+            if (! $this->isAbbreviatedStem($phrases[$index])) {
+                continue;
+            }
+
+            $ending = null;
+            for ($donor = $index + 1; $donor < $count; $donor++) {
+                if ($this->isAbbreviatedStem($phrases[$donor])) {
+                    continue;
+                }
+                $ending = $this->compoundEnding($phrases[$donor], $suffixes);
+                break;
+            }
+
+            $stem = rtrim($phrases[$index], '-–—');
+            $phrases[$index] = $ending === null ? $stem : $stem.$ending;
+        }
+
+        $completed = [];
+        foreach ($phrases as $phrase) {
+            if ($phrase !== '') {
+                $completed[] = $phrase;
+            }
+        }
+
+        return $completed;
+    }
+
+    private function isAbbreviatedStem(string $phrase): bool
+    {
+        return preg_match('/[-–—]$/u', $phrase) === 1;
+    }
+
+    /**
+     * @param  list<string>  $suffixes
+     */
+    private function compoundEnding(string $phrase, array $suffixes): ?string
+    {
+        $lower = mb_strtolower($phrase);
+        foreach ($suffixes as $suffix) {
+            if (str_ends_with($lower, $suffix)) {
+                return mb_substr($phrase, mb_strlen($phrase) - mb_strlen($suffix));
+            }
+        }
+
+        return null;
+    }
+
+    private function genreName(string $slug, string $wikiPhrase): string
+    {
+        return match ($slug) {
+            'investigation' => 'Ermittlung',
+            'dungeon' => 'Dungeon',
+            'intrigue' => 'Intrige',
+            'horror' => 'Horror',
+            'humor' => 'Humor',
+            'exploration' => 'Erkundung',
+            'social' => 'Soziales Spiel',
+            'seafaring' => 'Seefahrt',
+            'sonstiges' => 'Sonstiges',
+            default => $wikiPhrase,
+        };
     }
 
     /**
@@ -311,11 +432,21 @@ final class WikiAdventureMapper
         if (preg_match('/va\s*(\d+(?:\.\d+)?)/u', $raw, $matches) === 1) {
             return 'va'.str_replace('.', '-', $matches[1]);
         }
-        if (preg_match('/\ba\s*(\d+(?:\.\d+)?)/u', $raw, $matches) === 1) {
+        if ($series === 'a-reihe' && preg_match('/\ba\s*(\d+(?:\.\d+)?)/u', $raw, $matches) === 1) {
             return 'a'.str_replace('.', '-', $matches[1]);
         }
 
-        return $series === 'va-reihe' ? 'va' : 'a';
+        if ($series === 'va-reihe') {
+            return 'va';
+        }
+
+        if ($series === 'a-reihe') {
+            return 'a';
+        }
+
+        $suffix = Str::slug($series, language: 'de');
+
+        return $suffix !== '' ? $suffix : 'reihe';
     }
 
     private function wikiUrl(string $title, ?string $wikiPath): string
@@ -327,6 +458,20 @@ final class WikiAdventureMapper
         $page = str_replace(' ', '_', $title);
 
         return 'https://de.wiki-aventurica.de/wiki/'.rawurlencode($page);
+    }
+
+    private function placeLabel(string $raw): ?string
+    {
+        $text = trim(preg_replace('/\s+/u', ' ', $raw) ?? $raw);
+        if ($text === '') {
+            return null;
+        }
+
+        if (mb_strlen($text) > 1000) {
+            return rtrim(mb_substr($text, 0, 999)).'…';
+        }
+
+        return $text;
     }
 
     private function normalizeDescription(?string $raw): ?string

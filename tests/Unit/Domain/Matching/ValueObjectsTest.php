@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Matching\AdventureCandidate;
 use App\Domain\Matching\Complexity;
 use App\Domain\Matching\DurationCategory;
 use App\Domain\Matching\DurationWish;
@@ -15,14 +16,14 @@ use App\Domain\Matching\RuleVersion;
 use App\Domain\Matching\WizardAnswers;
 
 it('falls back to neutral defaults for unknown wizard values', function (): void {
-    $answers = new WizardAnswers('???', 'x', '???', null, null, '???', [], '???', '???');
+    $answers = new WizardAnswers('???', 'x', ['???'], [], false, null, ['???'], false, [], ['???'], false, '???');
 
     expect($answers->experience())->toBe(ExperienceLevel::Einsteiger)
         ->and($answers->gmLevel())->toBe(ExperienceLevel::Einsteiger)
         ->and($answers->groupSizeWish())->toBeNull()
-        ->and($answers->durationWish())->toBe(DurationWish::EveningLong)
-        ->and($answers->exoticWish())->toBe(ExoticWish::Any)
-        ->and($answers->rulesWish())->toBe(RulesWish::Any)
+        ->and($answers->restrictsDuration())->toBeFalse()
+        ->and($answers->restrictsExotic())->toBeFalse()
+        ->and($answers->acceptsRule(RuleVersion::Dsa1))->toBeFalse()
         ->and($answers->hasRegionWish())->toBeFalse();
 });
 
@@ -34,15 +35,17 @@ it('parses valid wizard values', function (): void {
         'timeframe' => 'campaign',
         'exotic' => 'no',
         'rules' => 'dsa4',
+        'regionSlug' => 'mittelaventurien',
         'placeSlug' => 'gareth',
     ]);
 
     expect($answers->experience())->toBe(ExperienceLevel::Meister)
         ->and($answers->gmLevel())->toBe(ExperienceLevel::Erfahren)
         ->and($answers->groupSizeWish())->toBe(GroupSizeWish::SixPlus)
-        ->and($answers->durationWish())->toBe(DurationWish::Campaign)
-        ->and($answers->exoticWish())->toBe(ExoticWish::No)
-        ->and($answers->rulesWish())->toBe(RulesWish::Dsa4)
+        ->and($answers->durationWishes())->toBe([DurationWish::Campaign])
+        ->and($answers->exoticWishes())->toBe([ExoticWish::No])
+        ->and($answers->rules)->toBe(['dsa4'])
+        ->and($answers->placeSlug)->toBe('gareth')
         ->and($answers->hasRegionWish())->toBeTrue();
 });
 
@@ -52,7 +55,7 @@ it('computes experience ranks and distances', function (): void {
         ->and(ExperienceLevel::values())->toBe(['einsteiger', 'fortgeschritten', 'erfahren', 'meister'])
         ->and(Complexity::values())->toBe(['niedrig', 'mittel', 'hoch'])
         ->and(DurationCategory::values())->toBe(['kurz', 'mittel', 'lang', 'kampagne'])
-        ->and(RuleVersion::values())->toBe(['dsa4', 'dsa5', 'editionunabhaengig'])
+        ->and(RuleVersion::values())->toBe(['dsa1', 'dsa2', 'dsa3', 'dsa4', 'dsa5', 'editionunabhaengig'])
         ->and(LocationType::values())->toBe(['point', 'corridor', 'traveling'])
         ->and(LocationKind::values())->toBe(['continent', 'region', 'place']);
 
@@ -96,9 +99,12 @@ it('maps complexity to the ideal for each GM level', function (): void {
 
 it('accepts rule versions according to the wish', function (): void {
     expect(RulesWish::Any->accepts(RuleVersion::Dsa4))->toBeTrue()
+        ->and(RulesWish::Any->accepts(RuleVersion::Dsa1))->toBeTrue()
         ->and(RulesWish::Dsa5->accepts(RuleVersion::Dsa4))->toBeFalse()
+        ->and(RulesWish::Dsa5->accepts(RuleVersion::Dsa3))->toBeFalse()
         ->and(RulesWish::Dsa5->accepts(RuleVersion::EditionUnabhaengig))->toBeTrue()
         ->and(RulesWish::Dsa4->accepts(RuleVersion::Dsa5))->toBeFalse()
+        ->and(RulesWish::Dsa4->accepts(RuleVersion::Dsa2))->toBeFalse()
         ->and(RulesWish::Dsa4->accepts(RuleVersion::Dsa4))->toBeTrue();
 
     foreach (RulesWish::cases() as $wish) {
@@ -113,6 +119,7 @@ it('scores the exotic wish', function (): void {
     expect(ExoticWish::Any->fitFor(true, false))->toBe(100)
         ->and(ExoticWish::No->fitFor(false, false))->toBe(100)
         ->and(ExoticWish::No->fitFor(true, false))->toBe(0)
+        ->and(ExoticWish::No->fitFor(false, true))->toBe(0)
         ->and(ExoticWish::ExtraAventurian->fitFor(true, true))->toBe(100)
         ->and(ExoticWish::ExtraAventurian->fitFor(true, false))->toBe(60)
         ->and(ExoticWish::ExtraAventurian->fitFor(false, false))->toBe(20)
@@ -140,12 +147,27 @@ it('handles group size bands', function (): void {
     }
 });
 
+it('matches a place inside the free-text label and ignores shorter words', function (): void {
+    $candidate = adventureCandidate([
+        'placeLabel' => 'Grangor, Insel Fogstor, Meer der Sieben Winde',
+    ]);
+
+    expect($candidate->matchesPlaceSlug('insel-fogstor'))->toBeTrue()
+        ->and($candidate->matchesPlaceSlug('insel'))->toBeFalse()
+        ->and($candidate->matchesPlaceSlug('havena'))->toBeFalse()
+        ->and(AdventureCandidate::regionsMentionedIn(
+            'Bornland: Festum',
+            ['festum' => 'bornland', 'mark' => 'bornland'],
+        ))->toBe(['bornland']);
+});
+
 it('knows region neighbours and labels', function (): void {
     expect(RegionKey::Nordmarken->isNeighborOf(RegionKey::Mittelaventurien))->toBeTrue()
         ->and(RegionKey::Mittelaventurien->isNeighborOf(RegionKey::Nordmarken))->toBeTrue()
         ->and(RegionKey::Nordmarken->isNeighborOf(RegionKey::Suedwest))->toBeFalse()
         ->and(RegionKey::Myranor->neighbors())->toBe([])
         ->and(RegionKey::Myranor->isExtraAventurian())->toBeTrue()
+        ->and(RegionKey::Tiefenreich->isExtraAventurian())->toBeTrue()
         ->and(RegionKey::Seefahrt->isExtraAventurian())->toBeFalse()
         ->and(RegionKey::labelFor('suedaventurien'))->toBe('Südaventurien')
         ->and(RegionKey::labelFor('neues-land'))->toBe('Neues land');

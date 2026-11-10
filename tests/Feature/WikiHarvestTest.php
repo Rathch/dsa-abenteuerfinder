@@ -44,7 +44,7 @@ it('harvests from cache fixtures and applies without overwriting curated complet
         $parser->parse($fromCache->get('https://de.wiki-aventurica.de/wiki/Abenteuer/A-Reihe'), 'a-reihe'),
     );
 
-    expect($rows)->toHaveCount(3);
+    expect($rows)->toHaveCount(5);
 
     foreach ($rows as $index => $row) {
         $path = is_string($row['wiki_path'] ?? null) ? $row['wiki_path'] : (string) $row['title'];

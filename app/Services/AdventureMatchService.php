@@ -11,10 +11,13 @@ use App\Models\GenreTag;
 use App\Models\Location;
 
 /**
- * Lädt vollständige Abenteuer aus der Datenbank und lässt den reinen {@see MatchFinder} bewerten.
+ * Lädt die im Wiki gelisteten Abenteuer und lässt den reinen {@see MatchFinder} bewerten.
  */
 class AdventureMatchService
 {
+    /** @var list<AdventureCandidate>|null */
+    private ?array $candidates = null;
+
     public function __construct(private readonly MatchFinder $finder = new MatchFinder) {}
 
     public function recommend(WizardAnswers $answers): MatchResult
@@ -27,16 +30,33 @@ class AdventureMatchService
      */
     public function candidates(): array
     {
+        if ($this->candidates !== null) {
+            return $this->candidates;
+        }
+
         $candidates = [];
 
         $adventures = Adventure::query()
-            ->where('incomplete', false)
             ->where('missing_from_wiki', false)
             ->with(['series', 'genreTags', 'regions', 'primaryLocation', 'primaryRegion'])
             ->orderBy('id')
             ->get();
 
+        $regionByPlace = [];
+        $places = Location::query()->where('type', 'place')->with('parent')->get();
+        foreach ($places as $place) {
+            $regionSlug = $place->parent?->slug;
+            if (is_string($regionSlug) && $regionSlug !== '') {
+                $regionByPlace[$place->slug] = $regionSlug;
+            }
+        }
+        $regionsByKey = AdventureCandidate::regionIndex($regionByPlace);
+
         foreach ($adventures as $adventure) {
+            $regionSlugs = array_values(array_unique(array_merge(
+                array_map(static fn (Location $region): string => $region->slug, $adventure->regions->all()),
+                AdventureCandidate::regionsForLabel($adventure->place_label, $regionsByKey),
+            )));
             $candidates[] = new AdventureCandidate(
                 id: $adventure->id,
                 slug: $adventure->slug,
@@ -55,14 +75,17 @@ class AdventureMatchService
                 primaryPlaceSlug: $adventure->primaryLocation?->slug,
                 primaryPlaceName: $adventure->primaryLocation?->name,
                 primaryRegionSlug: $adventure->primaryRegion?->slug,
-                regionSlugs: array_values(array_map(static fn (Location $region): string => $region->slug, $adventure->regions->all())),
+                regionSlugs: $regionSlugs,
                 genres: array_values(array_map(static fn (GenreTag $tag): string => $tag->slug, $adventure->genreTags->all())),
                 shortDescription: $adventure->short_description,
                 wikiUrl: $adventure->wiki_url,
                 incomplete: $adventure->incomplete,
+                coverUrl: $adventure->cover_url,
+                placeLabel: $adventure->place_label,
+                missingFromWiki: $adventure->missing_from_wiki,
             );
         }
 
-        return $candidates;
+        return $this->candidates = $candidates;
     }
 }

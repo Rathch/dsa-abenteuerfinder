@@ -46,6 +46,26 @@ class LocationAutocompleteService
         return array_slice($matches, 0, $limit);
     }
 
+    /**
+     * @return list<array{slug: string, name: string}>
+     */
+    public function placesInRegion(string $regionSlug): array
+    {
+        $places = [];
+
+        $rows = Location::query()
+            ->where('type', LocationKind::Place->value)
+            ->whereHas('parent', fn ($query) => $query->where('slug', $regionSlug))
+            ->orderBy('name')
+            ->get();
+
+        foreach ($rows as $place) {
+            $places[] = ['slug' => $place->slug, 'name' => $place->name];
+        }
+
+        return $places;
+    }
+
     public function regionSlugFor(string $placeSlug): ?string
     {
         $place = Location::query()
