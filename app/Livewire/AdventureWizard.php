@@ -978,7 +978,7 @@ class AdventureWizard extends Component
 
     /**
      * @param  array<string, string>  $genreNames
-     * @return list<array{id: int, title: string, series: string, location: string, duration: string, rules: string, edition: ?int, group: ?string, genres: list<string>, description: string, reasons: list<string>, wikiUrl: string, blurbUrl: string, coverUrl: ?string}>
+     * @return list<array{id: int, title: string, series: string, location: string, duration: string, rules: string, edition: ?int, group: ?string, genres: list<string>, description: string, descriptionKind: 'klappentext'|'kurzbeschreibung'|null, reasons: list<string>, wikiUrl: string, blurbUrl: string, coverUrl: ?string}>
      */
     private function cards(MatchResult $result, array $genreNames): array
     {
@@ -986,6 +986,7 @@ class AdventureWizard extends Component
 
         foreach ($result->recommendations as $recommendation) {
             $adventure = $recommendation->adventure;
+            $display = $adventure->displayDescription();
 
             $cards[] = [
                 'id' => $adventure->id,
@@ -1000,7 +1001,8 @@ class AdventureWizard extends Component
                     static fn (string $slug): string => $genreNames[$slug] ?? ucfirst($slug),
                     $adventure->genres,
                 ),
-                'description' => $adventure->shortDescription,
+                'description' => $display['text'] ?? '',
+                'descriptionKind' => $display['kind'] ?? null,
                 'reasons' => $recommendation->reasons,
                 'wikiUrl' => $adventure->wikiUrl,
                 'blurbUrl' => $this->blurbUrl($adventure->wikiUrl),

@@ -120,6 +120,7 @@ class AdventureImportService
                     'primary_region_id' => $row['primary_region'] !== null ? $locationIds[$row['primary_region']] : null,
                     'place_label' => $row['place_label'],
                     'short_description' => $row['short_description'],
+                    'klappentext' => $row['klappentext'],
                     'wiki_url' => $row['wiki_url'],
                     'cover_url' => $row['cover_url'],
                     'incomplete' => $row['incomplete'],
@@ -151,7 +152,7 @@ class AdventureImportService
     /**
      * Normalisierte Abenteuer aus der JSON-Quelle, indexiert nach Slug.
      *
-     * @return array<string, array{slug: string, title: string, series: string, experience_level: string, page_count: ?int, duration_category: string, rule_version: string, exotic: bool, complexity: string, group_size_min: ?int, group_size_max: ?int, location_type: string, primary_location: ?string, primary_region: ?string, place_label: ?string, regions: list<string>, genres: list<string>, short_description: string, wiki_url: string, cover_url: ?string, incomplete: bool, missing_from_wiki: bool, source_note: ?string}>
+     * @return array<string, array{slug: string, title: string, series: string, experience_level: string, page_count: ?int, duration_category: string, rule_version: string, exotic: bool, complexity: string, group_size_min: ?int, group_size_max: ?int, location_type: string, primary_location: ?string, primary_region: ?string, place_label: ?string, regions: list<string>, genres: list<string>, short_description: string, klappentext: ?string, wiki_url: string, cover_url: ?string, incomplete: bool, missing_from_wiki: bool, source_note: ?string}>
      */
     public function sourceAdventuresBySlug(): array
     {
@@ -172,7 +173,7 @@ class AdventureImportService
      *     series: list<array{slug: string, name: string}>,
      *     tags: list<array{slug: string, name: string}>,
      *     locations: list<array{slug: string, name: string, type: string, parent: ?string}>,
-     *     adventures: list<array{slug: string, title: string, series: string, experience_level: string, page_count: ?int, duration_category: string, rule_version: string, exotic: bool, complexity: string, group_size_min: ?int, group_size_max: ?int, location_type: string, primary_location: ?string, primary_region: ?string, place_label: ?string, regions: list<string>, genres: list<string>, short_description: string, wiki_url: string, cover_url: ?string, incomplete: bool, missing_from_wiki: bool, source_note: ?string}>
+     *     adventures: list<array{slug: string, title: string, series: string, experience_level: string, page_count: ?int, duration_category: string, rule_version: string, exotic: bool, complexity: string, group_size_min: ?int, group_size_max: ?int, location_type: string, primary_location: ?string, primary_region: ?string, place_label: ?string, regions: list<string>, genres: list<string>, short_description: string, klappentext: ?string, wiki_url: string, cover_url: ?string, incomplete: bool, missing_from_wiki: bool, source_note: ?string}>
      * }
      *
      * @throws InvalidAdventureDataException wenn eine Datei fehlt oder kein gültiges JSON ist
@@ -321,7 +322,7 @@ class AdventureImportService
 
     /**
      * @param  array<mixed>  $rows
-     * @return list<array{slug: string, title: string, series: string, experience_level: string, page_count: ?int, duration_category: string, rule_version: string, exotic: bool, complexity: string, group_size_min: ?int, group_size_max: ?int, location_type: string, primary_location: ?string, primary_region: ?string, place_label: ?string, regions: list<string>, genres: list<string>, short_description: string, wiki_url: string, cover_url: ?string, incomplete: bool, missing_from_wiki: bool, source_note: ?string}>
+     * @return list<array{slug: string, title: string, series: string, experience_level: string, page_count: ?int, duration_category: string, rule_version: string, exotic: bool, complexity: string, group_size_min: ?int, group_size_max: ?int, location_type: string, primary_location: ?string, primary_region: ?string, place_label: ?string, regions: list<string>, genres: list<string>, short_description: string, klappentext: ?string, wiki_url: string, cover_url: ?string, incomplete: bool, missing_from_wiki: bool, source_note: ?string}>
      */
     private function normalizeAdventures(array $rows): array
     {
@@ -350,6 +351,7 @@ class AdventureImportService
                 'regions' => $this->strList($row['regions'] ?? []),
                 'genres' => $this->strList($row['genres'] ?? []),
                 'short_description' => $this->cleanShortDescription($this->str($row['short_description'] ?? null)),
+                'klappentext' => $this->optionalDescription($row['klappentext'] ?? null),
                 'wiki_url' => $this->str($row['wiki_url'] ?? null),
                 'cover_url' => $this->strOrNull($row['cover_url'] ?? null),
                 'incomplete' => (bool) ($row['incomplete'] ?? false),
@@ -364,7 +366,7 @@ class AdventureImportService
     /**
      * Prüft Referenzen und fachliche Konsistenz, die das Schema nicht ausdrücken kann.
      *
-     * @param  list<array{slug: string, title: string, series: string, experience_level: string, page_count: ?int, duration_category: string, rule_version: string, exotic: bool, complexity: string, group_size_min: ?int, group_size_max: ?int, location_type: string, primary_location: ?string, primary_region: ?string, place_label: ?string, regions: list<string>, genres: list<string>, short_description: string, wiki_url: string, cover_url: ?string, incomplete: bool, missing_from_wiki: bool, source_note: ?string}>  $adventures
+     * @param  list<array{slug: string, title: string, series: string, experience_level: string, page_count: ?int, duration_category: string, rule_version: string, exotic: bool, complexity: string, group_size_min: ?int, group_size_max: ?int, location_type: string, primary_location: ?string, primary_region: ?string, place_label: ?string, regions: list<string>, genres: list<string>, short_description: string, klappentext: ?string, wiki_url: string, cover_url: ?string, incomplete: bool, missing_from_wiki: bool, source_note: ?string}>  $adventures
      * @param  list<array{slug: string, name: string}>  $series
      * @param  list<array{slug: string, name: string}>  $tags
      * @param  list<array{slug: string, name: string, type: string, parent: ?string}>  $locations
@@ -468,6 +470,17 @@ class AdventureImportService
         } while ($text !== $previous);
 
         return $text;
+    }
+
+    private function optionalDescription(mixed $value): ?string
+    {
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $text = $this->cleanShortDescription($value);
+
+        return $text === '' || $text === '-' ? null : $text;
     }
 
     private function strOrNull(mixed $value): ?string

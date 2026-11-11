@@ -115,6 +115,21 @@ document.addEventListener('livewire:init', registerWizardFocus);
 registerWizardFocus();
 
 /**
+ * Umschlag in der Empfehlung an Ort und Stelle vergrößern.
+ * Der zweite Klick setzt dieselbe Karte wieder auf die kleine Darstellung.
+ */
+document.addEventListener('click', (event) => {
+    const button = event.target instanceof Element ? event.target.closest('[data-cover-preview]') : null;
+
+    if (!button) {
+        return;
+    }
+
+    const expanded = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+});
+
+/**
  * Das gezeigte Tortenstück nach vorn holen, damit die Vergrößerung nicht unter den Nachbarstücken liegt.
  */
 document.addEventListener('pointerover', (event) => {

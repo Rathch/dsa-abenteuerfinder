@@ -39,6 +39,7 @@ final readonly class AdventureCandidate
         public ?string $coverUrl = null,
         public ?string $placeLabel = null,
         public bool $missingFromWiki = false,
+        public ?string $klappentext = null,
     ) {}
 
     /**
@@ -72,6 +73,26 @@ final readonly class AdventureCandidate
     public static function regionsMentionedIn(?string $label, array $regionByPlaceSlug): array
     {
         return self::regionsForLabel($label, self::regionIndex($regionByPlaceSlug));
+    }
+
+    /**
+     * Klappentext, wenn einer vorliegt, sonst die Kurzbeschreibung.
+     *
+     * @return array{kind: 'klappentext'|'kurzbeschreibung', text: string}|null
+     */
+    public function displayDescription(): ?array
+    {
+        $klappentext = trim((string) $this->klappentext);
+        if ($klappentext !== '' && $klappentext !== '-') {
+            return ['kind' => 'klappentext', 'text' => $klappentext];
+        }
+
+        $kurzbeschreibung = trim($this->shortDescription);
+        if ($kurzbeschreibung !== '' && $kurzbeschreibung !== '-') {
+            return ['kind' => 'kurzbeschreibung', 'text' => $kurzbeschreibung];
+        }
+
+        return null;
     }
 
     /**

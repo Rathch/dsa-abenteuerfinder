@@ -28,89 +28,133 @@
                 <ol class="space-y-6" aria-label="Empfohlene Abenteuer">
                     @foreach ($cards as $card)
                         <li wire:key="card-{{ $card['id'] }}">
-                            <article class="card space-y-4" aria-labelledby="adventure-{{ $card['id'] }}-title" data-testid="recommendation">
-                                <header class="flex gap-4">
+                            <article class="card recommendation-card" aria-labelledby="adventure-{{ $card['id'] }}-title" data-testid="recommendation">
+                                <header class="recommendation-heading space-y-1">
+                                    <h3 id="adventure-{{ $card['id'] }}-title" class="recommendation-title">{{ $card['title'] }}</h3>
+                                    <p class="text-muted">Reihe: {{ $card['series'] }}</p>
+                                </header>
+
+                                @if ($card['coverUrl'])
+                                    <button
+                                        type="button"
+                                        class="cover-preview"
+                                        data-cover-preview
+                                        aria-expanded="false"
+                                        aria-label="Umschlag von {{ $card['title'] }}"
+                                    >
+                                        <img
+                                            src="{{ $card['coverUrl'] }}"
+                                            alt=""
+                                            width="96"
+                                            height="128"
+                                            class="cover-thumb"
+                                            loading="lazy"
+                                        >
+                                    </button>
+                                @else
                                     <img
-                                        src="{{ $card['coverUrl'] ?: asset('images/cover-fallback.svg') }}"
+                                        src="{{ asset('images/cover-fallback.svg') }}"
                                         alt=""
                                         width="96"
                                         height="128"
-                                        class="cover-thumb h-32 w-24 shrink-0 object-cover"
+                                        class="cover-thumb"
                                         loading="lazy"
                                     >
-                                    <div class="space-y-1">
-                                    <h3 id="adventure-{{ $card['id'] }}-title">{{ $card['title'] }}</h3>
-                                    <p class="text-muted">Reihe: {{ $card['series'] }}</p>
-                                    </div>
-                                </header>
+                                @endif
 
-                                <dl class="grid gap-x-8 gap-y-3 text-base sm:grid-cols-2">
-                                    <div>
-                                        <dt class="meta-label">
-                                            @include('partials.meta-icon', ['icon' => 'map'])
-                                            <span>Schauplatz</span>
-                                        </dt>
-                                        <dd>{{ $card['location'] }}</dd>
-                                    </div>
-                                    <div>
-                                        <dt class="meta-label">
-                                            @include('partials.meta-icon', ['icon' => 'hourglass'])
-                                            <span>Dauer</span>
-                                        </dt>
-                                        <dd>{{ $card['duration'] }}</dd>
-                                    </div>
-                                    <div>
-                                        <dt class="text-sm font-semibold text-muted">Regeln</dt>
-                                        <dd>
-                                            @if ($card['edition'] !== null)
-                                                <span class="edition-meta">
-                                                    @include('partials.edition-eye', ['edition' => $card['edition']])
-                                                    <span>{{ $card['rules'] }}</span>
-                                                </span>
-                                            @else
-                                                {{ $card['rules'] }}
-                                            @endif
-                                        </dd>
-                                    </div>
-                                    @if ($card['group'] !== null)
+                                <div class="recommendation-body space-y-5">
+                                <section class="steckbrief" aria-label="Steckbrief">
+                                    <dl class="steckbrief-grid">
                                         <div>
-                                            <dt class="text-sm font-semibold text-muted">Gruppengröße</dt>
-                                            <dd>{{ $card['group'] }}</dd>
+                                            <dt class="meta-label">
+                                                @include('partials.meta-icon', ['icon' => 'map'])
+                                                <span>Schauplatz</span>
+                                            </dt>
+                                            <dd>{{ $card['location'] }}</dd>
                                         </div>
-                                    @endif
-                                </dl>
+                                        <div>
+                                            <dt class="meta-label">
+                                                @include('partials.meta-icon', ['icon' => 'book'])
+                                                <span>Regeln</span>
+                                            </dt>
+                                            <dd>
+                                                @if ($card['edition'] !== null)
+                                                    <span class="edition-meta">
+                                                        @include('partials.edition-eye', ['edition' => $card['edition']])
+                                                        <span>{{ $card['rules'] }}</span>
+                                                    </span>
+                                                @else
+                                                    {{ $card['rules'] }}
+                                                @endif
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt class="meta-label">
+                                                @include('partials.meta-icon', ['icon' => 'hourglass'])
+                                                <span>Dauer</span>
+                                            </dt>
+                                            <dd>{{ $card['duration'] }}</dd>
+                                        </div>
+                                        @if ($card['group'] !== null)
+                                            <div>
+                                                <dt>Gruppengröße</dt>
+                                                <dd>{{ $card['group'] }}</dd>
+                                            </div>
+                                        @endif
+                                        @if (count($card['genres']) > 0)
+                                            <div class="steckbrief-genres">
+                                                <dt class="meta-label">
+                                                    @include('partials.meta-icon', ['icon' => 'tag'])
+                                                    <span>Genre</span>
+                                                </dt>
+                                                <dd>
+                                                    <ul class="flex flex-wrap gap-1.5" aria-label="Genres">
+                                                        @foreach ($card['genres'] as $genre)
+                                                            <li class="genre-tag">{{ $genre }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </dd>
+                                            </div>
+                                        @endif
+                                    </dl>
+                                </section>
 
-                                @if (count($card['genres']) > 0)
-                                    <ul class="flex flex-wrap gap-2" aria-label="Genres">
-                                        @foreach ($card['genres'] as $genre)
-                                            <li class="pill">{{ $genre }}</li>
-                                        @endforeach
-                                    </ul>
+                                @if ($card['descriptionKind'] === 'klappentext' || $card['descriptionKind'] === 'kurzbeschreibung')
+                                    <div>
+                                        <h4 class="meta-heading">{{ $card['descriptionKind'] === 'klappentext' ? 'Klappentext' : 'Kurzbeschreibung' }}</h4>
+                                        <p class="mt-2">{{ $card['description'] }}</p>
+                                        @if ($card['descriptionKind'] === 'klappentext')
+                                            <p class="mt-2 text-sm text-muted">
+                                                Quelle:
+                                                <a href="{{ $card['blurbUrl'] }}" class="text-link" target="_blank" rel="noopener noreferrer">Wiki Aventurica<span class="sr-only"> (öffnet in neuem Tab)</span></a>;
+                                                zur Weiterverwendung siehe
+                                                <a href="https://de.wiki-aventurica.de/wiki/Wiki_Aventurica:Ulisses-Disclaimer" class="text-link" target="_blank" rel="noopener noreferrer">Ulisses-Disclaimer<span class="sr-only"> (öffnet in neuem Tab)</span></a>.
+                                            </p>
+                                        @else
+                                            <p class="mt-2 text-sm text-muted">
+                                                Quelle:
+                                                <a href="{{ $card['wikiUrl'] }}" class="text-link" target="_blank" rel="noopener noreferrer">Wiki Aventurica<span class="sr-only"> (öffnet in neuem Tab)</span></a>,
+                                                Artikel „{{ $card['title'] }}“,
+                                                Lizenz
+                                                <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.de" class="text-link" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0<span class="sr-only"> (öffnet in neuem Tab)</span></a>.
+                                            </p>
+                                        @endif
+                                    </div>
                                 @endif
 
-                                @if ($card['description'] !== '' && $card['description'] !== '-')
-                                    <p>{{ $card['description'] }}</p>
-                                    <p class="text-sm text-muted">
-                                        — Klappentext von {{ $card['title'] }}; Quelle:
-                                        <a href="{{ $card['blurbUrl'] }}" class="text-link" target="_blank" rel="noopener noreferrer">Wiki Aventurica<span class="sr-only"> (öffnet in neuem Tab)</span></a>;
-                                        zur Weiterverwendung siehe
-                                        <a href="https://de.wiki-aventurica.de/wiki/Wiki_Aventurica:Ulisses-Disclaimer" class="text-link" target="_blank" rel="noopener noreferrer">Ulisses-Disclaimer<span class="sr-only"> (öffnet in neuem Tab)</span></a>.
-                                    </p>
-                                @endif
-
-                                <div>
+                                <div class="recommendation-reasons">
                                     <h4 class="meta-heading">
                                         @include('partials.meta-icon', ['icon' => 'bulb'])
                                         <span>Warum passt es?</span>
                                     </h4>
-                                    <ul class="mt-1 list-disc space-y-1 pl-6">
+                                    <ul class="mt-2 list-disc space-y-1 pl-6">
                                         @foreach ($card['reasons'] as $reason)
                                             <li>{{ $reason }}</li>
                                         @endforeach
                                     </ul>
                                 </div>
 
-                                <ul class="flex flex-wrap gap-3 pt-1" aria-label="Weiterführende Links zu {{ $card['title'] }}">
+                                <ul class="flex flex-wrap gap-3" aria-label="Weiterführende Links zu {{ $card['title'] }}">
                                     <li>
                                         <a href="{{ $card['wikiUrl'] }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
                                             <span>Im Wiki Aventurica lesen<span class="sr-only"> (öffnet in neuem Tab)</span></span>
@@ -118,6 +162,7 @@
                                         </a>
                                     </li>
                                 </ul>
+                                </div>
                             </article>
                         </li>
                     @endforeach

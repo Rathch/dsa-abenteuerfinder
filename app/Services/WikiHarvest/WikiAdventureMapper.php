@@ -481,9 +481,10 @@ final class WikiAdventureMapper
         }
 
         $text = trim(preg_replace('/\s+/u', ' ', $raw) ?? $raw);
+        $text = str_replace("\u{200b}", '', $text);
         // Harvest-Softnotes dürfen nicht in der öffentlichen Kurzbeschreibung landen.
         $text = $this->stripEditorialDescriptionPrefixes($text);
-        if (mb_strlen($text) < 20) {
+        if (mb_strlen($text) < 20 || $this->isPlaceholderDescription($text)) {
             return null;
         }
 
@@ -492,6 +493,16 @@ final class WikiAdventureMapper
         }
 
         return $text;
+    }
+
+    private function isPlaceholderDescription(string $text): bool
+    {
+        $lower = mb_strtolower(trim($text));
+
+        return $lower === '-'
+            || str_contains($lower, 'beschreibung des abenteuers')
+            || str_contains($lower, 'steht noch aus')
+            || preg_match('/\/klappentext\s*$/u', $lower) === 1;
     }
 
     private function stripEditorialDescriptionPrefixes(string $text): string

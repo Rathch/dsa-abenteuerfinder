@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2026 Christian Rath-Ulrich
 
 SPDX-License-Identifier: GPL-3.0-only
 
-Erwartet $icon: map | hourglass | bulb
+Erwartet $icon: map | hourglass | book | tag | bulb
 --}}
 @php
     $icon = $icon ?? '';
@@ -22,6 +22,14 @@ Erwartet $icon: map | hourglass | bulb
             <path d="M6 21h12" />
             <path d="M8 3v3.2a4 4 0 0 0 1.6 3.2L12 12l2.4-2.6A4 4 0 0 0 16 6.2V3" />
             <path d="M8 21v-3.2a4 4 0 0 1 1.6-3.2L12 12l2.4 2.6a4 4 0 0 1 1.6 3.2V21" />
+            @break
+        @case('book')
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+            @break
+        @case('tag')
+            <path d="M20.6 13.2 13.2 20.6a1.8 1.8 0 0 1-2.5 0L3 13V3h10l7.6 7.6a1.8 1.8 0 0 1 0 2.6Z" />
+            <circle cx="7.5" cy="7.5" r="1.4" fill="currentColor" stroke="none" />
             @break
         @case('bulb')
             <path d="M9 18h6" />

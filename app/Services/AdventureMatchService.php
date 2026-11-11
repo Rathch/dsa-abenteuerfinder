@@ -83,6 +83,7 @@ class AdventureMatchService
                 coverUrl: $adventure->cover_url,
                 placeLabel: $adventure->place_label,
                 missingFromWiki: $adventure->missing_from_wiki,
+                klappentext: $adventure->klappentext,
             );
         }
 

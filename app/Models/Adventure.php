@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int|null $primary_region_id
  * @property string|null $place_label
  * @property string $short_description
+ * @property string|null $klappentext
  * @property string $wiki_url
  * @property string|null $cover_url
  * @property bool $incomplete
@@ -57,6 +58,7 @@ class Adventure extends Model
         'primary_region_id',
         'place_label',
         'short_description',
+        'klappentext',
         'wiki_url',
         'cover_url',
         'incomplete',

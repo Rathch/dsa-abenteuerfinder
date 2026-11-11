@@ -97,6 +97,7 @@ final class WikiBlurbParser
     private function normalizeText(string $text): string
     {
         $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = str_replace("\u{200b}", '', $text);
         $text = preg_replace('/\s+/u', ' ', $text) ?? $text;
 
         return trim($text);
@@ -112,20 +113,34 @@ final class WikiBlurbParser
             || str_contains($lower, 'in eigenen worten')
             || str_contains($lower, 'beschreibung ergänzen')
             || str_contains($lower, 'offizielle beschreibung abtippen')
+            || str_contains($lower, 'beschreibung des abenteuers')
+            || str_contains($lower, 'steht noch aus')
+            || preg_match('/\/klappentext\s*$/u', $lower) === 1
             || preg_match('/^\[\s*\d+\s*\]$/u', $text) === 1;
     }
 
     /**
-     * Fallback: Abschnitt Kurzbeschreibung/Klappentext auf der Hauptseite.
+     * Offizieller Verlagstext aus dem Abschnitt Klappentext.
+     */
+    public function klappentextFromArticle(string $html): ?string
+    {
+        return $this->extractSectionParagraphs($html, 'Klappentext');
+    }
+
+    /**
+     * Wiki-Zusammenfassung aus dem Abschnitt Kurzbeschreibung.
+     */
+    public function kurzbeschreibungFromArticle(string $html): ?string
+    {
+        return $this->extractSectionParagraphs($html, 'Kurzbeschreibung');
+    }
+
+    /**
+     * Klappentext, und nur ohne diesen Abschnitt die Kurzbeschreibung.
      */
     public function extractFromArticle(string $html): ?string
     {
-        $fromKlappentext = $this->extractSectionParagraphs($html, 'Klappentext');
-        if ($fromKlappentext !== null) {
-            return $fromKlappentext;
-        }
-
-        return $this->extractSectionParagraphs($html, 'Kurzbeschreibung');
+        return $this->klappentextFromArticle($html) ?? $this->kurzbeschreibungFromArticle($html);
     }
 
     private function extractSectionParagraphs(string $html, string $sectionId): ?string
@@ -152,21 +167,21 @@ final class WikiBlurbParser
         }
 
         $parts = [];
-        for ($node = $heading->parentNode?->nextSibling; $node !== null; $node = $node->nextSibling) {
-            if ($node instanceof \DOMElement) {
-                $tag = mb_strtolower($node->tagName);
-                if (in_array($tag, ['h1', 'h2', 'h3', 'h4'], true) || ($node->getAttribute('class') !== '' && str_contains($node->getAttribute('class'), 'mw-heading'))) {
-                    break;
-                }
-                if ($tag === 'p') {
-                    $text = $this->normalizeText($node->textContent ?? '');
-                    if ($text !== '' && ! $this->isBoilerplate($text)) {
-                        $parts[] = $text;
-                    }
-                }
-            }
-            if (count($parts) >= 3) {
+        for ($node = $this->headingContainer($heading)->nextSibling; $node !== null; $node = $node->nextSibling) {
+            if ($this->isNextSection($node)) {
                 break;
+            }
+
+            foreach ($this->collectTextBlocks($node) as $text) {
+                if ($text === '' || $this->isBoilerplate($text) || $this->isAttribution($text)) {
+                    continue;
+                }
+
+                $parts[] = $text;
+                $joined = implode(' ', $parts);
+                if (count($parts) >= 3 || mb_strlen($joined) >= 280) {
+                    break 2;
+                }
             }
         }
 
@@ -180,5 +195,135 @@ final class WikiBlurbParser
         }
 
         return mb_strlen($description) >= self::MIN_LENGTH ? $description : null;
+    }
+
+    private function headingContainer(\DOMNode $heading): \DOMNode
+    {
+        $block = $heading;
+        while ($block->parentNode instanceof \DOMElement) {
+            $parent = $block->parentNode;
+            $tag = strtolower($parent->tagName);
+            $class = $parent->getAttribute('class');
+            if (in_array($tag, ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], true) || str_contains($class, 'mw-heading')) {
+                $block = $parent;
+
+                continue;
+            }
+
+            break;
+        }
+
+        return $block;
+    }
+
+    private function isNextSection(\DOMNode $node): bool
+    {
+        if (! $node instanceof \DOMElement) {
+            return false;
+        }
+
+        $tag = strtolower($node->tagName);
+        if (in_array($tag, ['h1', 'h2', 'h3', 'h4'], true)) {
+            return true;
+        }
+
+        return str_contains($node->getAttribute('class'), 'mw-heading');
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function collectTextBlocks(\DOMNode $node): array
+    {
+        if (! $node instanceof \DOMElement) {
+            return [];
+        }
+
+        $tag = strtolower($node->tagName);
+        if (in_array($tag, ['script', 'style'], true)) {
+            return [];
+        }
+
+        if ($tag === 'p') {
+            $text = $this->normalizeText($node->textContent ?? '');
+
+            return $text === '' ? [] : [$text];
+        }
+
+        if (in_array($tag, ['td', 'th', 'li'], true)) {
+            return $this->blocksFromMixedContent($node);
+        }
+
+        $blocks = [];
+        foreach ($node->childNodes as $child) {
+            if ($this->isNextSection($child)) {
+                break;
+            }
+
+            $blocks = array_merge($blocks, $this->collectTextBlocks($child));
+        }
+
+        if ($blocks === []) {
+            $text = $this->normalizeText($node->textContent ?? '');
+
+            return $text === '' ? [] : [$text];
+        }
+
+        return $blocks;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function blocksFromMixedContent(\DOMElement $node): array
+    {
+        $blocks = [];
+        $buffer = '';
+
+        foreach ($node->childNodes as $child) {
+            if ($child instanceof \DOMElement && strtolower($child->tagName) === 'p') {
+                $lead = $this->normalizeText($buffer);
+                if ($lead !== '') {
+                    $blocks[] = $lead;
+                }
+                $buffer = '';
+                $text = $this->normalizeText($child->textContent ?? '');
+                if ($text !== '') {
+                    $blocks[] = $text;
+                }
+
+                continue;
+            }
+
+            if ($child instanceof \DOMElement && strtolower($child->tagName) === 'br') {
+                $lead = $this->normalizeText($buffer);
+                if ($lead !== '') {
+                    $blocks[] = $lead;
+                }
+                $buffer = '';
+
+                continue;
+            }
+
+            $buffer .= $child->textContent ?? '';
+        }
+
+        $tail = $this->normalizeText($buffer);
+        if ($tail !== '') {
+            $blocks[] = $tail;
+        }
+
+        return $blocks;
+    }
+
+    private function isAttribution(string $text): bool
+    {
+        $trimmed = ltrim($text);
+        $lower = mb_strtolower($trimmed);
+
+        return str_starts_with($trimmed, '—')
+            || str_starts_with($trimmed, '–')
+            || str_contains($lower, 'zur weiterverwendung')
+            || str_contains($lower, 'klappentext von');
     }
 }

@@ -101,6 +101,90 @@ test.describe('Wunsch-Formular', () => {
         await expect(page.getByTestId('recommendation').first()).toBeVisible();
     });
 
+    test('vergrößert den Umschlag an Ort und Stelle und verkleinert ihn wieder', async ({ page }) => {
+        await page.goto('/');
+        await completeWizard(page);
+
+        await expect(page.locator('button:has(img[src*="cover-fallback.svg"])')).toHaveCount(0);
+
+        const fallbacks = page.locator('img[src*="cover-fallback.svg"]');
+        const fallback = fallbacks.first();
+        await expect(fallback).toBeVisible();
+        const fallbackBefore = await fallback.boundingBox();
+        expect(fallbackBefore).not.toBeNull();
+        await fallback.click({ force: true });
+        const fallbackAfter = await fallback.boundingBox();
+        expect(fallbackAfter).not.toBeNull();
+        expect(Math.abs((fallbackAfter?.width ?? 0) - (fallbackBefore?.width ?? 0))).toBeLessThan(2);
+        expect(Math.abs((fallbackAfter?.height ?? 0) - (fallbackBefore?.height ?? 0))).toBeLessThan(2);
+
+        const covers = page.locator('[data-cover-preview]');
+        if ((await covers.count()) === 0) {
+            return;
+        }
+
+        const cover = covers.first();
+        const card = page.getByTestId('recommendation').filter({ has: cover });
+        const image = cover.locator('img');
+
+        await expect(cover).toHaveAttribute('aria-expanded', 'false');
+        await expect(page.locator('dialog')).toHaveCount(0);
+        await image.evaluate(
+            (node: HTMLImageElement) =>
+                new Promise<void>((resolve, reject) => {
+                    if (node.complete) {
+                        if (node.naturalWidth > 0) {
+                            resolve();
+                        } else {
+                            reject(new Error('Umschlagbild lädt nicht'));
+                        }
+
+                        return;
+                    }
+
+                    node.addEventListener('load', () => resolve(), { once: true });
+                    node.addEventListener('error', () => reject(new Error('Umschlagbild lädt nicht')), { once: true });
+                }),
+        );
+
+        const collapsed = await image.boundingBox();
+        expect(collapsed).not.toBeNull();
+
+        await cover.click();
+        await page.mouse.move(0, 0);
+        await expect(cover).toHaveAttribute('aria-expanded', 'true');
+        await expect(cover).toBeFocused();
+        await expect(card).toBeVisible();
+        for (let index = 1; index < await covers.count(); index++) {
+            await expect(covers.nth(index)).toHaveAttribute('aria-expanded', 'false');
+        }
+        const enlarged = await image.boundingBox();
+        expect(enlarged).not.toBeNull();
+        expect(enlarged!.width).toBeGreaterThan((collapsed?.width ?? 0) + 20);
+
+        const naturalWidth = await image.evaluate((node: HTMLImageElement) => node.naturalWidth);
+        expect(enlarged!.width).toBeLessThanOrEqual(Math.min(naturalWidth, 288) + 1);
+        expect(enlarged!.height).toBeLessThanOrEqual(384 + 2);
+        await expect(image).toHaveCSS('clip-path', 'none');
+
+        await cover.click();
+        await page.mouse.move(0, 0);
+        await expect(cover).toHaveAttribute('aria-expanded', 'false');
+        await expect(cover).toBeFocused();
+
+        const restored = await image.boundingBox();
+        expect(restored).not.toBeNull();
+        expect(restored!.width).toBeLessThan(enlarged!.width - 20);
+
+        await cover.focus();
+        await page.keyboard.press('Enter');
+        await expect(cover).toHaveAttribute('aria-expanded', 'true');
+        await expect(cover).toBeFocused();
+        await page.keyboard.press('Space');
+        await expect(cover).toHaveAttribute('aria-expanded', 'false');
+        await expect(cover).toBeFocused();
+    });
+
     test('zeigt auf der ersten Frage noch keinen Submit-Button', async ({ page }) => {
         await page.goto('/');
         await expect(formHeading(page)).toBeVisible();

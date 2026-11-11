@@ -91,6 +91,12 @@
                     "minLength": 1,
                     "maxLength": 1200
                 },
+                "klappentext": {
+                    "oneOf": [
+                        { "type": "string", "minLength": 1, "maxLength": 1200 },
+                        { "type": "null" }
+                    ]
+                },
                 "wiki_url": { "type": "string", "format": "uri", "pattern": "^https://" },
                 "cover_url": {
                     "oneOf": [

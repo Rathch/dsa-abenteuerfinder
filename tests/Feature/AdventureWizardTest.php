@@ -272,6 +272,29 @@ it('yields recommendations after submitting from review', function (): void {
     $component->assertSee($result->recommendations[0]->adventure->title);
 });
 
+it('renders a recommendation cover as a named toggle for its image', function (): void {
+    Adventure::query()->update(['cover_url' => 'https://example.test/cover.jpg']);
+
+    $component = completeWizard(Livewire::test(AdventureWizard::class));
+    $title = $component->instance()->matchResult->recommendations[0]->adventure->title;
+
+    $component
+        ->assertSee('Umschlag von '.$title)
+        ->assertSee('aria-expanded="false"', false)
+        ->assertSee('data-cover-preview', false)
+        ->assertSee('https://example.test/cover.jpg', false)
+        ->assertDontSee('<dialog', false);
+});
+
+it('shows the fallback cover without an enlarge control', function (): void {
+    Adventure::query()->update(['cover_url' => null]);
+
+    completeWizard(Livewire::test(AdventureWizard::class))
+        ->assertSee('images/cover-fallback.svg', false)
+        ->assertDontSee('data-cover-preview', false)
+        ->assertDontSee('Umschlag von');
+});
+
 it('shows fallback notes when wishes had to be relaxed', function (): void {
     $component = Livewire::test(AdventureWizard::class)
         ->set('rulesAny', true)

@@ -171,3 +171,23 @@ it('stays incomplete without a wiki short description', function (): void {
         ->and($mapped['adventure']['short_description'])->toBe('-')
         ->and($mapped['adventure']['source_note'])->toContain('Kurzbeschreibung');
 });
+
+it('drops placeholder blurbs instead of showing them', function (): void {
+    $mapped = wikiMapper()->map([
+        'catalog_number' => '(VA105)',
+        'title' => 'Die Krone der Königin',
+        'wiki_path' => '/wiki/Die_Krone_der_Königin',
+        'rules_raw' => 'DSA5',
+        'place_raw' => 'Havena',
+        'genre_raw' => 'Detektivgeschichte',
+        'complexity_raw' => 'gering',
+        'experience_raw' => 'Einsteiger',
+        'page_count' => 64,
+        'series_key' => 'va-reihe',
+        'short_description_raw' => 'Die Krone der Königin/Klappentext',
+    ]);
+
+    expect($mapped['adventure']['incomplete'])->toBeTrue()
+        ->and($mapped['adventure']['short_description'])->toBe('-')
+        ->and($mapped['adventure']['source_note'])->toContain('Kurzbeschreibung');
+});
