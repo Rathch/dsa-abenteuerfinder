@@ -1,0 +1,638 @@
+{
+    "catalog": [
+        {
+            "id": 1,
+            "slug": "havena-raub",
+            "title": "Der Raub von Havena",
+            "seriesSlug": "va-reihe",
+            "seriesName": "VA-Reihe",
+            "experienceLevel": "einsteiger",
+            "pageCount": 32,
+            "durationCategory": "kurz",
+            "ruleVersion": "dsa5",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "point",
+            "primaryPlaceSlug": "havena",
+            "primaryPlaceName": "Havena",
+            "primaryRegionSlug": "nordmarken",
+            "regionSlugs": [],
+            "genres": [
+                "investigation"
+            ],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        },
+        {
+            "id": 2,
+            "slug": "riva-strasse",
+            "title": "Straße nach Riva",
+            "seriesSlug": "va-reihe",
+            "seriesName": "VA-Reihe",
+            "experienceLevel": "einsteiger",
+            "pageCount": 28,
+            "durationCategory": "kurz",
+            "ruleVersion": "dsa5",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "point",
+            "primaryPlaceSlug": "riva",
+            "primaryPlaceName": "Riva",
+            "primaryRegionSlug": "nordmarken",
+            "regionSlugs": [],
+            "genres": [
+                "exploration"
+            ],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        },
+        {
+            "id": 3,
+            "slug": "thorwal-hafen",
+            "title": "Hafen von Thorwal",
+            "seriesSlug": "va-reihe",
+            "seriesName": "VA-Reihe",
+            "experienceLevel": "einsteiger",
+            "pageCount": 24,
+            "durationCategory": "kurz",
+            "ruleVersion": "dsa5",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "point",
+            "primaryPlaceSlug": "thorwal",
+            "primaryPlaceName": "Thorwal",
+            "primaryRegionSlug": "nordmarken",
+            "regionSlugs": [],
+            "genres": [],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        },
+        {
+            "id": 4,
+            "slug": "gress-handel",
+            "title": "Handel in Gresham",
+            "seriesSlug": "a-reihe",
+            "seriesName": "A-Reihe",
+            "experienceLevel": "einsteiger",
+            "pageCount": 48,
+            "durationCategory": "mittel",
+            "ruleVersion": "dsa5",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "point",
+            "primaryPlaceSlug": null,
+            "primaryPlaceName": null,
+            "primaryRegionSlug": "mittelaventurien",
+            "regionSlugs": [],
+            "genres": [],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        },
+        {
+            "id": 5,
+            "slug": "myranor-sturm",
+            "title": "Sturm über Myranor",
+            "seriesSlug": "myranor",
+            "seriesName": "Myranor",
+            "experienceLevel": "erfahren",
+            "pageCount": 96,
+            "durationCategory": "lang",
+            "ruleVersion": "dsa4",
+            "exotic": true,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "point",
+            "primaryPlaceSlug": null,
+            "primaryPlaceName": null,
+            "primaryRegionSlug": "myranor",
+            "regionSlugs": [],
+            "genres": [],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        },
+        {
+            "id": 6,
+            "slug": "sued-duene",
+            "title": "Düne im Süden",
+            "seriesSlug": "sued",
+            "seriesName": "Süd",
+            "experienceLevel": "erfahren",
+            "pageCount": 180,
+            "durationCategory": "kampagne",
+            "ruleVersion": "dsa5",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "point",
+            "primaryPlaceSlug": null,
+            "primaryPlaceName": null,
+            "primaryRegionSlug": "suedwest",
+            "regionSlugs": [],
+            "genres": [],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        },
+        {
+            "id": 7,
+            "slug": "frei-weg",
+            "title": "Freier Weg",
+            "seriesSlug": "frei",
+            "seriesName": "Frei",
+            "experienceLevel": "einsteiger",
+            "pageCount": 32,
+            "durationCategory": "kurz",
+            "ruleVersion": "editionunabhaengig",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "traveling",
+            "primaryPlaceSlug": null,
+            "primaryPlaceName": null,
+            "primaryRegionSlug": "nordmarken",
+            "regionSlugs": [],
+            "genres": [],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        },
+        {
+            "id": 8,
+            "slug": "fehlt-im-wiki",
+            "title": "Fehlt im Wiki",
+            "seriesSlug": "luecke",
+            "seriesName": "Lücke",
+            "experienceLevel": "einsteiger",
+            "pageCount": 32,
+            "durationCategory": "kurz",
+            "ruleVersion": "dsa5",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "point",
+            "primaryPlaceSlug": null,
+            "primaryPlaceName": null,
+            "primaryRegionSlug": null,
+            "regionSlugs": [],
+            "genres": [],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": true,
+            "klappentext": null
+        },
+        {
+            "id": 9,
+            "slug": "unfertig",
+            "title": "Unfertiges Heft",
+            "seriesSlug": "luecke",
+            "seriesName": "Lücke",
+            "experienceLevel": "einsteiger",
+            "pageCount": 32,
+            "durationCategory": "kurz",
+            "ruleVersion": "dsa5",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": null,
+            "groupSizeMax": null,
+            "locationType": "point",
+            "primaryPlaceSlug": null,
+            "primaryPlaceName": null,
+            "primaryRegionSlug": "nordmarken",
+            "regionSlugs": [],
+            "genres": [],
+            "shortDescription": "-",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": true,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        },
+        {
+            "id": 10,
+            "slug": "zu-zweit",
+            "title": "Nur zu zweit",
+            "seriesSlug": "klein",
+            "seriesName": "Klein",
+            "experienceLevel": "einsteiger",
+            "pageCount": 32,
+            "durationCategory": "kurz",
+            "ruleVersion": "dsa5",
+            "exotic": false,
+            "complexity": "niedrig",
+            "groupSizeMin": 2,
+            "groupSizeMax": 2,
+            "locationType": "point",
+            "primaryPlaceSlug": null,
+            "primaryPlaceName": null,
+            "primaryRegionSlug": "nordmarken",
+            "regionSlugs": [],
+            "genres": [],
+            "shortDescription": "Eine kurze, spoilerfreie Beschreibung.",
+            "wikiUrl": "https://de.wiki-aventurica.de/wiki/Test",
+            "incomplete": false,
+            "coverUrl": null,
+            "placeLabel": null,
+            "missingFromWiki": false,
+            "klappentext": null
+        }
+    ],
+    "cases": [
+        {
+            "name": "ort-havena",
+            "answers": {
+                "experienceLevel": "einsteiger",
+                "groupSize": null,
+                "timeframes": [
+                    "evening_short"
+                ],
+                "regionSlugs": [
+                    "nordmarken"
+                ],
+                "regionsAny": false,
+                "placeSlug": "havena",
+                "exotics": [],
+                "exoticAny": true,
+                "genres": [
+                    "investigation"
+                ],
+                "rules": [
+                    "dsa5"
+                ],
+                "rulesAny": false,
+                "gmExperience": "einsteiger"
+            },
+            "titles": [
+                "Der Raub von Havena",
+                "Freier Weg",
+                "Hafen von Thorwal",
+                "Nur zu zweit",
+                "Unfertiges Heft"
+            ],
+            "reasons": [
+                [
+                    "Geeignet für Einsteiger.",
+                    "Spielt in Havena – genau der Ort, den du dir gewünscht hast.",
+                    "Deckt das Genre Ermittlung ab.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Passt zur Region Nordmarken.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (editionsunabhängig).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Passt zur Region Nordmarken.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Passt zur Region Nordmarken.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Passt zur Region Nordmarken.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ]
+            ],
+            "fallbackNotes": []
+        },
+        {
+            "name": "region-gelockert",
+            "answers": {
+                "experienceLevel": "einsteiger",
+                "groupSize": null,
+                "timeframes": [
+                    "evening_short"
+                ],
+                "regionSlugs": [
+                    "myranor"
+                ],
+                "regionsAny": false,
+                "placeSlug": null,
+                "exotics": [],
+                "exoticAny": true,
+                "genres": [],
+                "rules": [
+                    "dsa5"
+                ],
+                "rulesAny": false,
+                "gmExperience": "einsteiger"
+            },
+            "titles": [
+                "Freier Weg",
+                "Der Raub von Havena",
+                "Hafen von Thorwal",
+                "Nur zu zweit",
+                "Unfertiges Heft",
+                "Handel in Gresham"
+            ],
+            "reasons": [
+                [
+                    "Geeignet für Einsteiger.",
+                    "Reiseabenteuer, das sich flexibel in die Region Myranor einbinden lässt.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (editionsunabhängig).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Abenteuer für einen langen Abend bis zwei Sitzungen).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ]
+            ],
+            "fallbackNotes": [
+                "Region wurde ignoriert, weil nur 1 Treffer gefunden wurde."
+            ]
+        },
+        {
+            "name": "zeit-gelockert",
+            "answers": {
+                "experienceLevel": "einsteiger",
+                "groupSize": null,
+                "timeframes": [
+                    "campaign"
+                ],
+                "regionSlugs": [],
+                "regionsAny": false,
+                "placeSlug": null,
+                "exotics": [],
+                "exoticAny": true,
+                "genres": [],
+                "rules": [],
+                "rulesAny": true,
+                "gmExperience": "einsteiger"
+            },
+            "titles": [
+                "Handel in Gresham",
+                "Der Raub von Havena",
+                "Freier Weg",
+                "Hafen von Thorwal",
+                "Nur zu zweit",
+                "Unfertiges Heft"
+            ],
+            "reasons": [
+                [
+                    "Geeignet für Einsteiger.",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ]
+            ],
+            "fallbackNotes": [
+                "Zeitrahmen wurde ignoriert, weil es keine Treffer gab."
+            ]
+        },
+        {
+            "name": "erfahrung-gelockert",
+            "answers": {
+                "experienceLevel": "meister",
+                "groupSize": null,
+                "timeframes": [],
+                "regionSlugs": [],
+                "regionsAny": false,
+                "placeSlug": null,
+                "exotics": [],
+                "exoticAny": true,
+                "genres": [],
+                "rules": [],
+                "rulesAny": true,
+                "gmExperience": "einsteiger"
+            },
+            "titles": [
+                "Düne im Süden",
+                "Sturm über Myranor"
+            ],
+            "reasons": [
+                [
+                    "Richtet sich an Erfahrene und liegt damit nahe an deiner Wunschstufe (Meister).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Richtet sich an Erfahrene und liegt damit nahe an deiner Wunschstufe (Meister).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ]
+            ],
+            "fallbackNotes": [
+                "Zeitrahmen wurde ignoriert, weil nur 2 Treffer gefunden wurden.",
+                "Erfahrungsstufe wurde auf ±2 Stufen erweitert, weil nur 2 Treffer gefunden wurden."
+            ]
+        },
+        {
+            "name": "regeln-dsa4",
+            "answers": {
+                "experienceLevel": "einsteiger",
+                "groupSize": null,
+                "timeframes": [
+                    "evening_short",
+                    "multi"
+                ],
+                "regionSlugs": [],
+                "regionsAny": false,
+                "placeSlug": null,
+                "exotics": [],
+                "exoticAny": true,
+                "genres": [],
+                "rules": [
+                    "dsa4"
+                ],
+                "rulesAny": false,
+                "gmExperience": "einsteiger"
+            },
+            "titles": [
+                "Freier Weg",
+                "Sturm über Myranor"
+            ],
+            "reasons": [
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 4 (editionsunabhängig).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Richtet sich an Erfahrene und liegt damit nahe an deiner Wunschstufe (Einsteiger).",
+                    "Dauer passt zu mehrere Sitzungen (Abenteuer über mehrere Sitzungen).",
+                    "Verfügbar für DSA 4 (DSA 4).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ]
+            ],
+            "fallbackNotes": [
+                "Zeitrahmen wurde ignoriert, weil nur 1 Treffer gefunden wurde.",
+                "Erfahrungsstufe wurde auf ±2 Stufen erweitert, weil nur 1 Treffer gefunden wurde."
+            ]
+        },
+        {
+            "name": "gruppe-zwei",
+            "answers": {
+                "experienceLevel": "einsteiger",
+                "groupSize": "2",
+                "timeframes": [
+                    "evening_short"
+                ],
+                "regionSlugs": [],
+                "regionsAny": false,
+                "placeSlug": null,
+                "exotics": [],
+                "exoticAny": true,
+                "genres": [],
+                "rules": [
+                    "dsa5"
+                ],
+                "rulesAny": false,
+                "gmExperience": "einsteiger"
+            },
+            "titles": [
+                "Der Raub von Havena",
+                "Freier Weg",
+                "Hafen von Thorwal",
+                "Nur zu zweit",
+                "Unfertiges Heft",
+                "Handel in Gresham"
+            ],
+            "reasons": [
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (editionsunabhängig).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Geeignet für 2 Spielende.",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Kurzabenteuer für einen Abend).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ],
+                [
+                    "Geeignet für Einsteiger.",
+                    "Dauer passt zu einen kurzen Abend (Abenteuer für einen langen Abend bis zwei Sitzungen).",
+                    "Verfügbar für DSA 5 (DSA 5).",
+                    "Komplexität „niedrig“ passt zu deiner Spielleitungserfahrung (Einsteiger)."
+                ]
+            ],
+            "fallbackNotes": []
+        }
+    ]
+}

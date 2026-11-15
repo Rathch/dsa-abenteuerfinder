@@ -16,14 +16,17 @@ Lizenz: GPL-3.0-only · Verfassung: [`.specify/memory/constitution.md`](.specify
 
 - Spielleitungen beantworten wenige Fragen und erhalten eine nachvollziehbare, erklärte
   Rangliste passender Abenteuer.
-- Die Fachlogik (Matching, Bewertung) liegt rein in `app/Domain` und ist testgetrieben.
-- Die Oberfläche ist mit Laravel, Livewire und Tailwind gebaut, deutschsprachig und
-  nach WCAG 2.2 AA zugänglich.
-- Abenteuerdaten werden aus kuratierten Metadaten importiert (`adventures:import`).
+- Die Bewertung liegt in `frontend/src/domain` und läuft im Browser.
+- Die Oberfläche ist eine statische Vite-Seite, deutschsprachig und nach WCAG 2.2 AA
+  zugänglich.
+- Die Wiki-Pipeline bleibt PHP und schreibt `database/data/*.json`. Sie wird nicht
+  veröffentlicht.
 
 ## Stack
 
-Laravel 13 · PHP 8.5 · Livewire 4 / Volt · Tailwind 4 · Vite · SQLite · Pest · Playwright
+Öffentliche Seite: Vite · TypeScript · Tailwind 4 · Vitest · Playwright
+
+Wiki-Pipeline: Laravel 13 · PHP 8.5 · SQLite · Pest
 
 ## Setup
 
@@ -46,10 +49,12 @@ nvm install 24 && nvm use 24
 automatisch, sofern installiert.
 
 ```bash
-composer setup          # Abhängigkeiten, .env, Key, Migrationen, npm install + build
-composer dev            # Server, Logs und Vite parallel → http://127.0.0.1:8000
-php artisan adventures:import   # Abenteuer aus database/data/*.json
+npm ci
+npm run build           # catalog.json und dist/
+npx vite preview --host 127.0.0.1 --port 4173
 ```
+
+Die Wiki-Kommandos brauchen PHP 8.5 und Composer (`composer install`).
 
 ### Wiki-Harvest
 
@@ -95,46 +100,62 @@ npm run test:visual:update    # Screenshot-Baselines aktualisieren
 npm run test:visual:ci        # Playwright ohne Build (CI)
 ```
 
-Die Playwright-Läufe nutzen `scripts/playwright-serve.sh` mit isolierter SQLite-Datenbank
-(`database/playwright.sqlite`), frischen Migrationen und `adventures:import`.
+Playwright startet `vite preview`. Es gibt keine Playwright-SQLite.
 
-CI (`.github/workflows/ci.yml`): Pint, PHPStan, Deptrac, `composer validate`, Vite-Build,
-Pest mit Coverage (Domain ≥ 90 %), Playwright. Sicherheit (`security.yml`): Gitleaks,
-`composer audit`, `npm audit`.
+```bash
+npm run test:domain       # Vitest, Zeilenabdeckung von frontend/src/domain mindestens 90 %
+```
+
+CI (`.github/workflows/ci.yml`): Pint, PHPStan, Deptrac und Pest für die Wiki-Pipeline,
+`npm run build`, Vitest und Playwright gegen `vite preview`. Sicherheit (`security.yml`):
+Gitleaks, `composer audit`, `npm audit`.
 
 ## Architektur
 
 Abhängigkeitsrichtung (per Deptrac erzwungen):
 
 ```text
-Livewire / Http / Console → Services → Models → Domain
+Console → Services → Models → Domain
 ```
 
-`app/Domain` ist rein: kein Eloquent, keine Models, Services, Livewire oder HTTP.
+`app/Domain/Catalog` sind die Katalogtypen der Pipeline: kein Eloquent, keine Models,
+keine Services. Die Bewertung liegt in `frontend/src/domain`.
 
 ## Deployment
 
-Produktion: Docker Compose hinter Traefik auf
-`https://dsa-abenteuerfinder.rath-ulrich.de` (Details: [`deploy/README.md`](deploy/README.md)).
+Produktion ist GitHub Pages. Docker Compose ist nicht der Produktionsweg.
 
-```bash
-make build     # Image lokal bauen
-make push      # bauen + nach GHCR pushen
-make deploy    # bauen, pushen, Server aktualisieren
-make remote    # nur Server-Update
-```
+Der Build legt `dist/CNAME` mit genau `dsa-abenteuerfinder.rath-ulrich.de` ab. Die
+Pages-Action auf `main` führt `npm ci` und den Build aus und veröffentlicht `dist/`.
+Die geplante Wiki-Synchronisation committet mit dem Secret `CONTENTS_TOKEN`
+(Fine-grained PAT, nur dieses Repository, Contents schreiben). Ein Push mit
+`GITHUB_TOKEN` startet die Pages-Action nicht.
+
+1. Repository öffentlich halten (Pages im Free-Tarif).
+2. Nach dem ersten grünen Pages-Lauf: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. **Custom domain** auf `dsa-abenteuerfinder.rath-ulrich.de` setzen. Der Wert muss der Zeile in `CNAME` gleichen.
+4. Beim DNS-Anbieter der Zone `rath-ulrich.de` nur diesen Eintrag für den Hostnamen anlegen:
+   - Typ: `CNAME`
+   - Host: `dsa-abenteuerfinder`
+   - Ziel: `rathch.github.io`
+   - Nicht `rathch.github.io/dsa-abenteuerfinder` und kein zweiter A- oder AAAA-Eintrag für denselben Host.
+5. Proxy vor GitHub auslassen (bei Cloudflare „DNS only“).
+6. Warten, bis die DNS-Prüfung in den Pages-Einstellungen erfolgreich ist.
+7. Danach **Enforce HTTPS** einschalten. Vorher bleibt es aus.
+8. `https://dsa-abenteuerfinder.rath-ulrich.de/`, `/impressum/` und `/datenschutz/` öffnen.
+
+Die Apex-Domain `rath-ulrich.de` ist nicht das Ziel.
 
 ## Datensparsamkeit
 
-- Kein Nutzerkonto, kein Tracking, keine Drittanbieter-Ressourcen zur Laufzeit.
-- Nur zwingend erforderliche Daten werden verarbeitet; Logs bleiben minimal.
-- Nginx setzt Sicherheits-Header (CSP, `X-Frame-Options`, `Referrer-Policy`,
-  `Permissions-Policy`) und begrenzt Anfragen pro IP.
+- Kein Nutzerkonto, kein Tracking. Antworten bleiben unter `adventure_wizard` auf dem Gerät.
+- Cover bleiben Verweise auf `https://de.wiki-aventurica.de`. Weitere Fremdressourcen gibt es nicht.
+- GitHub Pages setzt keine Sicherheits-Header. Die Seite nutzt eine Meta-CSP und `no-referrer`.
 
 ## Barrierefreiheit und Performance
 
 - **WCAG 2.2 AA**: Tastaturbedienung, Kontrast, Fokus, Reflow; axe-core in Playwright.
-- **Budgets**: LCP ≤ 2,5 s · INP ≤ 200 ms · CLS ≤ 0,1 · serverseitige Antwort p95 ≤ 300 ms.
+- **Budgets**: LCP ≤ 2,5 s · INP ≤ 200 ms · CLS ≤ 0,1 · Rangliste unter 300 ms nach dem Parsen von `catalog.json`.
 
 ## Lizenz
 

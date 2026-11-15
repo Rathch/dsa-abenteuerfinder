@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-FileCopyrightText: 2026 Christian Rath-Ulrich -->
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 288 384" role="img" aria-label="Standardcover mit Auge und DSA">
+    <rect width="288" height="384" fill="#f3eee4"/>
+    <rect x="8" y="8" width="272" height="368" fill="none" stroke="#4a2e1c" stroke-width="6"/>
+    <rect x="18" y="18" width="252" height="348" fill="none" stroke="#7a4e28" stroke-width="2"/>
+    <g transform="translate(144 196) scale(3.7) translate(-32 -32.6)">
+        <path fill="#fffaf3" stroke="#4a2e1c" stroke-width="2.15" stroke-linejoin="round" d="M5.2 33.4C15.4 15.6 48.2 14.6 58.8 31.6C49.4 49.4 16.6 50.6 5.2 33.4Z"/>
+        <path fill="none" stroke="#4a2e1c" stroke-width="2.4" stroke-linecap="round" d="M6.2 32.2C16.2 16.8 47.4 15.8 57.6 30.8"/>
+        <circle cx="30.5" cy="32.4" r="11.6" fill="#9a6236"/>
+        <circle cx="30.5" cy="32.4" r="10" fill="#2a1810"/>
+        <circle cx="26.2" cy="27.2" r="1.5" fill="#f8e7c4"/>
+    </g>
+    <text x="138.4" y="196.5" text-anchor="middle" dominant-baseline="central" fill="#f8f1e4" font-family="Georgia, Palatino, 'Palatino Linotype', serif" font-size="17" font-weight="700" letter-spacing="0.4">DSA</text>
+</svg>

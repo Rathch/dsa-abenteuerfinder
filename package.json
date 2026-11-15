@@ -6,8 +6,9 @@
         "node": ">=24.0.0"
     },
     "scripts": {
-        "build": "vite build",
+        "build": "node --experimental-strip-types scripts/build-catalog.mjs && vite build",
         "dev": "vite",
+        "test:domain": "vitest run",
         "test:a11y": "npm run build && playwright test tests/visual/public/accessibility.spec.ts",
         "test:a11y:ci": "playwright test tests/visual/public/accessibility.spec.ts",
         "test:visual": "npm run build && playwright test",
@@ -20,10 +21,12 @@
         "@playwright/test": "^1.65.0",
         "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/vite": "^4.0.0",
+        "@vitest/coverage-v8": "^4.1.12",
         "concurrently": "^10.0.6",
         "laravel-vite-plugin": "^3.1",
         "tailwindcss": "^4.0.0",
-        "vite": "^8.0.0"
+        "vite": "^8.0.0",
+        "vitest": "^4.1.12"
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1"

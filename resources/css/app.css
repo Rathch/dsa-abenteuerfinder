@@ -5,6 +5,7 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
+@source '../../frontend/**/*.html';
 @source '../../app/Livewire/**/*.php';
 
 @custom-variant dark (&:is(.dark *));
@@ -640,6 +641,7 @@
         filter: var(--hex-ring) var(--hex-elevation);
     }
 
+    .theme-toggle:focus,
     .theme-toggle:focus-visible,
     .theme-toggle:focus-within {
         --hex-ring-ink: var(--focus);
@@ -1516,6 +1518,11 @@
         inset: 0;
         background: var(--hex-fill, var(--surface));
         clip-path: var(--hex-shape);
+    }
+
+    /* Die Hexform darf den Skip-Link nicht in den Fluss ziehen, sonst ragt er aus dem Sichtbereich. */
+    .skip-link {
+        position: absolute;
     }
 }
 

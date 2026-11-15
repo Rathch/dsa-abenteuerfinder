@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\WikiHarvest;
 
-use App\Domain\Matching\DurationCategory;
+use App\Domain\Catalog\DurationCategory;
 use Illuminate\Support\Str;
 
 /**

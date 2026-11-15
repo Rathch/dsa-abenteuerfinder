@@ -39,23 +39,15 @@ test.describe('Tastatur-Leitplanken', () => {
             const radio = page.locator('#ruleset-0');
             await expect(radio).toBeFocused();
 
-            // Tastaturfokus: die umgebende Antwortkarte zeigt einen sichtbaren Ring (Outline > 0).
-            const outline = await page.locator('label.choice', { has: radio }).evaluate((element) => {
-                const style = getComputedStyle(element);
-                return { width: parseFloat(style.outlineWidth), style: style.outlineStyle };
-            });
-            expect(outline.style).not.toBe('none');
-            expect(outline.width).toBeGreaterThanOrEqual(2);
+            // Tastaturfokus: die Hex-Antwortkarte zeigt den Fokusring (drop-shadow, nicht die Rechteck-Outline).
+            const choiceRing = await page.locator('label.choice', { has: radio }).evaluate((element) => getComputedStyle(element).filter);
+            expect(choiceRing).toContain('drop-shadow');
 
             const themeToggle = page.getByRole('switch', { name: 'Dunkles Design' });
             await themeToggle.focus();
             await expect(themeToggle).toBeFocused();
-            const toggleOutline = await themeToggle.evaluate((element) => {
-                const style = getComputedStyle(element);
-                return { width: parseFloat(style.outlineWidth), style: style.outlineStyle };
-            });
-            expect(toggleOutline.style).not.toBe('none');
-            expect(toggleOutline.width).toBeGreaterThanOrEqual(2);
+            const toggleRing = await themeToggle.evaluate((element) => getComputedStyle(element).filter);
+            expect(toggleRing).toContain('drop-shadow');
         });
     }
 

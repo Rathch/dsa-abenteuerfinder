@@ -62,9 +62,14 @@ it('harvests from cache fixtures and applies without overwriting curated complet
     }
 
     $before = json_decode((string) file_get_contents($tmpData.'/adventures.json'), true);
-    $curatedSlug = $before['adventures'][0]['slug'];
-    $curatedTitle = $before['adventures'][0]['title'];
-    expect($before['adventures'][0]['incomplete'])->toBeFalse();
+    $curated = collect($before['adventures'])->first(
+        fn (array $adventure): bool => ($adventure['incomplete'] ?? false) === false
+            && ! in_array($adventure['series'] ?? '', ['va-reihe', 'a-reihe'], true),
+    );
+    expect($curated)->toBeArray();
+    $curatedSlug = $curated['slug'];
+    $curatedTitle = $curated['title'];
+    $curatedDescription = $curated['short_description'];
 
     // Simuliere Kollision: Harvest-Titel = kuratierter Titel.
     $rows[] = [
@@ -93,7 +98,7 @@ it('harvests from cache fixtures and applies without overwriting curated complet
     $bySlug = collect($after['adventures'])->keyBy('slug');
 
     expect($bySlug[$curatedSlug]['incomplete'])->toBeFalse()
-        ->and($bySlug[$curatedSlug]['short_description'])->toBe($before['adventures'][0]['short_description'])
+        ->and($bySlug[$curatedSlug]['short_description'])->toBe($curatedDescription)
         ->and($summary['skipped'])->toBeGreaterThanOrEqual(1)
         ->and($summary['added'])->toBeGreaterThanOrEqual(3);
 

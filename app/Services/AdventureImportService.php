@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Domain\Matching\LocationKind;
+use App\Domain\Catalog\LocationKind;
 use App\Models\Adventure;
 use App\Models\GenreTag;
 use App\Models\Location;

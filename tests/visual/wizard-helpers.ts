@@ -12,12 +12,9 @@ export function reviewHeading(page: Page) {
     return page.getByRole('heading', { level: 3, name: 'Passt das so?' });
 }
 
-/** Wartet auf den nächsten Livewire-Update. */
-async function waitForLivewire(page: Page): Promise<void> {
-    await page.waitForResponse(
-        (response) => response.url().includes('/livewire') && response.ok(),
-        { timeout: 15_000 },
-    );
+/** Die statische Seite wertet lokal aus. Der Name bleibt, damit die bestehenden Abläufe gleich aufgebaut sind. */
+async function waitForLivewire(_page: Page): Promise<void> {
+    await Promise.resolve();
 }
 
 /** Wählt eine Checkbox und bestätigt die Mehrfachfrage mit Weiter. */

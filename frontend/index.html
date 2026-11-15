@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark">
+        <meta name="referrer" content="no-referrer">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' https://de.wiki-aventurica.de; connect-src 'self'; object-src 'none'; base-uri 'self'">
+        <title>Finde dein nächstes Abenteuer – DSA-Abenteuerfinder</title>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <meta name="description" content="Finde das passende Abenteuer für Das Schwarze Auge: Wähle Regeln, Region und Geschmack – und erhalte Empfehlungen für deine Spielrunde.">
+        <script src="/theme.js"></script>
+        <link rel="stylesheet" href="/src/styles.css">
+    </head>
+    <body class="min-h-screen flex flex-col">
+        <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+        <header class="site-header">
+            <div class="site-container flex flex-wrap items-center justify-between gap-4 py-4">
+                <a href="/" class="site-brand" aria-current="page">
+                    <span aria-hidden="true" class="site-brand-mark">
+                        <svg class="logo-eye" viewBox="0 0 64 64" fill="none" aria-hidden="true" focusable="false">
+                            <path class="eye-sclera" d="M5.2 33.4C15.4 15.6 48.2 14.6 58.8 31.6C49.4 49.4 16.6 50.6 5.2 33.4Z" />
+                            <path class="eye-lid" d="M6.2 32.2C16.2 16.8 47.4 15.8 57.6 30.8" />
+                            <circle class="eye-iris" cx="30.5" cy="32.4" r="11.6" />
+                            <circle class="eye-pupil" cx="30.5" cy="32.4" r="10" />
+                            <circle class="eye-glass" cx="30.5" cy="32.4" r="10" />
+                            <circle class="eye-highlight" cx="26.6" cy="28.4" r="2.3" />
+                            <path class="eye-handle" d="M38.3 40.2 46.6 48.5" />
+                        </svg>
+                    </span>
+                    <span>DSA-Abenteuerfinder</span>
+                </a>
+                <button type="button" class="theme-toggle" data-theme-toggle role="switch" aria-checked="false" aria-label="Dunkles Design">
+                    <span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span>
+                    <span class="theme-toggle-label">Dunkles Design</span>
+                </button>
+            </div>
+        </header>
+        <main id="main-content" tabindex="-1" class="site-container flex-1 w-full py-8 sm:py-12">
+            <div class="space-y-8">
+                <div class="hero-lead space-y-3">
+                    <h1>Finde dein nächstes DSA-Abenteuer</h1>
+                    <p class="max-w-prose text-lg text-muted">Sag uns, wonach ihr sucht – Regeln, Helden, Region und mehr. Die Auswahl schränkt sich mit jeder Angabe ein, danach schlagen wir passende Abenteuer für „Das Schwarze Auge“ vor.</p>
+                </div>
+                <div id="abenteuer-finden" class="scroll-mt-28"></div>
+            </div>
+        </main>
+        <footer class="site-footer">
+            <div class="site-container flex flex-col gap-4 py-6">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <nav aria-label="Rechtliches und Hilfe">
+                        <ul class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+                            <li><a href="/impressum" class="text-link">Impressum</a></li>
+                            <li><a href="/datenschutz" class="text-link">Datenschutz</a></li>
+                            <li><a href="https://elf.ulisses-spiele.de/" class="text-link" target="_blank" rel="noopener noreferrer">ELF (Ulisses)<span class="sr-only"> (öffnet in neuem Tab)</span></a></li>
+                            <li><a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-link" target="_blank" rel="noopener noreferrer">GNU GPLv3<span class="sr-only"> (öffnet in neuem Tab)</span></a></li>
+                            <li><a href="https://buymeacoffee.com/rathch" class="text-link" target="_blank" rel="noopener noreferrer">Buy Me a Coffee<span class="sr-only"> (öffnet in neuem Tab)</span></a></li>
+                        </ul>
+                    </nav>
+                    <a href="https://github.com/Rathch/dsa-abenteuerfinder/issues/new" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer">Fehler melden<span class="sr-only"> (öffnet in neuem Tab)</span></a>
+                </div>
+                <div class="fan-notice">
+                    <img src="/images/fan-produkt-logo.png" alt="Fanprodukt zum Rollenspiel Das Schwarze Auge" width="220" height="62" loading="lazy" decoding="async">
+                    <p>DAS SCHWARZE AUGE, AVENTURIEN, DERE, MYRANOR, THARUN, UTHURIA und RIESLAND sind eingetragene Marken der Significant Fantasy Medienrechte GbR. Ohne vorherige schriftliche Genehmigung der Ulisses Medien und Spiel Distribution GmbH ist eine Verwendung der genannten Markenzeichen nicht gestattet.</p>
+                </div>
+            </div>
+        </footer>
+        <script type="module" src="/src/boot.ts"></script>
+    </body>
+</html>

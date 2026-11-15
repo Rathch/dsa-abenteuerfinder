@@ -23,13 +23,6 @@ async function openThemed(page: Page, theme: Theme, path = '/'): Promise<void> {
     await expect(page.locator('html')).toHaveClass(theme === 'dark' ? /dark/ : /^(?!.*dark).*$/);
 }
 
-async function loginAdmin(page: Page): Promise<void> {
-    await page.goto('/verwaltung');
-    await page.getByLabel('Passwort').fill('secret');
-    await page.getByRole('button', { name: 'Anmelden' }).click();
-    await expect(page.getByRole('heading', { level: 1, name: 'Abenteuer' })).toBeVisible();
-}
-
 for (const theme of themes) {
     test.describe(`axe (${theme})`, () => {
         for (const { path, name } of routes) {
@@ -74,23 +67,6 @@ for (const theme of themes) {
             await completeWizard(page);
             await expect(page.getByTestId('recommendation').first()).toBeVisible();
 
-            await expectNoA11yViolations(page);
-        });
-
-        test('Verwaltung Abenteuerliste hat keine axe-Verstöße', async ({ page }) => {
-            await setTheme(page, theme);
-            await loginAdmin(page);
-            await expect(page.locator('html')).toHaveClass(theme === 'dark' ? /dark/ : /^(?!.*dark).*$/);
-            await expectNoA11yViolations(page);
-        });
-
-        test('Verwaltung Abenteuerformular hat keine axe-Verstöße', async ({ page }) => {
-            await setTheme(page, theme);
-            await loginAdmin(page);
-            await page.getByRole('link', { name: 'Bearbeiten' }).first().click();
-            await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-            await expect(page.locator('#wiki_url')).toBeVisible();
-            await expect(page.locator('html')).toHaveClass(theme === 'dark' ? /dark/ : /^(?!.*dark).*$/);
             await expectNoA11yViolations(page);
         });
     });

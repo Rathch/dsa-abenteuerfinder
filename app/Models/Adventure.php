@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Domain\Matching\Complexity;
-use App\Domain\Matching\DurationCategory;
-use App\Domain\Matching\ExperienceLevel;
-use App\Domain\Matching\LocationType;
-use App\Domain\Matching\RuleVersion;
+use App\Domain\Catalog\Complexity;
+use App\Domain\Catalog\DurationCategory;
+use App\Domain\Catalog\ExperienceLevel;
+use App\Domain\Catalog\LocationType;
+use App\Domain\Catalog\RuleVersion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

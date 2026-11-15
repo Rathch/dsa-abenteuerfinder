@@ -1,31 +1,15 @@
-import path from 'path';
 import { defineConfig, devices } from '@playwright/test';
-import { getPlaywrightBaseUrl, loadPlaywrightEnvFromDotenv } from './tests/visual/playwright-env';
-
-loadPlaywrightEnvFromDotenv();
 
 /**
- * Visuelle Regression, Barrierefreiheit (axe, WCAG 2.2 AA) und Browser-Flows.
- * — Lokal und in CI startet Playwright denselben isolierten Laravel-Server (scripts/playwright-serve.sh,
- *   SQLite database/playwright.sqlite, frische Migrationen, Abenteuer-Import).
- * — Projekte: chromium-desktop (alle Specs) und chromium-mobile (390x844, nur mit @mobile markierte Tests).
- * Baselines: `npm run test:visual:update` (ideal: Linux/WSL wie CI).
+ * Visuelle Regression, Barrierefreiheit (axe, WCAG 2.2 AA) und Browser-Flows
+ * gegen die statische Seite (`vite preview`).
  */
-const baseURL = getPlaywrightBaseUrl();
+const baseURL = 'http://127.0.0.1:4173';
 const shouldManageServer = process.env.PLAYWRIGHT_MANAGE_SERVER !== '0';
-const playwrightDbPath =
-    process.env.PLAYWRIGHT_DB_DATABASE ?? path.join(process.cwd(), 'database', 'playwright.sqlite');
 const configuredWorkers = Math.max(
     1,
     Number.parseInt(process.env.PLAYWRIGHT_WORKERS ?? (process.env.CI ? '2' : '4'), 10) || 4
 );
-
-// Isolierte SQLite-DB, damit lokale und CI-Läufe identische Daten sehen.
-process.env.APP_ENV = 'testing';
-process.env.DB_CONNECTION = 'sqlite';
-process.env.DB_DATABASE = playwrightDbPath;
-process.env.DB_BUSY_TIMEOUT = process.env.DB_BUSY_TIMEOUT ?? '5000';
-process.env.DB_JOURNAL_MODE = process.env.DB_JOURNAL_MODE ?? 'WAL';
 
 export default defineConfig({
     testDir: './tests/visual',
@@ -55,11 +39,10 @@ export default defineConfig({
     },
     webServer: shouldManageServer
         ? {
-              command: 'bash ./scripts/playwright-serve.sh',
-              url: `${baseURL}/up`,
-              // Nie einen eventuell veralteten Dev-Server wiederverwenden (deterministische Baselines).
+              command: 'npm run build && npx vite preview --host 127.0.0.1 --port 4173 --strictPort',
+              url: baseURL,
               reuseExistingServer: false,
-              timeout: 120_000,
+              timeout: 180_000,
           }
         : undefined,
     projects: [

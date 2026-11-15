@@ -1,7 +1,7 @@
 <?php
 
-use App\Domain\Matching\LocationKind;
-use App\Domain\Matching\LocationType;
+use App\Domain\Catalog\LocationKind;
+use App\Domain\Catalog\LocationType;
 use App\Models\Adventure;
 use App\Models\GenreTag;
 use App\Models\Location;
@@ -135,11 +135,11 @@ describe('shipped fixtures', function (): void {
     it('updates existing rows on re-import', function (): void {
         $importer = new AdventureImportService;
         $importer->import();
-        Adventure::where('slug', 'salz-und-silber')->update(['title' => 'Manipuliert']);
+        Adventure::where('slug', 'offenbarung-des-himmels-va001')->update(['title' => 'Manipuliert']);
 
         $importer->import();
 
-        expect(Adventure::where('slug', 'salz-und-silber')->firstOrFail()->title)->toBe('Salz und Silber');
+        expect(Adventure::where('slug', 'offenbarung-des-himmels-va001')->firstOrFail()->title)->toBe('Offenbarung des Himmels');
     });
 });
 
@@ -172,6 +172,7 @@ describe('schema validation', function (): void {
 
     it('requires a primary location for point adventures', function (): void {
         $dir = copiedDataDir(function (array $data): array {
+            $data['adventures'][0]['location_type'] = 'point';
             $data['adventures'][0]['primary_location'] = null;
 
             return $data;
@@ -269,6 +270,8 @@ describe('reference validation', function (): void {
 
     it('detects a place outside its primary region', function (): void {
         $dir = copiedDataDir(function (array $data): array {
+            $data['adventures'][0]['location_type'] = 'point';
+            $data['adventures'][0]['primary_location'] = 'havena';
             $data['adventures'][0]['primary_region'] = 'suedwest';
 
             return $data;

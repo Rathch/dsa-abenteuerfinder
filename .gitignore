@@ -18,6 +18,8 @@
 /auth.json
 /node_modules
 /public/build
+/dist
+/frontend/public/catalog.json
 /test-results
 /playwright-report
 /blob-report

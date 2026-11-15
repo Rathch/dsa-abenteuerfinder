@@ -4,6 +4,8 @@ SPDX-FileCopyrightText: 2026 Christian Rath-Ulrich
 SPDX-License-Identifier: GPL-3.0-only
 
 Sync Impact Report
+- Version change: 1.1.0 → 2.0.0
+- Geändert: I, II, IV, V, VI – öffentliche Seite statisch, Bewertung in Vitest, Pest nur für die Wiki-Pipeline, Playwright gegen vite preview, Header-Lücken unter Complexity Tracking
 - Version change: 1.0.0 → 1.1.0
 - Geändert: VIII – Kurzbeschreibungen aus Wiki Aventurica (CC-BY-SA, mit Quellenlink) ausdrücklich erlaubt
 - Version change: (neu) → 1.0.0
@@ -21,22 +23,27 @@ zu finden. Diese Verfassung ist für Spezifikationen, Pläne und Implementierung
 
 ### I. Test-Driven Development (NICHT VERHANDELBAR)
 
-Fachlogik wird testgetrieben entwickelt: Zuerst schlägt ein Pest-Test fehl (Red), dann
-folgt die minimale Implementierung (Green), dann Refactoring. Fehler MÜSSEN zuerst durch
-einen fehlschlagenden Regressionstest reproduziert werden. Die Schicht **`app/Domain`**
-MUSS eine Zeilenabdeckung von **mindestens 90 %** aufweisen; die Abdeckung der Gesamt-
-Codebasis DARF ohne Begründung im PR nicht sinken. Zusätzlich MUSS die Schichtentrennung
-über **Deptrac** (`deptrac.yaml`) und **PHPStan/Larastan** (Level 8, `phpstan.neon.dist`)
-sowie **Laravel Pint** fehlerfrei bestehen (`composer run lint`).
+Die öffentliche Bewertung wird testgetrieben in TypeScript entwickelt. Zuerst schlägt ein
+Vitest-Test fehl (Red), dann folgt die minimale Implementierung (Green), dann Refactoring.
+Die Schicht **`frontend/src/domain`** MUSS eine Zeilenabdeckung von **mindestens 90 %**
+aufweisen. Die öffentliche Seite ist nicht an Pest gebunden.
+
+Die Wiki-Pipeline bleibt PHP und wird mit Pest entwickelt: Zuerst schlägt der Pest-Test
+fehl, dann die Implementierung. Fehler MÜSSEN zuerst durch einen fehlschlagenden
+Regressionstest reproduziert werden. Für das verbleibende PHP MÜSSEN **Deptrac**
+(`deptrac.yaml`), **PHPStan/Larastan** (Level 8, `phpstan.neon.dist`) und **Laravel Pint**
+fehlerfrei bestehen (`composer run lint`).
 
 ### II. Architektur und Codequalität
 
-Die Domain-Schicht (`app/Domain`) ist rein: keine Abhängigkeit auf Eloquent, Models,
-Services, Livewire oder HTTP. Abhängigkeitsrichtung: Livewire/Http/Console → Services →
-Models → Domain. Livewire-Komponenten greifen nicht direkt auf Models zu. Öffentliche
-Schnittstellen MÜSSEN klar benannt und typisiert sein; Fehlerfälle werden deterministisch
-behandelt (keine stillen Failures). Bewusste Abweichungen MÜSSEN im Plan unter
-„Complexity Tracking“ begründet werden.
+Zwei Artefakte, ein Repository. Die veröffentlichte Seite ist das statische Vite-Build
+(`dist/`). Die Bewertung liegt in `frontend/src/domain` und kennt weder DOM noch Netz.
+Die Wiki-Pipeline bleibt PHP und wird nicht veröffentlicht. `app/Domain` enthält nur die
+Katalogtypen der Pipeline und bleibt rein: keine Abhängigkeit auf Eloquent, Models,
+Services oder HTTP. Abhängigkeitsrichtung der Pipeline: Console → Services → Models →
+Domain. Öffentliche Schnittstellen MÜSSEN klar benannt und typisiert sein; Fehlerfälle
+werden deterministisch behandelt (keine stillen Failures). Bewusste Abweichungen MÜSSEN
+im Plan unter „Complexity Tracking“ begründet werden.
 
 ### III. Barrierefreiheit (WCAG 2.2 AA)
 
@@ -47,26 +54,30 @@ Prüfungen (axe-core über Playwright) MÜSSEN ohne Verstöße der Stufe AA lauf
 
 ### IV. Visuelle und Ende-zu-Ende-Tests (Playwright)
 
-Nutzerrelevante Abläufe MÜSSEN mit **Playwright** abgedeckt sein, inklusive
-**Screenshot-Baselines** (`npm run test:visual`, Aktualisierung mit
-`npm run test:visual:update`, Baselines werden eingecheckt). Der E2E-Server nutzt eine
-isolierte SQLite-Datenbank (`database/playwright.sqlite`, `scripts/playwright-serve.sh`).
-Visuelle Änderungen MÜSSEN im PR bewusst und nachvollziehbar sein.
+Nutzerrelevante Abläufe MÜSSEN mit **Playwright** gegen **`vite preview`** abgedeckt sein,
+inklusive **Screenshot-Baselines** (`npm run test:visual`, Aktualisierung mit
+`npm run test:visual:update`, Baselines werden eingecheckt). Es gibt keinen
+Playwright-Server mit SQLite. Visuelle Änderungen MÜSSEN im PR bewusst und
+nachvollziehbar sein.
 
 ### V. Performance
 
-Features MÜSSEN messbare Budgets einhalten oder definieren (z. B. Largest Contentful
-Paint ≤ 2,5 s, Interaction to Next Paint ≤ 200 ms, CLS ≤ 0,1, Suchantwort p95 ≤ 300 ms
-serverseitig, JS-Bundle klein halten). Budgets stehen im Plan; Regressionen werden im
-Review mit Messung adressiert. Abfragen MÜSSEN N+1-frei und indiziert sein.
+Features MÜSSEN messbare Budgets einhalten oder definieren. Für die öffentliche Seite:
+Largest Contentful Paint ≤ 2,5 s, Interaction to Next Paint ≤ 200 ms, CLS ≤ 0,1. Die
+Rangliste MUSS auf dem CI-Browser in unter 300 ms stehen, nachdem `catalog.json` geparst
+ist. Der Katalog wird erst nach dem ersten Paint geladen. Budgets stehen im Plan;
+Regressionen werden im Review mit Messung adressiert.
 
 ### VI. Sicherheit
 
-Eingaben MÜSSEN validiert, Ausgaben escaped werden. Produktion läuft mit
-Sicherheits-Headern (CSP, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
-`Permissions-Policy`), Rate-Limiting und HTTPS. Geheimnisse gehören nie ins Repository
-(Gitleaks in CI). Abhängigkeiten werden mit `composer audit` und `npm audit` geprüft;
-bekannte Schwachstellen mit Schweregrad „high“ oder höher blockieren den Merge.
+Eingaben MÜSSEN validiert, Ausgaben escaped werden. Die Seite läuft über HTTPS. Skripte
+und Styles kommen von derselben Herkunft. Eine Meta-CSP erlaubt Skripte und Styles nur
+von `'self'` und Bilder von `'self'` sowie `https://de.wiki-aventurica.de`. Der Referrer
+ist `no-referrer`. GitHub Pages kann CSP, `X-Frame-Options`, `Referrer-Policy` und
+`Permissions-Policy` nicht als HTTP-Header setzen; diese Lücke steht unter Complexity
+Tracking. Geheimnisse gehören nie ins Repository (Gitleaks in CI). Abhängigkeiten werden
+mit `composer audit` und `npm audit` geprüft; bekannte Schwachstellen mit Schweregrad
+„high“ oder höher blockieren den Merge.
 
 ### VII. Datensparsamkeit
 
@@ -98,8 +109,10 @@ Abhängigkeiten MÜSSEN GPL-3.0-kompatibel lizenziert sein.
 
 ## Arbeitsweise & Nachweis
 
-- Vor Merge MÜSSEN Pint, PHPStan, Deptrac, Pest (inkl. Domain-Coverage ≥ 90 %),
-  Frontend-Build und Playwright grün sein (CI) oder Ausnahmen dokumentiert werden.
+- Vor Merge MÜSSEN für die Wiki-Pipeline Pint, PHPStan, Deptrac und Pest grün sein.
+  Für die öffentliche Seite MÜSSEN Vitest (Zeilenabdeckung von `frontend/src/domain`
+  ≥ 90 %), `npm run build` und Playwright gegen `vite preview` grün sein (CI) oder
+  Ausnahmen dokumentiert werden.
 - Reviews prüfen explizit: Tests zuerst?, Barrierefreiheit?, Performance-Budgets?,
   Sicherheit?, Datensparsamkeit?
 - Bei Konflikt zwischen Verfassung und Spezifikation gilt die Verfassung.
@@ -110,4 +123,10 @@ Abhängigkeiten MÜSSEN GPL-3.0-kompatibel lizenziert sein.
 Datum der letzten Änderung und ggf. Kommunikation im Team. PRs MÜSSEN die Einhaltung der
 Prinzipien adressieren oder Abweichungen unter „Complexity Tracking“ begründen.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-05 | **Last Amended**: 2026-11-06
+## Complexity Tracking
+
+- **Prinzip VI, Antwort-Header.** GitHub Pages lässt CSP, `X-Frame-Options`, `Referrer-Policy` und `Permissions-Policy` nicht als HTTP-Header setzen. Ersatz: HTTPS durch GitHub, keine Cookies, keine Verwaltung, Meta-CSP und `<meta name="referrer" content="no-referrer">`. `frame-ancestors` kann eine Meta-CSP nicht setzen.
+- **Prinzip VII, Cover.** Bilder von `de.wiki-aventurica.de` bleiben Fremdabrufe. Keine weiteren Fremdressourcen.
+- **Zwei Testläufer.** Vitest für die Bewertung, Pest für die Wiki-Pipeline. Deptrac gilt nur für das verbleibende PHP.
+
+**Version**: 2.0.0 | **Ratified**: 2026-11-05 | **Last Amended**: 2026-11-15
