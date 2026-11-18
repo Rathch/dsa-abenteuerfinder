@@ -34,7 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    void fetch('/catalog.json')
+    const catalogUrl = new URL('catalog.json', new URL('..', import.meta.url));
+
+    void fetch(catalogUrl)
         .then((response) => response.json())
         .then((documentJson: PublicCatalog) => {
             mountWizard(root, documentJson);

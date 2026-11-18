@@ -95,8 +95,8 @@ test.describe('Tastatur-Leitplanken', () => {
     test('Fußzeile verlinkt Impressum und Datenschutz', async ({ page }) => {
         await page.goto('/');
         const footer = page.getByRole('contentinfo');
-        await expect(footer.getByRole('link', { name: 'Impressum' })).toHaveAttribute('href', /\/impressum$/);
-        await expect(footer.getByRole('link', { name: 'Datenschutz' })).toHaveAttribute('href', /\/datenschutz$/);
+        await expect(footer.getByRole('link', { name: 'Impressum' })).toHaveAttribute('href', /impressum$/);
+        await expect(footer.getByRole('link', { name: 'Datenschutz' })).toHaveAttribute('href', /datenschutz$/);
         await expect(footer.getByRole('link', { name: /ELF \(Ulisses\)/ })).toHaveAttribute('href', 'https://elf.ulisses-spiele.de/');
         await expect(footer.getByRole('link', { name: /GNU GPLv3/ })).toHaveAttribute('href', 'https://www.gnu.org/licenses/gpl-3.0.html');
         await expect(footer.getByRole('link', { name: /Buy Me a Coffee/ })).toHaveAttribute('href', 'https://buymeacoffee.com/rathch');

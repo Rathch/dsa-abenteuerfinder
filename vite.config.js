@@ -32,7 +32,7 @@ function redirectDirectoryIndexes() {
 // Keine externen Webfonts: System-Schriftstacks (Datenschutz, Performance, deterministische Screenshots).
 export default defineConfig({
     root: 'frontend',
-    base: '/',
+    base: './',
     publicDir: 'public',
     plugins: [tailwindcss(), redirectDirectoryIndexes()],
     build: {

@@ -578,7 +578,7 @@ function card(candidate: AdventureCandidate, reasons: string[]): HTMLLIElement {
         article.append(button);
     } else {
         const image = document.createElement('img');
-        image.src = '/images/cover-fallback.svg';
+        image.src = new URL('../images/cover-fallback.svg', import.meta.url).href;
         image.alt = '';
         image.width = 96;
         image.height = 128;
