@@ -127,9 +127,9 @@ Produktion ist GitHub Pages. Docker Compose ist nicht der Produktionsweg.
 
 Der Build legt `dist/CNAME` mit genau `dsa-abenteuerfinder.rath-ulrich.de` ab. Die
 Pages-Action auf `main` führt `npm ci` und den Build aus und veröffentlicht `dist/`.
-Die geplante Wiki-Synchronisation committet mit dem Secret `CONTENTS_TOKEN`
-(Fine-grained PAT, nur dieses Repository, Contents schreiben). Ein Push mit
-`GITHUB_TOKEN` startet die Pages-Action nicht.
+Die geplante Wiki-Synchronisation committet den Katalog mit dem Workflow-Token.
+Ein solcher Push startet die Pages-Action nicht erneut; nach einem erfolgreichen
+Lauf veröffentlicht `workflow_run` die Seite trotzdem.
 
 1. Repository öffentlich halten (Pages im Free-Tarif).
 2. Nach dem ersten grünen Pages-Lauf: **Settings → Pages → Build and deployment → Source: GitHub Actions**.

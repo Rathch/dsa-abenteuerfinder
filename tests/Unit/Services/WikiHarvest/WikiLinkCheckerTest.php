@@ -105,16 +105,50 @@ it('gives up when the wiki connection fails', function (): void {
     ]))->toThrow(ConnectionException::class);
 });
 
-it('matches the catalog wiki urls that wiki aventurica does not have', function (): void {
+it('classifies the catalog wiki urls from the recorded missing list', function (): void {
+    Http::preventStrayRequests();
+
     /** @var array{adventures: list<array{slug: string, wiki_url: string}>} $catalog */
     $catalog = json_decode((string) file_get_contents(database_path('data/adventures.json')), true, flags: JSON_THROW_ON_ERROR);
     /** @var list<string> $expected */
     $expected = json_decode((string) file_get_contents(base_path('tests/Fixtures/wiki/catalog-wiki-urls-without-page.json')), true, flags: JSON_THROW_ON_ERROR);
+    $expectedLookup = array_fill_keys($expected, true);
 
     $byUrl = [];
+    /** @var array<string, true> $missingTitles */
+    $missingTitles = [];
     foreach ($catalog['adventures'] as $adventure) {
         $byUrl[$adventure['wiki_url']] = $adventure['slug'];
+        if (! isset($expectedLookup[$adventure['slug']])) {
+            continue;
+        }
+
+        $path = parse_url($adventure['wiki_url'], PHP_URL_PATH);
+        if (! is_string($path) || ! str_starts_with($path, '/wiki/') || $path === '/wiki/') {
+            continue;
+        }
+
+        $title = str_replace('_', ' ', rawurldecode(substr($path, strlen('/wiki/'))));
+        $missingTitles[mb_strtolower($title)] = true;
     }
+
+    Http::fake(function (Request $request) use ($missingTitles) {
+        parse_str($request->body(), $fields);
+        $titles = explode('|', (string) ($fields['titles'] ?? ''));
+        $pages = [];
+        foreach ($titles as $index => $title) {
+            $key = mb_strtolower(str_replace('_', ' ', $title));
+            $pages[(string) ($index + 1)] = isset($missingTitles[$key])
+                ? ['ns' => 0, 'title' => $title, 'missing' => '']
+                : ['pageid' => $index + 1, 'ns' => 0, 'title' => $title];
+        }
+
+        return Http::response([
+            'query' => [
+                'pages' => $pages,
+            ],
+        ]);
+    });
 
     $disclaimer = 'https://de.wiki-aventurica.de/wiki/Wiki_Aventurica:Ulisses-Disclaimer';
     $missing = (new WikiLinkChecker)->missingPages([...array_keys($byUrl), $disclaimer]);
@@ -125,4 +159,6 @@ it('matches the catalog wiki urls that wiki aventurica does not have', function 
 
     expect($missing)->not->toContain($disclaimer)
         ->and($missingSlugs)->toBe($expected);
+
+    Http::assertSent(fn (Request $request): bool => str_contains($request->url(), 'de.wiki-aventurica.de/de/api.php'));
 });

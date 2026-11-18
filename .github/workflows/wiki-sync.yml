@@ -10,22 +10,20 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   sync:
-    name: Wiki-Katalog mit CONTENTS_TOKEN committen
+    name: Wiki-Katalog prüfen und committen
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          token: ${{ secrets.CONTENTS_TOKEN }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.5"
-          extensions: mbstring, xml, ctype, json, tokenizer, dom
+          extensions: mbstring, xml, ctype, json, tokenizer, dom, curl
           coverage: none
           tools: composer:v2
 
@@ -40,7 +38,7 @@ jobs:
       - name: Sync wiki catalog
         run: php artisan adventures:sync-wiki --no-interaction
 
-      - name: Commit catalog with CONTENTS_TOKEN
+      - name: Commit catalog
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
