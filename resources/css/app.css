@@ -509,6 +509,7 @@
         font-size: clamp(1.4rem, 1.2rem + 1vw, 1.85rem);
         font-weight: 700;
         line-height: 1.2;
+        overflow-wrap: break-word;
     }
 
     .recommendation-card {
@@ -518,7 +519,8 @@
         grid-template-areas:
             "heading"
             "cover"
-            "body";
+            "body"
+            "actions";
     }
 
     .recommendation-heading {
@@ -526,26 +528,46 @@
         min-width: 0;
     }
 
+    .recommendation-description {
+        margin-top: 0.35rem;
+        overflow-wrap: break-word;
+    }
+
     .recommendation-card > .cover-preview,
     .recommendation-card > .cover-thumb {
         grid-area: cover;
         justify-self: start;
+        width: 9rem;
+        max-width: 100%;
+        min-width: 0;
     }
 
-    .recommendation-body {
+    .recommendation-body,
+    .recommendation-reasons {
         grid-area: body;
+        min-width: 0;
+    }
+
+    .recommendation-actions {
+        grid-area: actions;
+        justify-self: start;
         min-width: 0;
     }
 
     @media (min-width: 640px) {
         .recommendation-card {
-            grid-template-columns: auto minmax(0, 1fr);
-            column-gap: 1rem;
+            grid-template-columns: 9rem minmax(0, 1fr);
+            column-gap: 1.25rem;
             row-gap: 1.25rem;
             align-items: start;
             grid-template-areas:
                 "cover heading"
-                "body body";
+                "body body"
+                "actions actions";
+        }
+
+        .recommendation-card:has(.cover-preview[aria-expanded='true']) {
+            grid-template-columns: minmax(9rem, 27rem) minmax(0, 1fr);
         }
     }
 
@@ -1456,13 +1478,15 @@
 
     @media (min-width: 640px) {
         .cover-preview[aria-expanded='true'] {
-            max-width: 18rem;
+            width: auto;
+            max-width: min(27rem, 100%);
         }
     }
 
     .cover-thumb {
-        width: 6rem;
-        height: 8rem;
+        width: 9rem;
+        height: 12rem;
+        max-width: 100%;
         object-fit: cover;
         clip-path: none;
         border-radius: 0;
@@ -1471,8 +1495,8 @@
     .cover-preview[aria-expanded='true'] .cover-thumb {
         width: auto;
         height: auto;
-        max-width: 18rem;
-        max-height: 24rem;
+        max-width: min(27rem, 100%);
+        max-height: 36rem;
         object-fit: contain;
     }
 

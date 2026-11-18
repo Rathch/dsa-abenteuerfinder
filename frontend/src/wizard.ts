@@ -558,6 +558,14 @@ function card(candidate: AdventureCandidate, reasons: string[]): HTMLLIElement {
     series.className = 'text-muted';
     series.textContent = `Reihe: ${candidate.seriesName}`;
     header.append(title, series);
+
+    const description = candidate.displayDescription();
+    if (description !== null) {
+        const text = document.createElement('p');
+        text.className = 'recommendation-description';
+        text.textContent = description.text;
+        header.append(text);
+    }
     article.append(header);
 
     if (candidate.coverUrl) {
@@ -570,8 +578,8 @@ function card(candidate: AdventureCandidate, reasons: string[]): HTMLLIElement {
         const image = document.createElement('img');
         image.src = candidate.coverUrl;
         image.alt = '';
-        image.width = 96;
-        image.height = 128;
+        image.width = 144;
+        image.height = 192;
         image.className = 'cover-thumb';
         image.loading = 'lazy';
         button.append(image);
@@ -580,8 +588,8 @@ function card(candidate: AdventureCandidate, reasons: string[]): HTMLLIElement {
         const image = document.createElement('img');
         image.src = new URL('../images/cover-fallback.svg', import.meta.url).href;
         image.alt = '';
-        image.width = 96;
-        image.height = 128;
+        image.width = 144;
+        image.height = 192;
         image.className = 'cover-thumb';
         article.append(image);
     }
@@ -600,6 +608,7 @@ function card(candidate: AdventureCandidate, reasons: string[]): HTMLLIElement {
     }
     why.append(whyTitle, reasonList);
     const links = document.createElement('ul');
+    links.className = 'recommendation-actions';
     const linkItem = document.createElement('li');
     const wiki = document.createElement('a');
     wiki.href = candidate.wikiUrl;

@@ -9,7 +9,23 @@ document.addEventListener('click', (event) => {
     }
 
     const expanded = button.getAttribute('aria-expanded') === 'true';
+    const image = button.querySelector('img');
     button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+
+    if (!(image instanceof HTMLImageElement)) {
+        return;
+    }
+
+    if (expanded || image.naturalWidth === 0) {
+        image.style.width = '';
+        image.style.height = '';
+
+        return;
+    }
+
+    const scale = Math.min(1.5, (27 * 16) / image.naturalWidth, (36 * 16) / image.naturalHeight);
+    image.style.width = `${Math.round(image.naturalWidth * scale)}px`;
+    image.style.height = `${Math.round(image.naturalHeight * scale)}px`;
 });
 
 document.addEventListener('DOMContentLoaded', () => {
