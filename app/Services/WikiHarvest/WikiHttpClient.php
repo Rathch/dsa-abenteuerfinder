@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\WikiHarvest;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
+use Throwable;
 
 /**
  * Höflicher HTTP-Client für Wiki-Aventurica-Indexseiten mit Datei-Cache.
@@ -14,6 +17,8 @@ use RuntimeException;
 final class WikiHttpClient
 {
     private const USER_AGENT = 'DSA-Abenteuerfinder/1.0 (+https://github.com/rathch/dsa-abenteuerfinder; wiki-harvest; contact: local-dev)';
+
+    private ?string $lastError = null;
 
     public function __construct(
         private readonly string $cacheDirectory,
@@ -23,13 +28,16 @@ final class WikiHttpClient
 
     public function get(string $url): string
     {
+        $this->lastError = null;
         $body = $this->tryGet($url);
         if ($body === null) {
             if ($this->fromCacheOnly) {
                 throw new RuntimeException('Wiki-Cache fehlt für '.$url.' (Flag --from-cache).');
             }
 
-            throw new RuntimeException('Wiki-Abruf fehlgeschlagen: '.$url);
+            $reason = $this->lastError ?? 'keine Antwort';
+
+            throw new RuntimeException('Wiki-Abruf fehlgeschlagen: '.$url.' ('.$reason.')');
         }
 
         return $body;
@@ -63,12 +71,24 @@ final class WikiHttpClient
             $response = Http::withHeaders([
                 'User-Agent' => self::USER_AGENT,
                 'Accept' => 'text/html',
-            ])->timeout(30)->get($url);
-        } catch (HttpClientException) {
+            ])
+                ->connectTimeout(10)
+                ->timeout(30)
+                ->retry([500, 1500], when: function (Throwable $exception): bool {
+                    return $exception instanceof ConnectionException
+                        || ($exception instanceof RequestException
+                            && ($exception->response->serverError() || $exception->response->status() === 429));
+                })
+                ->get($url);
+        } catch (HttpClientException $exception) {
+            $this->lastError = $exception->getMessage();
+
             return null;
         }
 
         if (! $response->successful()) {
+            $this->lastError = 'HTTP '.$response->status();
+
             return null;
         }
 
