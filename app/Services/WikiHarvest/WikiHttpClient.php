@@ -72,8 +72,12 @@ final class WikiHttpClient
                 'User-Agent' => self::USER_AGENT,
                 'Accept' => 'text/html',
             ])
-                ->connectTimeout(10)
-                ->timeout(30)
+                ->withOptions([
+                    // GitHub-Runner können über DNS64 ein IPv6-Ziel erzeugen, das dieses Wiki nicht erreicht.
+                    'force_ip_resolve' => 'v4',
+                ])
+                ->connectTimeout(20)
+                ->timeout(45)
                 ->retry([500, 1500], when: function (Throwable $exception): bool {
                     return $exception instanceof ConnectionException
                         || ($exception instanceof RequestException

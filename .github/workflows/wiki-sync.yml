@@ -38,7 +38,20 @@ jobs:
           php artisan migrate --force --no-interaction
 
       - name: Sync wiki catalog
-        run: php artisan adventures:sync-wiki --no-interaction
+        run: |
+          set -u
+          for attempt in 1 2 3 4; do
+            echo "Wiki-Sync Versuch ${attempt}"
+            getent ahostsv4 de.wiki-aventurica.de || true
+            if php artisan adventures:sync-wiki --no-interaction; then
+              exit 0
+            fi
+            if [ "${attempt}" -lt 4 ]; then
+              echo "Wiki nicht erreichbar, nächster Versuch in 90 Sekunden."
+              sleep 90
+            fi
+          done
+          exit 1
 
       - name: Commit catalog
         run: |
