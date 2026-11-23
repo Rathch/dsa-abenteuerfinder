@@ -1,6 +1,22 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, test } from '@playwright/test';
 import { setTheme } from '../a11y-helpers';
 import { formHeading } from '../wizard-helpers';
+
+async function expectThumbSide(toggle: Locator, side: 'left' | 'right'): Promise<void> {
+    await expect.poll(async () => {
+        const thumb = await toggle.locator('.theme-toggle-thumb').boundingBox();
+        const track = await toggle.locator('.theme-toggle-track').boundingBox();
+
+        if (thumb === null || track === null) {
+            return 'missing';
+        }
+
+        const thumbCenter = thumb.x + thumb.width / 2;
+        const trackMid = track.x + track.width / 2;
+
+        return thumbCenter < trackMid ? 'left' : 'right';
+    }).toBe(side);
+}
 
 test.describe('Tastatur-Leitplanken', () => {
     test('Skip-Link ist erster Tab-Stopp, sichtbar und springt zum Hauptinhalt', async ({ page }) => {
@@ -43,7 +59,7 @@ test.describe('Tastatur-Leitplanken', () => {
             const choiceRing = await page.locator('label.choice', { has: radio }).evaluate((element) => getComputedStyle(element).filter);
             expect(choiceRing).toContain('drop-shadow');
 
-            const themeToggle = page.getByRole('switch', { name: 'Dunkles Design' });
+            const themeToggle = page.getByRole('switch', { name: theme === 'dark' ? 'Dunkles Design' : 'Helles Design' });
             await themeToggle.focus();
             await expect(themeToggle).toBeFocused();
             const toggleRing = await themeToggle.evaluate((element) => getComputedStyle(element).filter);
@@ -58,28 +74,38 @@ test.describe('Tastatur-Leitplanken', () => {
         await page.evaluate(() => localStorage.removeItem('theme'));
         await page.reload();
 
-        const toggle = page.getByRole('switch', { name: 'Dunkles Design' });
+        const toggle = page.locator('[data-theme-toggle]');
         await expect(toggle).toHaveAttribute('aria-checked', 'false');
+        await expect(toggle).toHaveAccessibleName('Helles Design');
         await expect(page.locator('html')).not.toHaveClass(/dark/);
+        await expectThumbSide(toggle, 'left');
 
         await toggle.focus();
         await page.keyboard.press('Enter');
         await expect(toggle).toHaveAttribute('aria-checked', 'true');
+        await expect(toggle).toHaveAccessibleName('Dunkles Design');
         await expect(page.locator('html')).toHaveClass(/dark/);
+        await expectThumbSide(toggle, 'right');
         expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
 
         await page.keyboard.press('Space');
         await expect(toggle).toHaveAttribute('aria-checked', 'false');
+        await expect(toggle).toHaveAccessibleName('Helles Design');
         await expect(page.locator('html')).not.toHaveClass(/dark/);
+        await expectThumbSide(toggle, 'left');
         expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('light');
 
         // Gespeicherte Wahl bleibt nach dem Neuladen erhalten.
         await page.keyboard.press('Enter');
         await expect(toggle).toHaveAttribute('aria-checked', 'true');
+        await expect(toggle).toHaveAccessibleName('Dunkles Design');
+        await expectThumbSide(toggle, 'right');
         expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark');
         await page.reload();
         await expect(page.locator('html')).toHaveClass(/dark/);
-        await expect(page.getByRole('switch', { name: 'Dunkles Design' })).toHaveAttribute('aria-checked', 'true');
+        await expect(page.locator('[data-theme-toggle]')).toHaveAttribute('aria-checked', 'true');
+        await expect(page.locator('[data-theme-toggle]')).toHaveAccessibleName('Dunkles Design');
+        await expectThumbSide(page.locator('[data-theme-toggle]'), 'right');
     });
 
     test('Ohne gespeicherte Wahl gilt der Browser-Standard', async ({ page }) => {

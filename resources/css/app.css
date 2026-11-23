@@ -631,7 +631,7 @@
         transform: rotate(-8deg) scale(1.08);
     }
 
-    /* Theme-Schalter: Label bleibt „Dunkles Design“, Zustand über Knopfstellung + aria-checked. */
+    /* Theme-Schalter: Beschriftung und Knopf folgen html.dark — hell links, dunkel rechts. */
     .theme-toggle {
         display: inline-flex;
         align-items: center;
@@ -682,7 +682,7 @@
         transition: background-color var(--motion-fast) ease;
     }
 
-    .theme-toggle.is-on .theme-toggle-track {
+    html.dark .theme-toggle .theme-toggle-track {
         background-color: transparent;
     }
 
@@ -702,7 +702,7 @@
         );
     }
 
-    .theme-toggle.is-on .theme-toggle-track::before {
+    html.dark .theme-toggle .theme-toggle-track::before {
         background-color: var(--accent);
     }
 
@@ -726,7 +726,7 @@
             color var(--motion-fast) ease;
     }
 
-    .theme-toggle.is-on .theme-toggle-thumb {
+    html.dark .theme-toggle .theme-toggle-thumb {
         transform: translateX(1.36rem);
         background-color: var(--accent-ink);
         color: var(--accent);
@@ -755,12 +755,12 @@
             transform var(--motion-fast) var(--ease-spring);
     }
 
-    .theme-toggle.is-on .theme-toggle-icon-sun {
+    html.dark .theme-toggle .theme-toggle-icon-sun {
         opacity: 0;
         transform: scale(0.6);
     }
 
-    .theme-toggle.is-on .theme-toggle-icon-moon {
+    html.dark .theme-toggle .theme-toggle-icon-moon {
         opacity: 1;
         transform: scale(1);
     }
@@ -768,6 +768,18 @@
     .theme-toggle-label {
         padding-right: 0.25rem;
         white-space: nowrap;
+    }
+
+    .theme-toggle-label-dark {
+        display: none;
+    }
+
+    html.dark .theme-toggle-label-light {
+        display: none;
+    }
+
+    html.dark .theme-toggle-label-dark {
+        display: inline;
     }
 
     .text-link {
