@@ -41932,12 +41932,41 @@
                 "horror",
                 "exploration"
             ],
-            "short_description": "Winter in Weiden: Ein halbes Jahr nach dem »Alptraum ohne Ende« ruft ein Brief des Herzogs unsere Helden in das winterliche Herzogtum. Nun, wahrscheinlich nicht gerade eine Gelegenheit, sich von den Alpträumen zu erholen – aber schrecklicher als die Katastrophe von Dragenfeld kann es ja wohl nicht kommen, oder?",
+            "short_description": "-",
             "wiki_url": "https://de.wiki-aventurica.de/wiki/Unsterbliche_Gier",
             "cover_url": "https://de.wiki-aventurica.de/de/images/thumb/1/18/AB_A57.jpg/250px-AB_A57.jpg",
             "incomplete": true,
             "missing_from_wiki": false,
-            "source_note": "Schauplatz konnte nicht sicher gemappt werden."
+            "source_note": "Schauplatz konnte nicht sicher gemappt werden. Kurzbeschreibung im Wiki nicht gefunden (Wiki-Harvest)."
+        },
+        {
+            "slug": "die-hungrige-mutter-hw-reihe",
+            "title": "Die Hungrige Mutter",
+            "series": "hw-reihe",
+            "experience_level": "einsteiger",
+            "page_count": 16,
+            "duration_category": "kurz",
+            "rule_version": "dsa5",
+            "exotic": false,
+            "complexity": "hoch",
+            "group_size_min": null,
+            "group_size_max": null,
+            "location_type": "traveling",
+            "primary_location": null,
+            "primary_region": "mittelaventurien",
+            "place_label": "Ulmenstein",
+            "regions": [
+                "mittelaventurien"
+            ],
+            "genres": [
+                "horror"
+            ],
+            "short_description": "-",
+            "wiki_url": "https://de.wiki-aventurica.de/wiki/Die_Hungrige_Mutter",
+            "cover_url": null,
+            "incomplete": true,
+            "missing_from_wiki": false,
+            "source_note": "Erfahrungsstufe aus Wiki-Text geschätzt. Schauplatz konnte nicht sicher gemappt werden. Kurzbeschreibung im Wiki nicht gefunden (Wiki-Harvest)."
         }
     ]
 }
