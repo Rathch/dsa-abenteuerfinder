@@ -2,12 +2,18 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
+# Ein TCP-Timeout zum Wiki bleibt auf demselben Runner bestehen. Jeder Job
+# ist deshalb eine neue VM. Der nächste Job startet nur nach einem Fehlschlag.
 name: Wiki sync
 
 on:
   schedule:
     - cron: "15 3 * * *"
   workflow_dispatch:
+
+concurrency:
+  group: wiki-sync
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -16,51 +22,27 @@ jobs:
   sync:
     name: Wiki-Katalog prüfen und committen
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+      - uses: ./.github/actions/wiki-sync
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.5"
-          extensions: mbstring, xml, ctype, json, tokenizer, dom, curl, pdo_sqlite
-          coverage: none
-          tools: composer:v2
+  sync-retry:
+    name: Wiki-Katalog, neuer Runner
+    needs: sync
+    if: ${{ !cancelled() && needs.sync.result == 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/wiki-sync
 
-      - name: Install dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist --no-dev
-
-      - name: Prepare Laravel env
-        run: |
-          cp .env.example .env
-          php artisan key:generate --force
-          touch database/database.sqlite
-          php artisan migrate --force --no-interaction
-
-      - name: Sync wiki catalog
-        run: |
-          set -u
-          for attempt in 1 2 3 4; do
-            echo "Wiki-Sync Versuch ${attempt}"
-            getent ahostsv4 de.wiki-aventurica.de || true
-            if php artisan adventures:sync-wiki --no-interaction; then
-              exit 0
-            fi
-            if [ "${attempt}" -lt 4 ]; then
-              echo "Wiki nicht erreichbar, nächster Versuch in 90 Sekunden."
-              sleep 90
-            fi
-          done
-          exit 1
-
-      - name: Commit catalog
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add database/data
-          if git diff --cached --quiet; then
-            echo "Keine Katalogänderung."
-          else
-            git commit -m "Synchronisiere den Wiki-Katalog"
-            git push
-          fi
+  sync-retry-again:
+    name: Wiki-Katalog, dritter Runner
+    needs: sync-retry
+    if: ${{ !cancelled() && needs.sync-retry.result == 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/wiki-sync
