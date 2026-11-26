@@ -22,13 +22,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: Build und deploy-pages
+  build:
+    name: Build
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
 
@@ -52,6 +49,16 @@ jobs:
         with:
           path: dist
 
+  # deploy-pages listet Artefakte sofort. Im selben Job ist das gerade
+  # hochgeladene Artefakt oft noch unsichtbar (actions/deploy-pages#451).
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
