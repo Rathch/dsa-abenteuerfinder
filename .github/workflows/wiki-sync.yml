@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 # Ein TCP-Timeout zum Wiki bleibt auf demselben Runner bestehen. Jeder Job
-# ist deshalb eine neue VM. Der nächste Job startet nur nach einem Fehlschlag.
+# ist deshalb eine neue VM. Ein fehlgeschlagener Versuch darf den Workflow
+# nicht rot färben, solange ein späterer Runner den Katalog synchronisiert.
 name: Wiki sync
 
 on:
@@ -23,26 +24,49 @@ jobs:
     name: Wiki-Katalog prüfen und committen
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      ok: ${{ steps.sync.outcome == 'success' }}
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/wiki-sync
+      - id: sync
+        continue-on-error: true
+        uses: ./.github/actions/wiki-sync
 
   sync-retry:
     name: Wiki-Katalog, neuer Runner
     needs: sync
-    if: ${{ !cancelled() && needs.sync.result == 'failure' }}
+    if: ${{ !cancelled() && needs.sync.outputs.ok != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      ok: ${{ steps.sync.outcome == 'success' }}
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/wiki-sync
+      - id: sync
+        continue-on-error: true
+        uses: ./.github/actions/wiki-sync
 
   sync-retry-again:
     name: Wiki-Katalog, dritter Runner
-    needs: sync-retry
-    if: ${{ !cancelled() && needs.sync-retry.result == 'failure' }}
+    needs: [sync, sync-retry]
+    if: ${{ !cancelled() && needs.sync.outputs.ok != 'true' && needs.sync-retry.outputs.ok != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      ok: ${{ steps.sync.outcome == 'success' }}
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/wiki-sync
+      - id: sync
+        continue-on-error: true
+        uses: ./.github/actions/wiki-sync
+
+  result:
+    name: Wiki-Sync fehlgeschlagen
+    needs: [sync, sync-retry, sync-retry-again]
+    if: ${{ !cancelled() && always() && needs.sync.outputs.ok != 'true' && needs.sync-retry.outputs.ok != 'true' && needs.sync-retry-again.outputs.ok != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kein Runner hat den Katalog synchronisiert
+        run: |
+          echo "Keiner der Runner hat den Wiki-Katalog synchronisiert."
+          exit 1
